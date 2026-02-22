@@ -1,0 +1,24 @@
+# Core
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+python-dotenv>=1.0.0
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# AI
+anthropic>=0.40.0
+
+# Crawling — Firecrawl (primary, handles JS/SPAs)
+firecrawl-py>=1.0.0
+
+# Crawling — fallback (used when Firecrawl key not set)
+httpx>=0.27.0
+beautifulsoup4>=4.12.0
+lxml>=5.1.0
+
+# Scheduling (auto-refresh)
+apscheduler>=3.10.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.23.0
