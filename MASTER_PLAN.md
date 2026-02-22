@@ -33,10 +33,10 @@ Website owners don't know how to fix this. We fix it for them automatically.
 
 1. **Learning network effect** — LLM pipeline trained on thousands of sites → industry-specific templates improve over time.
 2. **Real usage signal** — JS snippet logs every AI agent request (which agent, which page). AI traffic analytics dashboard live.
-3. **AI Readiness Score + Badge** — 0-100 score, grade A+→F, embeddable SVG badge, public profile.
+3. **AI Readiness Score + Badge** — 0-100 score, grade A+→F, embeddable SVG badge, improvement suggestions.
 4. **Two-sided network** — Agent builders query our registry. Site owners install us to be visible to agents.
 5. **Vertical depth** — Industry-specific tool schemas (next: SaaS, legal, healthcare).
-6. **WebMCP auto-implementation** — Google shipped WebMCP Feb 2026. We auto-implement it for any site via snippet. First mover.
+6. **WebMCP auto-implementation** — Google shipped WebMCP Feb 2026 (Chrome 146 Canary). We auto-implement it for any site via snippet. First mover.
 
 ---
 
@@ -59,7 +59,7 @@ References:
 
 ```
 [Customer site]
-    └── <script src="https://api.galui.com/galui.js?key=cr_live_..." async>
+    └── <script src="https://galui-production.up.railway.app/galui.js?key=cr_live_..." async>
             ├── Detects page type (homepage/pricing/docs/blog/contact/product)
             ├── Extracts headings, CTAs, forms, schema.org, clean text
             ├── Registers WebMCP tools via navigator.modelContext.registerTool()
@@ -68,20 +68,20 @@ References:
             └── POSTs structured page data to /api/v1/ingest/push (hash-gated)
 
 [Backend — FastAPI on Railway]
-    ├── GET  /galui.js                       ← serves the snippet
-    ├── POST /api/v1/ingest/push             ← receives snippet data → LLM pipeline
-    ├── POST /api/v1/analytics/event         ← logs AI agent hits
-    ├── GET  /api/v1/analytics/{domain}      ← customer analytics summary
-    ├── GET  /api/v1/analytics/{domain}/agents ← agent breakdown
-    ├── GET  /api/v1/analytics/{domain}/pages  ← page breakdown
-    ├── GET  /api/v1/score/{domain}          ← AI Readiness Score (0-100)
-    ├── GET  /api/v1/score/{domain}/badge    ← embeddable SVG badge
+    ├── GET  /galui.js                          ← serves the snippet
+    ├── POST /api/v1/ingest/push                ← snippet-driven ingest pipeline
+    ├── POST /api/v1/ingest                     ← manual crawl (also works)
+    ├── POST /api/v1/analytics/event            ← logs AI agent hits
+    ├── GET  /api/v1/analytics/{domain}         ← customer analytics summary
+    ├── GET  /api/v1/analytics/{domain}/agents  ← agent breakdown
+    ├── GET  /api/v1/analytics/{domain}/pages   ← page breakdown
+    ├── GET  /api/v1/score/{domain}             ← AI Readiness Score (0-100)
+    ├── GET  /api/v1/score/{domain}/badge       ← embeddable SVG badge
     ├── GET  /api/v1/score/{domain}/suggestions ← improvement suggestions
-    ├── GET  /registry/{domain}              ← full JSON registry
-    ├── GET  /registry/{domain}/llms.txt     ← llms.txt standard
-    ├── GET  /registry/{domain}/ai-plugin.json ← OpenAI plugin manifest
-    ├── GET  /registry/{domain}/status       ← live status check
-    ├── POST /api/v1/ingest                  ← manual crawl (also works)
+    ├── GET  /registry/{domain}                 ← full JSON registry
+    ├── GET  /registry/{domain}/llms.txt        ← llms.txt standard
+    ├── GET  /registry/{domain}/ai-plugin.json  ← OpenAI plugin manifest
+    ├── GET  /registry/{domain}/status          ← live status check
     └── Full tenant + admin endpoints
 
 [Customer dashboard — React/Vite]
@@ -89,7 +89,7 @@ References:
     ├── Analytics   — AI agent traffic, agent breakdown, page hits, daily trend
     ├── AI Score    — score ring, dimension breakdown, suggestions, badge embed
     ├── Snippet     — install guide, debug mode, verify checklist
-    ├── Registries  — domain list + detail (capabilities, pricing, integration, llms.txt, json)
+    ├── Registries  — domain list + detail tabs
     ├── Ingest      — manual crawl with live progress
     ├── Tenants     — create/manage tenant API keys
     └── Settings    — API URL + key config
@@ -97,81 +97,175 @@ References:
 
 ---
 
-## CODEBASE MAP
+## PRODUCTION STATE
 
-**Path:** `C:\Users\yanko\OneDrive\שולחן העבודה\galui\`
+### URLs
+| What | URL |
+|------|-----|
+| API (Railway) | `https://galui-production.up.railway.app` |
+| Health check | `https://galui-production.up.railway.app/health` |
+| API docs | `https://galui-production.up.railway.app/docs` |
+| GitHub repo | `https://github.com/yan-yanko/galui` |
 
-| File | Status | What it does |
-|------|--------|-------------|
-| `static/galui.js` | ✅ NEW | The JS snippet — full pipeline |
-| `app/api/main.py` | ✅ UPDATED | Rewired v2.0, serves /galui.js |
-| `app/api/routes/push.py` | ✅ NEW | Push ingest + score + badge endpoints |
-| `app/api/routes/analytics.py` | ✅ NEW | Analytics routes |
-| `app/api/routes/ingest.py` | ✅ EXISTING | Manual crawl (unchanged) |
-| `app/api/routes/registry.py` | ✅ EXISTING | Registry output formats (unchanged) |
-| `app/api/routes/admin.py` | ✅ EXISTING | Admin ops (unchanged) |
-| `app/api/routes/tenants.py` | ✅ EXISTING | Tenant management (unchanged) |
-| `app/services/analytics.py` | ✅ NEW | Analytics DB, 20 AI agent patterns |
-| `app/services/score.py` | ✅ NEW | AI Readiness Score (5 dimensions) |
-| `app/services/comprehension.py` | ✅ EXISTING | 4-pass LLM pipeline (unchanged) |
-| `app/services/crawler.py` | ✅ EXISTING | Firecrawl + httpx fallback |
-| `app/services/registry_builder.py` | ✅ UPDATED | Added webmcp_meta param |
-| `app/services/storage.py` | ✅ UPDATED | Added page_hashes table |
-| `app/services/tenant.py` | ✅ EXISTING | Multi-tenancy (unchanged) |
-| `app/services/scheduler.py` | ✅ EXISTING | Auto-refresh (unchanged) |
-| `app/models/registry.py` | ✅ UPDATED | AIMetadata has WebMCP fields |
-| `app/models/crawl.py` | ✅ EXISTING | CrawlResult model (unchanged) |
-| `app/models/jobs.py` | ✅ EXISTING | Job tracking (unchanged) |
-| `app/config.py` | ✅ EXISTING | Settings (unchanged) |
-| `app/api/auth.py` | ✅ EXISTING | Auth middleware (unchanged) |
-| `dashboard/src/App.jsx` | ✅ REBUILT | 8-page customer dashboard |
-| `dashboard/src/api.js` | ✅ UPDATED | All new endpoints wired |
+### Credentials (keep safe — never commit)
+| Key | Value | Where used |
+|-----|-------|-----------|
+| `REGISTRY_API_KEY` | `kotleryan1984` | Admin master key — X-API-Key header |
+| Your tenant key | `cr_live_Jrdgrz8mSPKxQsoIhrrpaQNWr72zzOL1PrRS4Fg3` | Snippet + dashboard |
+| Anthropic API key | in `.env` file locally | Set in Railway variables |
+| Firecrawl API key | in `.env` file locally | Set in Railway variables |
+
+### Railway environment variables (already set)
+```
+ANTHROPIC_API_KEY=sk-ant-api03-...
+FIRECRAWL_API_KEY=fc-d777...
+DATABASE_URL=data/registry.db
+BASE_API_URL=https://galui-production.up.railway.app
+MAX_PAGES_PER_CRAWL=20
+FAST_MODEL=claude-haiku-4-5-20251001
+DEEP_MODEL=claude-sonnet-4-5-20250929
+REGISTRY_API_KEY=kotleryan1984
+```
+
+### Pipeline test results (stripe.com, 2026-02-22)
+| Endpoint | Status | Result |
+|----------|--------|--------|
+| POST /api/v1/ingest | ✅ | 10 pages, 76 seconds, confidence 0.767 |
+| GET /registry/{domain} | ✅ | 8 capabilities, fintech, full schema |
+| GET /registry/{domain}/llms.txt | ✅ Fixed | Was 500 (strftime bug) — fixed in commit c239b0f |
+| GET /api/v1/score/{domain} | ✅ | Grade C, 66/100 for stripe.com |
+| GET /api/v1/score/{domain}/badge | ✅ | SVG renders correctly |
+| GET /registry/{domain}/ai-plugin.json | ✅ | Valid OpenAI plugin manifest |
+| GET /registry/{domain}/status | ✅ | Live HTTP check, "operational" |
 
 ---
 
-## WHAT'S NEXT (next session starts here)
+## CODEBASE MAP
 
-### Priority 1 — Test end-to-end
-1. Start server: `python run.py`
-2. Create a tenant key via POST /api/v1/tenants
-3. Install snippet on a test HTML page (or use curl to simulate push)
-4. Verify /api/v1/score/{domain} returns data
-5. Verify /api/v1/score/{domain}/badge returns SVG
-6. Verify /registry/{domain}/llms.txt returns text
+**Local path:** `C:\Users\yanko\OneDrive\שולחן העבודה\galui\`
 
-### Priority 2 — Deploy to Railway
-1. Set env vars: `ANTHROPIC_API_KEY`, `REGISTRY_API_KEY`, `BASE_API_URL`, optionally `FIRECRAWL_API_KEY`
-2. Push to GitHub → Railway auto-deploys
-3. Test /health on live URL
+| File | What it does |
+|------|-------------|
+| `static/galui.js` | JS snippet — page analysis, WebMCP, AI detection, beacon, link injection |
+| `app/api/main.py` | FastAPI app v2.0 — all routes wired, serves /galui.js |
+| `app/api/auth.py` | Two-mode auth: master key + tenant keys |
+| `app/api/routes/push.py` | Push ingest + Score + Badge SVG endpoints |
+| `app/api/routes/analytics.py` | AI traffic analytics routes |
+| `app/api/routes/ingest.py` | Manual crawl endpoint |
+| `app/api/routes/registry.py` | JSON / llms.txt / ai-plugin.json / status |
+| `app/api/routes/admin.py` | Admin: refresh, delete, stats |
+| `app/api/routes/tenants.py` | Tenant lifecycle CRUD |
+| `app/services/analytics.py` | Analytics DB — 20 AI agent patterns, event logging |
+| `app/services/score.py` | AI Readiness Score (5 dimensions, suggestions) |
+| `app/services/comprehension.py` | 4-pass LLM pipeline (Haiku + Sonnet) |
+| `app/services/crawler.py` | Firecrawl + httpx fallback crawler |
+| `app/services/registry_builder.py` | LLM output → CapabilityRegistry schema |
+| `app/services/storage.py` | SQLite storage + page_hashes table |
+| `app/services/tenant.py` | Multi-tenancy, API key generation, usage tracking |
+| `app/services/scheduler.py` | Auto-refresh every 7 days |
+| `app/models/registry.py` | Full data schema incl. WebMCP fields |
+| `app/models/crawl.py` | CrawlResult model |
+| `app/models/jobs.py` | Job tracking model |
+| `app/config.py` | Settings via pydantic-settings + .env |
+| `dashboard/src/App.jsx` | 8-page React dashboard |
+| `dashboard/src/api.js` | API client (reads URL+key from localStorage) |
+| `railway.toml` | Railway deploy config |
+| `Dockerfile` | Python 3.11-slim, uvicorn |
 
-### Priority 3 — Rate limiting enforcement
-- Tenant plan limits are defined (free=10/min, pro=60/min, enterprise=300/min) but NOT enforced in middleware
-- Add rate limit check in auth.py using a simple in-memory counter (or Redis for scale)
+---
 
-### Priority 4 — Public domain profile page
-- `GET /profile/{domain}` — public-facing HTML page with score, badge, and registry summary
-- Used for the two-sided network moat: agent builders land here
+## KNOWN ISSUES / NEXT STEPS
 
-### Priority 5 — Vertical templates
-- Industry-specific extraction prompts and WebMCP tool schemas
-- Start with SaaS, then legal, then healthcare
+### 🔴 Critical — Fix before anything else
+1. **SQLite is ephemeral on Railway** — every redeploy wipes the database.
+   - **Fix:** Add a Railway Volume mounted at `/app/data` in the Railway dashboard
+   - Go to Railway project → **+ New** → **Volume** → mount path `/app/data`
+   - This makes `data/registry.db` survive deploys forever
+
+### 🟡 Important — Do soon
+2. **Rate limiting not enforced** — tenant plan limits (free=10/min, pro=60/min) are defined but not checked in middleware
+3. **Dashboard not deployed** — React dashboard only runs locally (`cd dashboard && npm run dev`). Needs to be either deployed separately (Vercel/Netlify) or served by FastAPI as static files.
+4. **Push pipeline merge logic** — `_merge_registries()` in push.py is basic; needs smarter field-level merging for multi-page sites
+
+### 🟢 Nice to have — Next features
+5. **Public domain profile page** — `GET /profile/{domain}` — public HTML with score + badge (for two-sided network moat)
+6. **Vertical templates** — industry-specific prompts and WebMCP schemas (SaaS, legal, healthcare)
+7. **Rate limiting** — enforce in auth middleware using in-memory counter or Redis
+8. **Email notifications** — tenant welcome email, score change alerts
+
+---
+
+## HOW TO DEPLOY THE DASHBOARD
+
+Currently the dashboard is React/Vite and only runs locally.
+
+**Option A — Vercel (recommended, free)**
+```bash
+cd dashboard
+npm run build
+# Push to GitHub, connect Vercel to the repo, set VITE_API_URL=https://galui-production.up.railway.app
+```
+
+**Option B — Serve from FastAPI (single deployment)**
+Add to Dockerfile:
+```
+RUN cd dashboard && npm install && npm run build
+```
+Add to main.py:
+```python
+from fastapi.staticfiles import StaticFiles
+app.mount("/dashboard", StaticFiles(directory="dashboard/dist", html=True), name="dashboard")
+```
 
 ---
 
 ## KEY TECHNICAL NOTES
 
-- Windows path has Hebrew chars — use pathlib not os.path
-- Starlette BaseHTTPMiddleware swallows HTTPException — use JSONResponse for auth errors (already done)
-- Railway uses dynamic $PORT — Dockerfile must use `CMD uvicorn ... --port ${PORT}`
-- SQLite db at `data/registry.db`
+- Windows path has Hebrew chars — always use `pathlib` not `os.path`
+- Starlette BaseHTTPMiddleware swallows HTTPException — use JSONResponse for auth errors (already done in auth.py)
+- Railway uses dynamic `$PORT` — Dockerfile uses `CMD uvicorn ... --port ${PORT}` ✅
+- SQLite db at `data/registry.db` — needs Railway Volume to persist
 - Fast model: `claude-haiku-4-5-20251001`, Deep model: `claude-sonnet-4-5-20250929`
-- All new routes use `api.base()` from localStorage — no hardcoded localhost in dashboard
+- Dashboard reads API URL from localStorage key `galui_api_url` (default: localhost:8000)
+- Dashboard reads API key from localStorage key `galui_api_key`
+- `nul` file in root is a Windows artifact — safe to ignore
+
+---
+
+## WORKFLOW — HOW TO DEVELOP
+
+```bash
+# 1. Start backend locally
+cd "C:\Users\yanko\OneDrive\שולחן העבודה\galui"
+python run.py
+
+# 2. Start dashboard locally (separate terminal)
+cd dashboard
+npm run dev
+# Opens at http://localhost:5173
+
+# 3. In dashboard Settings tab:
+#    API URL: http://localhost:8000
+#    API Key: kotleryan1984
+
+# 4. When ready to deploy:
+git add -A
+git commit -m "your message"
+git push
+# Railway auto-deploys on push to main
+```
 
 ---
 
 ## TO RESUME A SESSION
 
-1. Read this file top to bottom
-2. Find "WHAT'S NEXT" section — first uncompleted item is where to start
-3. Check the relevant source files
-4. Continue from there
+Say exactly this:
+
+> **"Read MASTER_PLAN.md at C:\Users\yanko\OneDrive\שולחן העבודה\galui\MASTER_PLAN.md and continue from where we left off"**
+
+The plan has everything needed:
+1. What the product is
+2. All credentials and URLs
+3. Current codebase state
+4. Exactly what's broken and what's next
+5. How to run it locally and deploy
