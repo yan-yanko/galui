@@ -1,18 +1,31 @@
-// When served from Railway (/dashboard), use same origin as the API.
-// When running locally, fall back to localhost:8000.
-const _sameOrigin = window.location.hostname !== 'localhost' && !window.location.hostname.includes('lovable')
-  ? window.location.origin
-  : null;
-const BASE = localStorage.getItem('galui_api_url') || import.meta.env.VITE_API_URL || _sameOrigin || 'http://localhost:8000';
+// Auto-detect the API base URL:
+// - When served from Railway (/dashboard), use same origin → no config needed
+// - When running locally, use localhost:8000
+// - Can always be overridden via Settings (localStorage)
+const _autoBase = window.location.hostname === 'localhost'
+  ? 'http://localhost:8000'
+  : window.location.origin;
+
+const BASE = localStorage.getItem('galui_api_url') || _autoBase;
+
+// Default API key — works out of the box for the hosted dashboard.
+// Users can override in Settings if needed.
+const DEFAULT_KEY = 'kotleryan1984';
+
+function getKey() {
+  return localStorage.getItem('galui_api_key') || DEFAULT_KEY;
+}
+
+function getBase() {
+  return localStorage.getItem('galui_api_url') || BASE;
+}
 
 async function req(path, options = {}) {
-  const apiKey = localStorage.getItem('galui_api_key') || '';
-  const base   = localStorage.getItem('galui_api_url') || BASE;
-  const res = await fetch(`${base}${path}`, {
+  const res = await fetch(`${getBase()}${path}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      ...(apiKey ? { 'X-API-Key': apiKey } : {}),
+      'X-API-Key': getKey(),
       ...options.headers,
     },
   });
@@ -24,28 +37,26 @@ async function req(path, options = {}) {
 }
 
 async function reqText(path) {
-  const apiKey = localStorage.getItem('galui_api_key') || '';
-  const base   = localStorage.getItem('galui_api_url') || BASE;
-  const res = await fetch(`${base}${path}`, {
-    headers: apiKey ? { 'X-API-Key': apiKey } : {},
+  const res = await fetch(`${getBase()}${path}`, {
+    headers: { 'X-API-Key': getKey() },
   });
   if (!res.ok) throw new Error(res.statusText);
   return res.text();
 }
 
 export const api = {
-  base: () => localStorage.getItem('galui_api_url') || BASE,
+  base: getBase,
 
   health: () => req('/health'),
 
-  // ── Ingestion (crawl-based) ──────────────────────────────────────────────
-  ingest: (url, force = false) =>
+  // ── Ingestion ────────────────────────────────────────────────────────────
+  ingest:   (url, force = false) =>
     req('/api/v1/ingest', { method: 'POST', body: JSON.stringify({ url, force_refresh: force }) }),
-  pollJob: (jobId) => req(`/api/v1/jobs/${jobId}`),
-  listJobs: () => req('/api/v1/jobs'),
+  pollJob:  (jobId) => req(`/api/v1/jobs/${jobId}`),
+  listJobs: ()      => req('/api/v1/jobs'),
 
   // ── Registry ─────────────────────────────────────────────────────────────
-  listRegistries: () => req('/registry/'),
+  listRegistries: ()       => req('/registry/'),
   getRegistry:    (domain) => req(`/registry/${domain}`),
   getLlmsTxt:     (domain) => reqText(`/registry/${domain}/llms.txt`),
   getLiveStatus:  (domain) => req(`/registry/${domain}/status`),
@@ -53,7 +64,7 @@ export const api = {
   // ── Score + Badge ─────────────────────────────────────────────────────────
   getScore:       (domain) => req(`/api/v1/score/${domain}`),
   getSuggestions: (domain) => req(`/api/v1/score/${domain}/suggestions`),
-  getBadgeUrl:    (domain) => `${api.base()}/api/v1/score/${domain}/badge`,
+  getBadgeUrl:    (domain) => `${getBase()}/api/v1/score/${domain}/badge`,
 
   // ── Analytics ─────────────────────────────────────────────────────────────
   getAnalytics:      (domain, days = 30) => req(`/api/v1/analytics/${domain}?days=${days}`),

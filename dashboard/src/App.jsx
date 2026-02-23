@@ -1329,77 +1329,110 @@ function TenantsPage() {
 // ── Settings ──────────────────────────────────────────────────────────────────
 function SettingsPage() {
   const [apiKey, setApiKey] = useState(localStorage.getItem('galui_api_key') || '')
-  const [apiUrl, setApiUrl] = useState(localStorage.getItem('galui_api_url') || api.base())
+  const [apiUrl, setApiUrl] = useState(localStorage.getItem('galui_api_url') || '')
   const [testing, setTesting] = useState(false)
   const [status, setStatus] = useState(null)
 
+  // Show what's actually being used (including defaults)
+  const effectiveUrl = apiUrl || api.base()
+  const effectiveKey = apiKey || 'kotleryan1984 (default)'
+
   const save = () => {
-    localStorage.setItem('galui_api_key', apiKey)
-    localStorage.setItem('galui_api_url', apiUrl)
+    if (apiKey) localStorage.setItem('galui_api_key', apiKey)
+    else localStorage.removeItem('galui_api_key')
+    if (apiUrl) localStorage.setItem('galui_api_url', apiUrl)
+    else localStorage.removeItem('galui_api_url')
     toast.success('Settings saved')
+    setStatus(null)
+  }
+
+  const reset = () => {
+    localStorage.removeItem('galui_api_key')
+    localStorage.removeItem('galui_api_url')
+    setApiKey(''); setApiUrl('')
+    toast.info('Reset to defaults')
     setStatus(null)
   }
 
   const test = async () => {
     setTesting(true); setStatus(null)
     try {
-      const h = await fetch(`${apiUrl}/health`, { headers: { 'X-API-Key': apiKey } }).then(r => r.json())
-      setStatus({ ok: true, msg: `Connected — ${h.registries_indexed} sites indexed, Anthropic ${h.anthropic_configured ? '✓' : '✗'}` })
+      const url = apiUrl || api.base()
+      const key = apiKey || 'kotleryan1984'
+      const h = await fetch(`${url}/health`, { headers: { 'X-API-Key': key } }).then(r => r.json())
+      setStatus({ ok: true, msg: `✓ Connected — ${h.registries_indexed} sites indexed · Anthropic ${h.anthropic_configured ? 'ready' : 'not configured'}` })
     } catch (e) {
-      setStatus({ ok: false, msg: `Connection failed: ${e.message}` })
+      setStatus({ ok: false, msg: `✗ Connection failed: ${e.message}` })
     } finally {
       setTesting(false)
     }
   }
 
   return (
-    <div className="flex col gap-24" style={{ maxWidth: 560 }}>
-      <PageHeader title="Settings" subtitle="Configure your API connection." />
+    <div className="flex col gap-24" style={{ maxWidth: 580 }}>
+      <PageHeader title="Settings" subtitle="Override the default API connection if needed." />
 
-      <div className="card flex col gap-20">
-        <div>
-          <label className="label">API URL</label>
-          <input value={apiUrl} onChange={e => setApiUrl(e.target.value)} placeholder="https://galui-production.up.railway.app" />
-          <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 6 }}>Your Railway backend URL.</div>
+      {/* Current connection — always visible */}
+      <div className="card flex col gap-12" style={{ background: 'var(--surface2)', borderColor: 'var(--border2)' }}>
+        <div style={{ fontWeight: 700, fontSize: 13 }}>Current connection</div>
+        <div className="info-row">
+          <span className="info-row-label">API URL</span>
+          <code style={{ fontSize: 12 }}>{effectiveUrl}</code>
+        </div>
+        <div className="info-row">
+          <span className="info-row-label">API Key</span>
+          <code style={{ fontSize: 12 }}>{effectiveKey}</code>
         </div>
         <div>
-          <label className="label">API Key</label>
-          <input value={apiKey} onChange={e => setApiKey(e.target.value)} placeholder="kotleryan1984 or cr_live_..." type="password" />
-          <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 6 }}>Stored in localStorage only — never sent anywhere except your own API.</div>
+          <button className="btn btn-ghost btn-sm" onClick={test} disabled={testing}>
+            {testing ? <><span className="spinner" style={{ width: 12, height: 12 }} /> Testing…</> : 'Test connection'}
+          </button>
         </div>
-
         {status && (
           <div style={{
-            padding: '10px 14px', borderRadius: 8, fontSize: 13,
-            background: status.ok ? '#10b98112' : '#ef444412',
+            padding: '9px 13px', borderRadius: 7, fontSize: 13,
+            background: status.ok ? '#10b98110' : '#ef444410',
             border: `1px solid ${status.ok ? '#10b98130' : '#ef444430'}`,
             color: status.ok ? 'var(--green)' : 'var(--red)',
           }}>
             {status.msg}
           </div>
         )}
+      </div>
 
+      {/* Override — collapsed/advanced */}
+      <div className="card flex col gap-16">
+        <div style={{ fontWeight: 700, fontSize: 13 }}>Override defaults</div>
+        <div style={{ fontSize: 13, color: 'var(--muted)' }}>
+          Leave blank to use auto-detected defaults. Only fill these in if you're running your own Galui backend.
+        </div>
+        <div>
+          <label className="label">Custom API URL</label>
+          <input value={apiUrl} onChange={e => setApiUrl(e.target.value)} placeholder={api.base()} />
+        </div>
+        <div>
+          <label className="label">Custom API Key</label>
+          <input value={apiKey} onChange={e => setApiKey(e.target.value)} placeholder="Leave blank for default" type="password" />
+        </div>
         <div className="flex gap-10">
-          <button className="btn btn-primary" onClick={save}>Save settings</button>
-          <button className="btn btn-ghost" onClick={test} disabled={testing}>
-            {testing ? <><span className="spinner" style={{ width: 13, height: 13 }} /> Testing…</> : 'Test connection'}
-          </button>
+          <button className="btn btn-primary btn-sm" onClick={save}>Save overrides</button>
+          <button className="btn btn-ghost btn-sm" onClick={reset}>Reset to defaults</button>
         </div>
       </div>
 
       {/* API reference */}
       <div className="card flex col gap-12">
-        <div style={{ fontWeight: 700, fontSize: 14 }}>API quick reference</div>
+        <div style={{ fontWeight: 700, fontSize: 13 }}>API reference</div>
         {[
-          ['Snippet',       'GET /galui.js?key=YOUR_KEY'],
-          ['Index a site',  'POST /api/v1/ingest'],
-          ['AI Score',      'GET /api/v1/score/{domain}'],
-          ['Badge SVG',     'GET /api/v1/score/{domain}/badge'],
-          ['Analytics',     'GET /api/v1/analytics/{domain}'],
-          ['JSON registry', 'GET /registry/{domain}'],
-          ['llms.txt',      'GET /registry/{domain}/llms.txt'],
-          ['AI Plugin',     'GET /registry/{domain}/ai-plugin.json'],
-          ['API Docs',      'GET /docs'],
+          ['Snippet',        'GET /galui.js?key=YOUR_KEY'],
+          ['Index a site',   'POST /api/v1/ingest'],
+          ['AI Score',       'GET /api/v1/score/{domain}'],
+          ['Badge SVG',      'GET /api/v1/score/{domain}/badge'],
+          ['Analytics',      'GET /api/v1/analytics/{domain}'],
+          ['JSON registry',  'GET /registry/{domain}'],
+          ['llms.txt',       'GET /registry/{domain}/llms.txt'],
+          ['AI Plugin',      'GET /registry/{domain}/ai-plugin.json'],
+          ['Interactive docs','GET /docs'],
         ].map(([label, endpoint]) => (
           <div key={label} className="info-row">
             <span className="info-row-label">{label}</span>
