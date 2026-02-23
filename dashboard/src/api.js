@@ -1,4 +1,9 @@
-const BASE = localStorage.getItem('galui_api_url') || import.meta.env.VITE_API_URL || 'http://localhost:8000';
+// When served from Railway (/dashboard), use same origin as the API.
+// When running locally, fall back to localhost:8000.
+const _sameOrigin = window.location.hostname !== 'localhost' && !window.location.hostname.includes('lovable')
+  ? window.location.origin
+  : null;
+const BASE = localStorage.getItem('galui_api_url') || import.meta.env.VITE_API_URL || _sameOrigin || 'http://localhost:8000';
 
 async function req(path, options = {}) {
   const apiKey = localStorage.getItem('galui_api_key') || '';

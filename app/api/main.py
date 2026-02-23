@@ -126,10 +126,8 @@ async def health():
 
 
 # ── Snippet delivery ───────────────────────────────────────────────────────
-# Serve galui.js directly from the API so customers use:
-#   <script src="https://your-api.com/galui.js?key=cr_live_..."></script>
-
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.staticfiles import StaticFiles
 import pathlib as _pathlib
 
 @app.get("/galui.js", tags=["Snippet"], include_in_schema=False)
@@ -143,3 +141,23 @@ async def serve_snippet():
         "Cache-Control": "public, max-age=3600",
         "Access-Control-Allow-Origin": "*",
     })
+
+# ── Dashboard (React SPA) ──────────────────────────────────────────────────
+# Served from /dashboard — built by Docker frontend stage
+_dashboard_path = _pathlib.Path(__file__).parent.parent.parent / "static" / "dashboard"
+
+if _dashboard_path.exists():
+    app.mount("/dashboard", StaticFiles(directory=str(_dashboard_path), html=True), name="dashboard")
+    logger.info(f"  Dashboard:    /dashboard (React SPA)")
+
+    @app.get("/", include_in_schema=False)
+    async def root_redirect():
+        """Redirect root to dashboard."""
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse(url="/dashboard")
+else:
+    logger.info("  Dashboard:    not built (run Docker to build)")
+
+    @app.get("/", include_in_schema=False)
+    async def root_redirect():
+        return {"service": "galui", "version": "2.0.0", "docs": "/docs", "dashboard": "not built"}
