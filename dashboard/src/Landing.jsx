@@ -220,36 +220,7 @@ export function LandingPage({ onScanComplete }) {
 
           {/* Scanning */}
           {stage === 'scanning' && (
-            <div style={{ background: '#f8f8ff', border: '1.5px solid #e0e0f0', borderRadius: 14, padding: '24px 28px' }}>
-              <div style={{ fontSize: 13, color: '#64648a', marginBottom: 12, fontWeight: 500 }}>
-                Scanning <strong style={{ color: '#6366f1' }}>{url}</strong>
-              </div>
-              <div style={{ background: '#e8e8f8', borderRadius: 8, height: 8, overflow: 'hidden', marginBottom: 12 }}>
-                <div style={{
-                  height: '100%', borderRadius: 8,
-                  background: 'linear-gradient(90deg, #6366f1, #a78bfa)',
-                  width: `${progress}%`, transition: 'width 0.6s ease',
-                  boxShadow: '0 0 8px rgba(99,102,241,0.4)',
-                }} />
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: '#9898b8', marginBottom: 16 }}>
-                <div style={{ width: 13, height: 13, border: '2px solid #c7c7e0', borderTopColor: '#6366f1', borderRadius: '50%', animation: 'spin 0.65s linear infinite', flexShrink: 0 }} />
-                {statusText}
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {[
-                  { label: 'Crawling pages', done: progress > 20 },
-                  { label: 'AI comprehension (4 passes)', done: progress > 60 },
-                  { label: 'Extracting capabilities', done: progress > 75 },
-                  { label: 'Calculating AI Readiness Score', done: progress > 90 },
-                ].map(({ label, done }) => (
-                  <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: done ? '#10b981' : '#c0c0d8', transition: 'color 0.4s', fontWeight: done ? 600 : 400 }}>
-                    <span style={{ fontSize: 14 }}>{done ? '✓' : '○'}</span>
-                    <span>{label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <ScanAnimation url={url} progress={progress} />
           )}
 
           <p style={{ fontSize: 12, color: '#b0b0c8', marginTop: 16 }}>
@@ -395,6 +366,138 @@ export function LandingPage({ onScanComplete }) {
           .hero-animation { display: none !important; }
         }
       `}</style>
+    </div>
+  )
+}
+
+// ── Scan animation ────────────────────────────────────────────────────────────
+function ScanAnimation({ url, progress }) {
+  const steps = [
+    { label: 'Crawling pages',               icon: '🌐', threshold: 20 },
+    { label: 'AI comprehension (4 passes)',   icon: '🧠', threshold: 60 },
+    { label: 'Extracting capabilities',       icon: '🔍', threshold: 75 },
+    { label: 'Calculating AI Readiness Score',icon: '📊', threshold: 90 },
+  ]
+
+  const activeStep = steps.reduce((acc, s, i) => progress >= s.threshold ? i : acc, -1)
+
+  // Fake "pages found" counter that grows with progress
+  const pagesFound = Math.floor((progress / 100) * 18)
+
+  // Fake log lines that appear as progress advances
+  const logs = [
+    { at: 5,  text: `GET /${url.replace(/https?:\/\//, '')} → 200` },
+    { at: 12, text: 'Sitemap found · 18 URLs queued' },
+    { at: 22, text: 'Crawled /about → extracted 420 tokens' },
+    { at: 35, text: 'Crawled /pricing → extracted 318 tokens' },
+    { at: 48, text: 'Pass 1/4 · Content extraction complete' },
+    { at: 58, text: 'Pass 2/4 · Capability mapping complete' },
+    { at: 66, text: 'Pass 3/4 · Structure analysis complete' },
+    { at: 74, text: 'Pass 4/4 · Intent classification done' },
+    { at: 82, text: '7 capabilities identified' },
+    { at: 91, text: 'Computing AI Readiness Score…' },
+  ].filter(l => l.at <= progress)
+
+  return (
+    <div style={{
+      background: '#0d0d1a',
+      border: '1.5px solid #2a2a40',
+      borderRadius: 16,
+      overflow: 'hidden',
+      fontFamily: "'Inter', monospace",
+    }}>
+      {/* Terminal top bar */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', background: '#13131f', borderBottom: '1px solid #1e1e30' }}>
+        <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }} />
+        <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#febc2e' }} />
+        <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }} />
+        <div style={{ flex: 1, textAlign: 'center', fontSize: 11, color: '#4a4a6a', fontWeight: 600, letterSpacing: '0.3px' }}>
+          galui scanner
+        </div>
+      </div>
+
+      {/* Scanner URL header */}
+      <div style={{ padding: '14px 18px 10px', borderBottom: '1px solid #1a1a2e', display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#6366f1', boxShadow: '0 0 8px #6366f1', animation: 'pulse-dot 1s ease-in-out infinite', flexShrink: 0 }} />
+        <div style={{ fontSize: 13, color: '#a5b4fc', fontWeight: 700, fontFamily: 'monospace' }}>
+          {url.replace(/https?:\/\//, '')}
+        </div>
+        <div style={{ marginLeft: 'auto', fontSize: 11, color: '#4a4a6a' }}>
+          {pagesFound} pages
+        </div>
+      </div>
+
+      {/* Progress bar */}
+      <div style={{ padding: '0 18px 0', paddingTop: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: '#4a4a6a', marginBottom: 5, fontFamily: 'monospace' }}>
+          <span>PROGRESS</span>
+          <span style={{ color: '#6366f1', fontWeight: 700 }}>{progress}%</span>
+        </div>
+        <div style={{ background: '#1e1e30', borderRadius: 4, height: 4, overflow: 'hidden', marginBottom: 14 }}>
+          <div style={{
+            height: '100%', borderRadius: 4,
+            background: 'linear-gradient(90deg, #6366f1, #a78bfa)',
+            width: `${progress}%`,
+            transition: 'width 0.8s ease',
+            boxShadow: '0 0 10px rgba(99,102,241,0.6)',
+          }} />
+        </div>
+
+        {/* Steps */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 12 }}>
+          {steps.map((s, i) => {
+            const done = progress >= s.threshold
+            const active = !done && i === activeStep + 1
+            return (
+              <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 10, opacity: done || active ? 1 : 0.3, transition: 'opacity 0.4s' }}>
+                <div style={{
+                  width: 20, height: 20, borderRadius: 6, flexShrink: 0,
+                  background: done ? '#10b98120' : active ? '#6366f115' : '#1a1a2e',
+                  border: `1px solid ${done ? '#10b98140' : active ? '#6366f140' : '#252538'}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 11,
+                }}>
+                  {done ? '✓' : active
+                    ? <div style={{ width: 8, height: 8, borderRadius: '50%', border: '1.5px solid #6366f1', borderTopColor: 'transparent', animation: 'spin 0.7s linear infinite' }} />
+                    : <span style={{ fontSize: 9, color: '#3a3a5c' }}>{i + 1}</span>}
+                </div>
+                <span style={{ fontSize: 12, color: done ? '#10b981' : active ? '#a5b4fc' : '#4a4a6a', fontWeight: done || active ? 600 : 400, transition: 'color 0.4s' }}>
+                  {s.label}
+                </span>
+                {done && <span style={{ marginLeft: 'auto', fontSize: 10, color: '#10b98180' }}>done</span>}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Log output */}
+      <div style={{
+        margin: '0 18px 14px',
+        background: '#080810',
+        border: '1px solid #1a1a2e',
+        borderRadius: 8,
+        padding: '10px 12px',
+        height: 90,
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        gap: 3,
+      }}>
+        {logs.slice(-5).map((l, i) => (
+          <div key={l.at} style={{
+            fontSize: 10, fontFamily: 'monospace',
+            color: i === logs.slice(-5).length - 1 ? '#a5b4fc' : '#3a3a5a',
+            animation: i === logs.slice(-5).length - 1 ? 'fadeSlideUp 0.3s ease-out both' : 'none',
+            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+          }}>
+            <span style={{ color: '#2a2a4a', marginRight: 6 }}>›</span>{l.text}
+          </div>
+        ))}
+        {/* Blinking cursor */}
+        <div style={{ fontSize: 10, fontFamily: 'monospace', color: '#6366f1', animation: 'crawl-blink 1s step-end infinite' }}>▋</div>
+      </div>
     </div>
   )
 }
