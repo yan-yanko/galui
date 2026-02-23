@@ -15,8 +15,8 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 logger = logging.getLogger(__name__)
 
-PUBLIC_EXACT = {"/health", "/docs", "/redoc", "/openapi.json", "/docs/oauth2-redirect"}
-PUBLIC_PREFIXES = ("/registry/",)  # Registry output always public for agent access
+PUBLIC_EXACT = {"/health", "/docs", "/redoc", "/openapi.json", "/docs/oauth2-redirect", "/", "/galui.js"}
+PUBLIC_PREFIXES = ("/registry/", "/dashboard", "/assets/")  # Registry + dashboard static files always public
 
 # Endpoints that accept tenant keys (ingest, jobs)
 TENANT_ENDPOINTS = ("/api/v1/ingest", "/api/v1/jobs")
