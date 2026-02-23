@@ -136,19 +136,22 @@ function OverviewPage({ setPage }) {
   const [stats, setStats] = useState(null)
   const [health, setHealth] = useState(null)
   const [registries, setRegistries] = useState([])
+  const [scores, setScores] = useState({})
 
   useEffect(() => {
     api.getStats().then(setStats).catch(()=>{})
     api.health().then(setHealth).catch(()=>{})
-    api.listRegistries().then(r => setRegistries(r.registries||[])).catch(()=>{})
+    api.listRegistries().then(r => {
+      const regs = r.registries || []
+      setRegistries(regs)
+      // load scores for all indexed sites
+      regs.forEach(r => {
+        api.getScore(r.domain).then(s => setScores(prev => ({ ...prev, [r.domain]: s }))).catch(()=>{})
+      })
+    }).catch(()=>{})
   }, [])
 
-  const cards = [
-    { label:'Sites indexed',    value: stats?.registries_indexed ?? '—',  color:'var(--accent2)' },
-    { label:'Jobs completed',   value: stats?.jobs?.complete ?? '—',       color:'var(--green)'   },
-    { label:'AI traffic domains',value: health?.domains_with_ai_traffic ?? '—', color:'var(--blue)' },
-    { label:'Jobs failed',      value: stats?.jobs?.failed ?? 0,           color:'var(--red)'     },
-  ]
+  const hasData = registries.length > 0
 
   return (
     <div className="flex col gap-24">
@@ -159,45 +162,90 @@ function OverviewPage({ setPage }) {
         </p>
       </div>
 
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))', gap:12 }}>
-        {cards.map(c => (
-          <div key={c.label} className="stat-card">
-            <div className="stat-value" style={{ color:c.color }}>{c.value}</div>
-            <div className="stat-label">{c.label}</div>
+      {/* HERO: first-time empty state → index your site */}
+      {!hasData && (
+        <div className="card flex col gap-20" style={{ borderColor:'var(--accent2)', borderWidth:2, padding:32, textAlign:'center', alignItems:'center' }}>
+          <div style={{ fontSize:40 }}>🚀</div>
+          <div>
+            <h2 style={{ fontWeight:800, fontSize:20, marginBottom:8 }}>Index your first site</h2>
+            <p style={{ color:'var(--muted)', fontSize:14, maxWidth:460 }}>
+              Enter your website URL below to crawl it, extract structured data for AI agents, and get your AI Readiness Score.
+            </p>
           </div>
-        ))}
-      </div>
-
-      {/* Quick start */}
-      <div className="card flex col gap-16">
-        <h3 style={{ fontWeight:700, fontSize:15 }}>Quick start</h3>
-        <p style={{ color:'var(--muted)', fontSize:13 }}>Add this snippet to your site's <code>&lt;head&gt;</code>:</p>
-        <div style={{ background:'#0f172a', borderRadius:8, padding:'16px 20px', fontFamily:'monospace', fontSize:13, color:'#e2e8f0', position:'relative' }}>
-          {'<script src="'}{api.base()}{'/galui.js?key=YOUR_KEY" async></script>'}
-          <CopyBtn text={`<script src="${api.base()}/galui.js?key=YOUR_KEY" async></script>`} />
+          <button className="btn btn-primary" style={{ fontSize:15, padding:'10px 28px' }} onClick={()=>setPage('ingest')}>
+            → Index a site now
+          </button>
         </div>
-        <div className="flex gap-12 wrap">
-          <button className="btn btn-primary btn-sm" onClick={()=>setPage('snippet')}>View full setup guide →</button>
-          <button className="btn btn-ghost btn-sm" onClick={()=>setPage('score')}>Check AI Score →</button>
-        </div>
-      </div>
+      )}
 
-      {/* Recent sites */}
-      {registries.length > 0 && (
-        <div className="card">
-          <h3 style={{ marginBottom:16, fontSize:14, fontWeight:600 }}>Indexed sites</h3>
-          <div className="flex col gap-8">
-            {registries.slice(0,8).map(r => (
-              <div key={r.domain} className="flex center between" style={{ padding:'8px 0', borderBottom:'1px solid var(--border)' }}>
-                <span style={{ fontFamily:'monospace', color:'var(--accent2)', fontSize:13 }}>{r.domain}</span>
-                <div className="flex gap-8">
-                  <a href={`${api.base()}/registry/${r.domain}/llms.txt`} target="_blank"
-                    style={{ fontSize:12, color:'var(--muted)' }}>llms.txt ↗</a>
-                  <a href={`${api.base()}/registry/${r.domain}`} target="_blank"
-                    style={{ fontSize:12, color:'var(--muted)' }}>JSON ↗</a>
+      {/* Indexed sites with scores */}
+      {hasData && (
+        <div className="flex col gap-12">
+          <div className="flex between center">
+            <h3 style={{ fontWeight:700, fontSize:15 }}>Your indexed sites</h3>
+            <button className="btn btn-primary btn-sm" onClick={()=>setPage('ingest')}>+ Index another site</button>
+          </div>
+          {registries.map(r => {
+            const s = scores[r.domain]
+            return (
+              <div key={r.domain} className="card flex center gap-20 wrap" style={{ padding:'16px 20px' }}>
+                {s ? <ScoreRing score={s.total} size={64}/> : (
+                  <div style={{ width:64, height:64, borderRadius:'50%', background:'var(--border)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                    <span className="spinner"/>
+                  </div>
+                )}
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ fontWeight:700, fontFamily:'monospace', fontSize:15, color:'var(--accent2)' }}>{r.domain}</div>
+                  {s && (
+                    <div style={{ color:'var(--muted)', fontSize:13, marginTop:4 }}>
+                      {s.label} · Grade {s.grade} · {s.total}/100
+                    </div>
+                  )}
+                  {s?.suggestions?.[0] && (
+                    <div style={{ fontSize:12, color:'var(--yellow)', marginTop:4 }}>
+                      ↑ {s.suggestions[0].fix}
+                    </div>
+                  )}
+                </div>
+                <div className="flex gap-8 wrap">
+                  <button className="btn btn-ghost btn-sm" onClick={()=>setPage('score')}>Score details</button>
+                  <button className="btn btn-ghost btn-sm" onClick={()=>setPage('analytics')}>Analytics</button>
+                  <button className="btn btn-ghost btn-sm" onClick={()=>setPage('snippet')}>Install snippet</button>
                 </div>
               </div>
-            ))}
+            )
+          })}
+        </div>
+      )}
+
+      {/* Stats row — only when there's data */}
+      {hasData && (
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))', gap:12 }}>
+          {[
+            { label:'Sites indexed',      value: stats?.registries_indexed ?? registries.length, color:'var(--accent2)' },
+            { label:'Jobs completed',     value: stats?.jobs?.complete ?? '—',   color:'var(--green)'   },
+            { label:'AI traffic domains', value: health?.domains_with_ai_traffic ?? '—', color:'var(--blue)' },
+            { label:'Jobs failed',        value: stats?.jobs?.failed ?? 0,       color:'var(--red)'     },
+          ].map(c => (
+            <div key={c.label} className="stat-card">
+              <div className="stat-value" style={{ color:c.color }}>{c.value}</div>
+              <div className="stat-label">{c.label}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Install snippet CTA */}
+      {hasData && (
+        <div className="card flex col gap-12" style={{ background:'#1e293b' }}>
+          <div className="flex between center wrap gap-12">
+            <div>
+              <h3 style={{ fontWeight:700, fontSize:14 }}>Install the snippet to unlock AI traffic analytics</h3>
+              <p style={{ color:'var(--muted)', fontSize:13, marginTop:4 }}>
+                Drop one script tag on your site → get live AI agent tracking + auto WebMCP registration.
+              </p>
+            </div>
+            <button className="btn btn-primary btn-sm" onClick={()=>setPage('snippet')}>View install guide →</button>
           </div>
         </div>
       )}
@@ -766,16 +814,35 @@ function IngestPage() {
   const [loading, setLoading] = useState(false)
   const [job, setJob] = useState(null)
   const [polling, setPolling] = useState(false)
+  const [result, setResult] = useState(null)   // registry + score after done
+  const [loadingResult, setLoadingResult] = useState(false)
 
   const submit = async (e) => {
     e.preventDefault(); if(!url.trim()) return
-    setLoading(true); setJob(null)
+    setLoading(true); setJob(null); setResult(null)
     try {
       const res = await api.ingest(url.trim(), force)
       setJob(res)
-      if(res.status==='complete') toast.success(`Cached registry for ${res.domain}`)
-      else { toast.info(`Ingestion started for ${res.domain}`); setPolling(true) }
+      if(res.status==='complete') {
+        toast.success(`Cached registry for ${res.domain}`)
+        loadResult(res.domain)
+      } else {
+        toast.info(`Indexing started for ${res.domain}`)
+        setPolling(true)
+      }
     } catch(err) { toast.error(err.message) } finally { setLoading(false) }
+  }
+
+  const loadResult = async (domain) => {
+    setLoadingResult(true)
+    try {
+      const [registry, score] = await Promise.all([
+        api.getRegistry(domain),
+        api.getScore(domain),
+      ])
+      setResult({ registry, score })
+    } catch {}
+    setLoadingResult(false)
   }
 
   useEffect(()=>{
@@ -786,27 +853,31 @@ function IngestPage() {
         setJob(j=>({...j,...u}))
         if(['complete','failed'].includes(u.status)) {
           setPolling(false)
-          if(u.status==='complete') toast.success(`✓ Registry ready for ${job.domain}`)
-          else toast.error(`Failed: ${u.error}`)
+          if(u.status==='complete') {
+            toast.success(`✓ Done! Registry ready for ${job.domain}`)
+            loadResult(job.domain)
+          } else toast.error(`Failed: ${u.error}`)
         }
       } catch {}
-    }, 2000)
+    }, 800)
     return ()=>clearInterval(i)
   }, [polling,job])
 
   const stageMap = { pending:0, crawling:1, comprehending:2, storing:3, complete:4, failed:4 }
+  const priorityColor = { high:'var(--red)', medium:'var(--yellow)', low:'var(--muted)' }
 
   return (
-    <div className="flex col gap-24" style={{ maxWidth:680 }}>
+    <div className="flex col gap-24" style={{ maxWidth:720 }}>
       <div>
-        <h1 style={{ fontSize:26, fontWeight:800 }}>Manual Crawl</h1>
+        <h1 style={{ fontSize:26, fontWeight:800 }}>Index a site</h1>
         <p style={{ color:'var(--muted)', marginTop:4, fontSize:14 }}>
-          Crawl a site directly without the snippet. Useful for initial setup or testing.
+          Enter any website URL. We'll crawl it, run the AI pipeline, and show you exactly what AI agents will see.
         </p>
       </div>
+
       <form onSubmit={submit} className="card flex col gap-16">
         <div><label className="label">Website URL</label>
-          <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="https://stripe.com" disabled={loading}/>
+          <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="https://yoursite.com" disabled={loading||polling}/>
         </div>
         <div className="flex center gap-12">
           <label className="flex center gap-8" style={{ cursor:'pointer', userSelect:'none' }}>
@@ -814,37 +885,146 @@ function IngestPage() {
             <span style={{ color:'var(--muted)', fontSize:13 }}>Force re-crawl</span>
           </label>
           <div className="grow"/>
-          <button className="btn btn-primary" disabled={loading||!url.trim()}>
-            {loading?<><span className="spinner"/>Crawling…</>:'→ Crawl'}
+          <button className="btn btn-primary" disabled={loading||polling||!url.trim()}>
+            {loading||polling ? <><span className="spinner"/>Working…</> : '→ Index site'}
           </button>
         </div>
       </form>
-      {job&&(
+
+      {/* Progress */}
+      {job && !['complete','failed'].includes(job.status) && (
         <div className="card flex col gap-16">
           <div className="flex center between">
-            <div><div style={{ fontWeight:600 }}>{job.domain}</div><div style={{ color:'var(--muted)', fontSize:12 }}>{job.job_id}</div></div>
+            <div style={{ fontWeight:600 }}>{job.domain}</div>
             <StatusBadge status={job.status}/>
           </div>
-          {!['complete','failed'].includes(job.status)&&(
-            <div className="flex col gap-8">
-              {['Crawling pages','LLM comprehension (4 passes)','Building schema','Storing'].map((label,i)=>{
-                const stage=stageMap[job.status]||0; const done=i<stage; const active=i===stage-1
-                return(
-                  <div key={i} className="flex center gap-12" style={{ fontSize:13 }}>
-                    {done?<span style={{ color:'var(--green)',width:18 }}>✓</span>:active?<span className="spinner" style={{ width:14,height:14 }}/>:<span style={{ color:'var(--border2)',width:18,textAlign:'center' }}>○</span>}
-                    <span style={{ color:active?'var(--text)':done?'var(--muted)':'var(--border2)' }}>{label}</span>
+          <div className="flex col gap-10">
+            {[
+              ['Crawling pages',             1],
+              ['AI comprehension (4 passes)', 2],
+              ['Building schema',            3],
+              ['Storing',                    4],
+            ].map(([label, stage]) => {
+              const cur = stageMap[job.status] || 0
+              const done = cur > stage; const active = cur === stage
+              return (
+                <div key={label} className="flex center gap-12" style={{ fontSize:13 }}>
+                  {done
+                    ? <span style={{ color:'var(--green)', width:18 }}>✓</span>
+                    : active
+                      ? <span className="spinner" style={{ width:14, height:14 }}/>
+                      : <span style={{ color:'var(--border)', width:18, textAlign:'center' }}>○</span>}
+                  <span style={{ color: active ? 'var(--text)' : done ? 'var(--muted)' : 'var(--border)' }}>{label}</span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Error */}
+      {job?.status === 'failed' && (
+        <div className="card" style={{ color:'var(--red)', background:'#ef444410', borderColor:'var(--red)' }}>
+          {job.error || 'Unknown error'}
+        </div>
+      )}
+
+      {/* Loading result */}
+      {loadingResult && (
+        <div className="flex center gap-12" style={{ padding:24, color:'var(--muted)' }}>
+          <span className="spinner"/> Loading results…
+        </div>
+      )}
+
+      {/* ── Results ── */}
+      {result && (
+        <div className="flex col gap-16">
+          {/* Score hero */}
+          <div className="card flex center gap-24 wrap" style={{ padding:'20px 24px', borderColor: result.score.total >= 70 ? 'var(--green)' : result.score.total >= 50 ? 'var(--yellow)' : 'var(--red)' }}>
+            <ScoreRing score={result.score.total} size={100}/>
+            <div className="flex col gap-8" style={{ flex:1 }}>
+              <div style={{ fontSize:20, fontWeight:800 }}>{result.score.label}</div>
+              <div style={{ color:'var(--muted)', fontSize:13 }}>{result.registry.domain}</div>
+              <div style={{ fontSize:13, color:'var(--muted)', marginTop:4 }}>
+                {result.registry.metadata.description}
+              </div>
+            </div>
+          </div>
+
+          {/* Score dimensions */}
+          <div className="card flex col gap-12">
+            <h3 style={{ fontWeight:700, fontSize:14, marginBottom:4 }}>Score breakdown</h3>
+            {Object.entries(result.score.dimensions || {}).map(([key, dim]) => {
+              const labels = { content_coverage:'Content Coverage', structure_quality:'Structure Quality', freshness:'Freshness', webmcp_compliance:'WebMCP', output_formats:'Output Formats' }
+              const colors = { content_coverage:'var(--accent2)', structure_quality:'var(--green)', freshness:'var(--blue)', webmcp_compliance:'var(--purple,#8b5cf6)', output_formats:'var(--yellow)' }
+              return (
+                <div key={key}>
+                  <div className="flex between" style={{ fontSize:13, marginBottom:4 }}>
+                    <span style={{ fontWeight:500 }}>{labels[key]||key}</span>
+                    <span style={{ color:'var(--muted)' }}>{dim.score}/{dim.max}</span>
                   </div>
-                )
-              })}
+                  <div style={{ background:'var(--border)', borderRadius:4, height:7 }}>
+                    <div style={{ height:7, borderRadius:4, background:colors[key]||'var(--accent2)', width:`${(dim.score/dim.max)*100}%`, transition:'width 0.5s' }}/>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Capabilities */}
+          {result.registry.capabilities?.length > 0 && (
+            <div className="card flex col gap-12">
+              <h3 style={{ fontWeight:700, fontSize:14 }}>
+                What AI agents now know about {result.registry.domain}
+              </h3>
+              <div style={{ fontSize:12, color:'var(--muted)', marginBottom:4 }}>
+                {result.registry.capabilities.length} capabilities extracted by the AI pipeline
+              </div>
+              {result.registry.capabilities.map(cap => (
+                <div key={cap.id} style={{ borderLeft:'3px solid var(--accent2)', paddingLeft:12, paddingTop:4, paddingBottom:4 }}>
+                  <div style={{ fontWeight:600, fontSize:13 }}>{cap.name}</div>
+                  <div style={{ fontSize:12, color:'var(--muted)', marginTop:2 }}>{cap.description}</div>
+                  {cap.use_cases?.length > 0 && (
+                    <div className="flex wrap gap-6" style={{ marginTop:6 }}>
+                      {cap.use_cases.slice(0,4).map(u => (
+                        <span key={u} style={{ fontSize:11, background:'var(--border)', color:'var(--muted)', padding:'2px 7px', borderRadius:4 }}>{u}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           )}
-          {job.status==='complete'&&(
-            <div className="flex gap-8 wrap">
-              <a href={`${api.base()}/registry/${job.domain}`} target="_blank" className="btn btn-primary btn-sm">View JSON ↗</a>
-              <a href={`${api.base()}/registry/${job.domain}/llms.txt`} target="_blank" className="btn btn-ghost btn-sm">llms.txt ↗</a>
+
+          {/* Suggestions */}
+          {result.score.suggestions?.length > 0 && (
+            <div className="card flex col gap-12">
+              <h3 style={{ fontWeight:700, fontSize:14 }}>How to improve your score</h3>
+              {result.score.suggestions.map((s, i) => (
+                <div key={i} style={{ borderLeft:`3px solid ${priorityColor[s.priority]||'var(--muted)'}`, paddingLeft:12 }}>
+                  <div style={{ fontSize:12, fontWeight:600, color:priorityColor[s.priority], marginBottom:2 }}>
+                    {s.priority.toUpperCase()} · {s.dimension}
+                  </div>
+                  <div style={{ fontSize:13, marginBottom:2 }}>{s.issue}</div>
+                  <div style={{ fontSize:12, color:'var(--muted)' }}>{s.fix}</div>
+                </div>
+              ))}
             </div>
           )}
-          {job.status==='failed'&&<div style={{ color:'var(--red)', fontSize:13, background:'#ef444410', padding:12, borderRadius:8 }}>{job.error||'Unknown error'}</div>}
+
+          {/* Install snippet CTA */}
+          <div className="card flex col gap-12" style={{ background:'#1e293b', borderColor:'var(--accent2)' }}>
+            <h3 style={{ fontWeight:700, fontSize:14 }}>Next step: install the snippet</h3>
+            <p style={{ color:'var(--muted)', fontSize:13 }}>
+              Add this to your site's <code>&lt;head&gt;</code> to unlock AI agent analytics, WebMCP auto-registration, and real-time score updates:
+            </p>
+            <div style={{ background:'#0f172a', borderRadius:8, padding:'14px 18px', fontFamily:'monospace', fontSize:12, color:'#e2e8f0', position:'relative' }}>
+              {`<script src="${api.base()}/galui.js?key=${localStorage.getItem('galui_api_key')||'YOUR_KEY'}" async></script>`}
+              <div style={{ position:'absolute', top:8, right:8 }}>
+                <CopyBtn text={`<script src="${api.base()}/galui.js?key=${localStorage.getItem('galui_api_key')||'YOUR_KEY'}" async></script>`}/>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
