@@ -133,8 +133,8 @@ async def get_llms_txt(domain: str):
     lines.append(f"Current status: {r.current_status}")
     if r.status_page_url:
         lines.append(f"Status page: {r.status_page_url}")
-    if r.sla_uptime_percent:
-        lines.append(f"SLA uptime: {r.sla_uptime_percent}%")
+    if registry.limitations.sla_uptime_percent:
+        lines.append(f"SLA uptime: {registry.limitations.sla_uptime_percent}%")
 
     lines += [
         "",
