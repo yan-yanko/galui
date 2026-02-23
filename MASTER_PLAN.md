@@ -1,5 +1,5 @@
 # Galui — MASTER PLAN
-_Last updated: 2026-02-22_
+_Last updated: 2026-02-23_
 
 ---
 
@@ -84,7 +84,7 @@ References:
     ├── GET  /registry/{domain}/status          ← live status check
     └── Full tenant + admin endpoints
 
-[Customer dashboard — React/Vite]
+[Customer dashboard — React/Vite on Lovable.dev]
     ├── Overview    — stats, quick start, snippet tag
     ├── Analytics   — AI agent traffic, agent breakdown, page hits, daily trend
     ├── AI Score    — score ring, dimension breakdown, suggestions, badge embed
@@ -97,15 +97,21 @@ References:
 
 ---
 
-## PRODUCTION STATE
+## PRODUCTION STATE ✅ FULLY LIVE
 
 ### URLs
 | What | URL |
 |------|-----|
 | API (Railway) | `https://galui-production.up.railway.app` |
+| Dashboard (Lovable) | `https://galui.lovable.app` |
 | Health check | `https://galui-production.up.railway.app/health` |
 | API docs | `https://galui-production.up.railway.app/docs` |
 | GitHub repo | `https://github.com/yan-yanko/galui` |
+
+### Dashboard login
+Go to `https://galui.lovable.app` → Settings tab → set:
+- **API URL:** `https://galui-production.up.railway.app`
+- **API Key:** `kotleryan1984`
 
 ### Credentials (keep safe — never commit)
 | Key | Value | Where used |
@@ -127,7 +133,10 @@ DEEP_MODEL=claude-sonnet-4-5-20250929
 REGISTRY_API_KEY=kotleryan1984
 ```
 
-### Pipeline test results (stripe.com, 2026-02-22)
+### Railway Volume (already set)
+- Volume mounted at `/app/data` — SQLite DB persists across deploys ✅
+
+### Pipeline test results (stripe.com, 2026-02-22) — all passing
 | Endpoint | Status | Result |
 |----------|--------|--------|
 | POST /api/v1/ingest | ✅ | 10 pages, 76 seconds, confidence 0.767 |
@@ -137,6 +146,7 @@ REGISTRY_API_KEY=kotleryan1984
 | GET /api/v1/score/{domain}/badge | ✅ | SVG renders correctly |
 | GET /registry/{domain}/ai-plugin.json | ✅ | Valid OpenAI plugin manifest |
 | GET /registry/{domain}/status | ✅ | Live HTTP check, "operational" |
+| Dashboard live | ✅ | https://galui.lovable.app rendering correctly |
 
 ---
 
@@ -167,7 +177,7 @@ REGISTRY_API_KEY=kotleryan1984
 | `app/models/crawl.py` | CrawlResult model |
 | `app/models/jobs.py` | Job tracking model |
 | `app/config.py` | Settings via pydantic-settings + .env |
-| `dashboard/src/App.jsx` | 8-page React dashboard |
+| `dashboard/src/App.jsx` | 8-page React dashboard (deployed on Lovable.dev) |
 | `dashboard/src/api.js` | API client (reads URL+key from localStorage) |
 | `railway.toml` | Railway deploy config |
 | `Dockerfile` | Python 3.11-slim, uvicorn |
@@ -176,46 +186,23 @@ REGISTRY_API_KEY=kotleryan1984
 
 ## KNOWN ISSUES / NEXT STEPS
 
-### 🔴 Critical — Fix before anything else
-1. **SQLite is ephemeral on Railway** — every redeploy wipes the database.
-   - **Fix:** Add a Railway Volume mounted at `/app/data` in the Railway dashboard
-   - Go to Railway project → **+ New** → **Volume** → mount path `/app/data`
-   - This makes `data/registry.db` survive deploys forever
+### 🔴 Critical — Nothing blocking right now ✅
+All critical issues resolved:
+- ✅ SQLite persistence: Railway Volume mounted at `/app/data`
+- ✅ llms.txt 500 bug: strftime + sla_uptime_percent fixes committed
+- ✅ Dashboard deployed: https://galui.lovable.app
 
 ### 🟡 Important — Do soon
-2. **Rate limiting not enforced** — tenant plan limits (free=10/min, pro=60/min) are defined but not checked in middleware
-3. **Dashboard not deployed** — React dashboard only runs locally (`cd dashboard && npm run dev`). Needs to be either deployed separately (Vercel/Netlify) or served by FastAPI as static files.
-4. **Push pipeline merge logic** — `_merge_registries()` in push.py is basic; needs smarter field-level merging for multi-page sites
+1. **Rate limiting not enforced** — tenant plan limits (free=10/min, pro=60/min) are defined but not checked in middleware
+2. **Push pipeline merge logic** — `_merge_registries()` in push.py is basic; needs smarter field-level merging for multi-page sites
+3. **Dashboard CORS** — if Lovable dashboard calls fail due to CORS, add `https://galui.lovable.app` to FastAPI CORS allowed origins in main.py
 
 ### 🟢 Nice to have — Next features
-5. **Public domain profile page** — `GET /profile/{domain}` — public HTML with score + badge (for two-sided network moat)
-6. **Vertical templates** — industry-specific prompts and WebMCP schemas (SaaS, legal, healthcare)
-7. **Rate limiting** — enforce in auth middleware using in-memory counter or Redis
-8. **Email notifications** — tenant welcome email, score change alerts
-
----
-
-## HOW TO DEPLOY THE DASHBOARD
-
-Currently the dashboard is React/Vite and only runs locally.
-
-**Option A — Vercel (recommended, free)**
-```bash
-cd dashboard
-npm run build
-# Push to GitHub, connect Vercel to the repo, set VITE_API_URL=https://galui-production.up.railway.app
-```
-
-**Option B — Serve from FastAPI (single deployment)**
-Add to Dockerfile:
-```
-RUN cd dashboard && npm install && npm run build
-```
-Add to main.py:
-```python
-from fastapi.staticfiles import StaticFiles
-app.mount("/dashboard", StaticFiles(directory="dashboard/dist", html=True), name="dashboard")
-```
+4. **Public domain profile page** — `GET /profile/{domain}` — public HTML with score + badge (for two-sided network moat)
+5. **Vertical templates** — industry-specific prompts and WebMCP schemas (SaaS, legal, healthcare)
+6. **Rate limiting** — enforce in auth middleware using in-memory counter or Redis
+7. **Email notifications** — tenant welcome email, score change alerts
+8. **Onboarding flow** — self-serve signup → auto-create tenant → show snippet tag
 
 ---
 
@@ -224,10 +211,11 @@ app.mount("/dashboard", StaticFiles(directory="dashboard/dist", html=True), name
 - Windows path has Hebrew chars — always use `pathlib` not `os.path`
 - Starlette BaseHTTPMiddleware swallows HTTPException — use JSONResponse for auth errors (already done in auth.py)
 - Railway uses dynamic `$PORT` — Dockerfile uses `CMD uvicorn ... --port ${PORT}` ✅
-- SQLite db at `data/registry.db` — needs Railway Volume to persist
+- SQLite db at `data/registry.db` — Railway Volume at `/app/data` keeps it persistent ✅
 - Fast model: `claude-haiku-4-5-20251001`, Deep model: `claude-sonnet-4-5-20250929`
 - Dashboard reads API URL from localStorage key `galui_api_url` (default: localhost:8000)
 - Dashboard reads API key from localStorage key `galui_api_key`
+- Lovable.dev dashboard: deployed from GitHub repo `yan-yanko/galui`, branch `main`, root `dashboard/`
 - `nul` file in root is a Windows artifact — safe to ignore
 
 ---
@@ -252,7 +240,8 @@ npm run dev
 git add -A
 git commit -m "your message"
 git push
-# Railway auto-deploys on push to main
+# Railway auto-deploys backend on push to main
+# Lovable auto-deploys dashboard on push to main
 ```
 
 ---
@@ -265,7 +254,7 @@ Say exactly this:
 
 The plan has everything needed:
 1. What the product is
-2. All credentials and URLs
+2. All credentials and URLs (API + Dashboard both live)
 3. Current codebase state
-4. Exactly what's broken and what's next
+4. Exactly what's next (rate limiting, public profile page, verticals)
 5. How to run it locally and deploy
