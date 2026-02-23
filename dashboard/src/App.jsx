@@ -216,20 +216,33 @@ function OverviewPage({ setPage }) {
           background: 'linear-gradient(135deg, #0f0f1a 0%, #13102a 100%)',
           padding: '40px 36px',
         }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 16 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 20 }}>
             <div style={{ fontSize: 48, lineHeight: 1 }}>🚀</div>
             <div>
-              <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 10 }}>
+              <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 12 }}>
                 Make your first site AI-readable
               </h2>
-              <p style={{ color: 'var(--muted)', fontSize: 14, maxWidth: 500, lineHeight: 1.7 }}>
-                Enter any URL and Galui will crawl it, run a 4-pass AI pipeline, extract every capability,
-                and generate an AI Readiness Score — in under 2 minutes.
+              <p style={{ color: 'var(--muted)', fontSize: 14, maxWidth: 540, lineHeight: 1.8 }}>
+                Enter any URL below. Galui crawls every page, runs a 4-pass AI pipeline, extracts your site's capabilities,
+                and generates an <strong style={{ color: 'var(--text)' }}>AI Readiness Score (0–100)</strong> — in under 2 minutes. Free, no credit card.
               </p>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, maxWidth: 560, width: '100%' }}>
+              {[
+                { icon: '📊', label: 'AI Readiness Score', sub: '0–100 across 5 dimensions' },
+                { icon: '🔍', label: 'Capabilities extracted', sub: 'What AI agents will know' },
+                { icon: '💡', label: 'Improvement plan', sub: 'Specific fixes, ranked by impact' },
+              ].map(({ icon, label, sub }) => (
+                <div key={label} style={{ background: '#0a0a18', border: '1px solid var(--border2)', borderRadius: 10, padding: '14px 12px', textAlign: 'center' }}>
+                  <div style={{ fontSize: 22, marginBottom: 6 }}>{icon}</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 3 }}>{label}</div>
+                  <div style={{ fontSize: 11, color: 'var(--muted)' }}>{sub}</div>
+                </div>
+              ))}
             </div>
             <button
               className="btn btn-primary"
-              style={{ fontSize: 14, padding: '11px 28px', marginTop: 4 }}
+              style={{ fontSize: 14, padding: '12px 32px' }}
               onClick={() => setPage('ingest')}
             >
               Index your first site →
@@ -621,7 +634,13 @@ function ScorePage() {
 
   const dimLabels = { content_coverage: 'Content Coverage', structure_quality: 'Structure Quality', freshness: 'Freshness', webmcp_compliance: 'WebMCP Compliance', output_formats: 'Output Formats' }
   const dimColors = { content_coverage: 'var(--accent2)', structure_quality: 'var(--green)', freshness: 'var(--blue)', webmcp_compliance: 'var(--purple)', output_formats: 'var(--yellow)' }
-  const dimDesc  = { content_coverage: 'Capabilities, use cases, problems solved', structure_quality: 'Pricing, API info, schema completeness', freshness: 'How recently the registry was updated', webmcp_compliance: 'WebMCP tools registered via snippet', output_formats: 'llms.txt, JSON registry, AI plugin manifest' }
+  const dimDesc  = {
+    content_coverage: 'How well your site\'s capabilities, use cases, and value proposition are extracted and described. Low score = AI agents can\'t explain what you do.',
+    structure_quality: 'Completeness of structured data: pricing, API info, schema.org markup, headings hierarchy. Low score = AI gives incomplete or inaccurate answers about your product.',
+    freshness: 'How recently your registry was updated relative to your actual site. Stale data = AI agents cite outdated information.',
+    webmcp_compliance: 'Whether the Galui snippet is installed and WebMCP tools are registered. Without this, AI agents can\'t interact with your site\'s forms or actions.',
+    output_formats: 'Whether your llms.txt, JSON registry, and AI plugin manifest are generated and accessible. These are what AI crawlers actually fetch.',
+  }
   const priorityColor = { high: 'var(--red)', medium: 'var(--yellow)', low: 'var(--muted)' }
 
   return (
@@ -663,6 +682,28 @@ function ScorePage() {
                   Calculated {new Date(score.calculated_at).toLocaleString()}
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Score scale */}
+          <div className="card flex col gap-10">
+            <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>Score scale</div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {[
+                { range: '90–100', grade: 'A+', color: 'var(--green)',  label: 'Elite — fully AI-optimized' },
+                { range: '70–89',  grade: 'B',  color: 'var(--blue)',   label: 'Good — minor improvements needed' },
+                { range: '50–69',  grade: 'C',  color: 'var(--yellow)', label: 'Average — AI may miss key info' },
+                { range: '30–49',  grade: 'D',  color: 'var(--red)',    label: 'Poor — high invisibility risk' },
+                { range: '0–29',   grade: 'F',  color: '#991b1b',       label: 'Not readable by AI' },
+              ].map(({ range, grade, color, label }) => (
+                <div key={grade} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, padding: '7px 12px', flex: '1 1 160px' }}>
+                  <div style={{ width: 24, height: 24, borderRadius: 6, background: color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: 'white', fontSize: 11, flexShrink: 0 }}>{grade}</div>
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text)' }}>{range}</div>
+                    <div style={{ fontSize: 10, color: 'var(--muted)' }}>{label}</div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -822,16 +863,38 @@ function AnalyticsPage({ setPage }) {
       {loading && <div className="flex center gap-12" style={{ padding: 40, color: 'var(--muted)' }}><span className="spinner" /> Loading…</div>}
 
       {!loading && summary && summary.total_ai_hits === 0 && (
-        <EmptyState
-          icon="📡"
-          title="No AI traffic recorded yet"
-          description={`Install the Galui snippet on ${selected || 'your site'} to start tracking AI agent visits in real time.`}
-          action={
-            <button className="btn btn-primary btn-sm" onClick={() => setPage('snippet')}>
-              View install guide →
-            </button>
-          }
-        />
+        <div className="card flex col gap-20" style={{ padding: '32px 28px' }}>
+          <div className="empty-state">
+            <div className="empty-state-icon">📡</div>
+            <div className="empty-state-title">No AI traffic recorded yet</div>
+            <div className="empty-state-desc">
+              Install the Galui snippet on <strong>{selected || 'your site'}</strong> to start tracking AI agent visits in real time.
+              The snippet detects 30+ AI crawlers and logs every visit — agent name, page visited, timestamp.
+            </div>
+            <div style={{ marginTop: 16 }}>
+              <button className="btn btn-primary btn-sm" onClick={() => setPage('snippet')}>
+                View install guide →
+              </button>
+            </div>
+          </div>
+          <div style={{ borderTop: '1px solid var(--border)', paddingTop: 20 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 14 }}>What you'll see once the snippet is installed</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
+              {[
+                { icon: '🤖', label: 'GPTBot & ChatGPT visits', sub: 'OpenAI crawler + live ChatGPT browsing' },
+                { icon: '🟣', label: 'ClaudeBot visits', sub: 'Anthropic crawler traffic' },
+                { icon: '🔵', label: 'PerplexityBot visits', sub: 'Perplexity AI search indexing' },
+                { icon: '📄', label: 'Pages AI agents read', sub: 'Which URLs they fetch most' },
+              ].map(({ icon, label, sub }) => (
+                <div key={label} style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 10, padding: '12px 14px' }}>
+                  <div style={{ fontSize: 18, marginBottom: 6 }}>{icon}</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 2 }}>{label}</div>
+                  <div style={{ fontSize: 11, color: 'var(--muted)' }}>{sub}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       )}
 
       {!loading && summary && summary.total_ai_hits > 0 && (
@@ -945,20 +1008,42 @@ function SnippetPage() {
 
       {/* What it does */}
       <div className="card flex col gap-16">
-        <div style={{ fontWeight: 700, fontSize: 14 }}>What happens automatically</div>
+        <div style={{ fontWeight: 700, fontSize: 14 }}>What happens automatically when the snippet loads</div>
         {[
-          { icon: '🔍', title: 'Page analysis', desc: 'Detects page type, extracts headings, CTAs, forms, schema.org, and clean text.' },
-          { icon: '🤖', title: 'WebMCP tools', desc: 'Registers forms and interactions as WebMCP tools for Chrome AI agents via navigator.modelContext.' },
-          { icon: '📡', title: 'AI agent detection', desc: 'Identifies AI crawlers (GPTBot, ClaudeBot, PerplexityBot, Gemini…) and logs them to your analytics.' },
-          { icon: '🔗', title: 'Discovery links', desc: 'Injects <link rel="llms"> and <link rel="ai-plugin"> in your <head> for automatic discovery.' },
-          { icon: '♻️', title: 'Smart updates', desc: 'Only re-processes pages when content changes (SHA-256 hash check — zero redundant calls).' },
+          { icon: '🔍', title: 'Page analysis', desc: 'Detects page type, extracts headings, CTAs, forms, schema.org markup, and the full readable text of every page — then pushes it to your registry.' },
+          { icon: '🤖', title: 'WebMCP tool registration', desc: 'WebMCP (W3C standard, Chrome Feb 2026) lets browser-based AI agents call your site\'s forms and interactions directly. The snippet auto-registers forms as WebMCP tools via navigator.modelContext — no backend changes needed.' },
+          { icon: '📡', title: 'AI agent detection', desc: 'Identifies 30+ AI crawlers by User-Agent (GPTBot, ClaudeBot, PerplexityBot, Gemini, Applebot…) and logs each visit — agent name, page, timestamp — to your analytics dashboard.' },
+          { icon: '🔗', title: 'Discovery link injection', desc: 'Injects <link> tags in your <head> pointing to your llms.txt, ai-plugin.json, and canonical URL — so AI crawlers scanning your HTML immediately find the machine-readable endpoints.' },
+          { icon: '📄', title: 'Auto JSON-LD schema', desc: 'If your page has no structured data, the snippet injects Organization + WebSite + WebPage schema.org markup — improving AI entity recognition and AI Overview eligibility.' },
+          { icon: '♻️', title: 'Smart content hashing', desc: 'Hashes page content on every load. Only re-indexes when content actually changes — zero redundant API calls, no performance impact.' },
         ].map(({ icon, title, desc }) => (
           <div key={title} className="flex gap-14">
-            <span style={{ fontSize: 22, flexShrink: 0, lineHeight: 1, marginTop: 1 }}>{icon}</span>
+            <span style={{ fontSize: 20, flexShrink: 0, lineHeight: 1, marginTop: 2 }}>{icon}</span>
             <div>
-              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 3 }}>{title}</div>
-              <div style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.5 }}>{desc}</div>
+              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 4 }}>{title}</div>
+              <div style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.6 }}>{desc}</div>
             </div>
+          </div>
+        ))}
+      </div>
+
+      {/* What gets generated */}
+      <div className="card flex col gap-14">
+        <div style={{ fontWeight: 700, fontSize: 14 }}>What gets generated for your domain</div>
+        <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 4 }}>
+          Once installed, these URLs are live and served automatically by Galui:
+        </div>
+        {[
+          { label: 'llms.txt', url: `${api.base()}/registry/YOUR_DOMAIN/llms.txt`, what: 'Plain-text file LLMs read at inference time — lists your site\'s key pages and capabilities in a format every AI understands.' },
+          { label: 'AI Plugin manifest', url: `${api.base()}/registry/YOUR_DOMAIN/ai-plugin.json`, what: 'OpenAI-compatible manifest at /.well-known/ai-plugin.json — tells ChatGPT and AI agents what tools your site exposes.' },
+          { label: 'JSON registry', url: `${api.base()}/registry/YOUR_DOMAIN`, what: 'Full structured data: capabilities, pricing, integrations, WebMCP tools — machine-readable by any AI system.' },
+          { label: 'AI Readiness Score', url: `${api.base()}/api/v1/score/YOUR_DOMAIN`, what: '0–100 score with dimension breakdown and improvement suggestions. Updates automatically when content changes.' },
+          { label: 'Embeddable badge', url: `${api.base()}/api/v1/score/YOUR_DOMAIN/badge`, what: 'SVG badge you can add to your README or website showing your current AI Readiness Score.' },
+        ].map(({ label, url, what }) => (
+          <div key={label} style={{ borderLeft: '3px solid var(--accent)', paddingLeft: 14 }}>
+            <div style={{ fontWeight: 600, fontSize: 12, marginBottom: 3 }}>{label}</div>
+            <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 5, lineHeight: 1.5 }}>{what}</div>
+            <code style={{ fontSize: 10, color: 'var(--accent2)', background: 'var(--border)', padding: '2px 8px', borderRadius: 4 }}>{url}</code>
           </div>
         ))}
       </div>
@@ -1017,11 +1102,11 @@ function RegistriesPage() {
     <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 16, height: 'calc(100vh - 54px - 48px)' }}>
       {/* Sidebar */}
       <div className="card flex col gap-4" style={{ overflow: 'auto', padding: 12 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', padding: '4px 8px 8px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', padding: '4px 8px 4px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
           {registries.length} site{registries.length !== 1 ? 's' : ''}
         </div>
         {registries.length === 0 && (
-          <div style={{ color: 'var(--muted)', fontSize: 13, padding: 8, lineHeight: 1.5 }}>No registries yet. Index a site first.</div>
+          <div style={{ color: 'var(--muted)', fontSize: 12, padding: '8px 8px 4px', lineHeight: 1.6 }}>No registries yet.<br />Index a site first.</div>
         )}
         {registries.map(r => (
           <button key={r.domain} onClick={() => select(r.domain)} style={{
@@ -1036,9 +1121,12 @@ function RegistriesPage() {
       {/* Detail */}
       <div style={{ overflow: 'auto' }}>
         {!selected && (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--muted)', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--muted)', flexDirection: 'column', gap: 14, padding: 40 }}>
             <div style={{ fontSize: 32, opacity: 0.3 }}>▦</div>
-            <div>Select a domain from the list</div>
+            <div style={{ fontSize: 14, textAlign: 'center' }}>Select a domain from the list</div>
+            <div style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'center', maxWidth: 340, lineHeight: 1.7 }}>
+              A <strong style={{ color: 'var(--subtle)' }}>registry</strong> is Galui's structured representation of your site — capabilities, pricing, integrations, and WebMCP tools — served as JSON, llms.txt, and an AI plugin manifest that AI systems can read directly.
+            </div>
           </div>
         )}
         {selected && !detail && (
@@ -1092,19 +1180,22 @@ function RegistriesPage() {
                 </div>
                 <div className="card flex col gap-10">
                   <div className="label">WebMCP status</div>
+                  <div style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.6, marginBottom: 4 }}>
+                    WebMCP (W3C, Chrome 2026) lets AI agents call your site's forms and actions directly. Requires the Galui snippet.
+                  </div>
                   <div className="flex between center">
                     <span style={{ fontSize: 13, color: 'var(--muted)' }}>Status</span>
                     <span className={`badge ${detail.ai_metadata.webmcp_enabled ? 'badge-green' : 'badge-gray'}`}>
-                      {detail.ai_metadata.webmcp_enabled ? 'Active' : 'Pending'}
+                      {detail.ai_metadata.webmcp_enabled ? '✓ Active' : '○ Snippet not installed'}
                     </span>
                   </div>
                   <div className="info-row">
                     <span className="info-row-label">Tools registered</span>
-                    <span className="info-row-value" style={{ fontSize: 13 }}>{detail.ai_metadata.webmcp_tools_count}</span>
+                    <span className="info-row-value" style={{ fontSize: 13 }}>{detail.ai_metadata.webmcp_tools_count || 0}</span>
                   </div>
                   <div className="info-row">
                     <span className="info-row-label">Forms exposed</span>
-                    <span className="info-row-value" style={{ fontSize: 13 }}>{detail.ai_metadata.forms_exposed}</span>
+                    <span className="info-row-value" style={{ fontSize: 13 }}>{detail.ai_metadata.forms_exposed || 0}</span>
                   </div>
                   <div className="info-row">
                     <span className="info-row-label">Last updated</span>

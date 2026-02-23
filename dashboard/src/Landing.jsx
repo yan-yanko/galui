@@ -248,24 +248,74 @@ export function LandingPage({ onScanComplete }) {
       </div>
 
       {/* ── How it works ── */}
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: '80px 32px' }}>
+      <div style={{ maxWidth: 960, margin: '0 auto', padding: '80px 32px' }}>
         <h2 style={{ textAlign: 'center', fontSize: 34, fontWeight: 900, marginBottom: 10, letterSpacing: '-0.5px', color: '#0a0a14' }}>How it works</h2>
         <p style={{ textAlign: 'center', color: '#64648a', fontSize: 15, marginBottom: 52 }}>Three steps to full AI visibility</p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 20 }}>
           {[
-            { step: '01', title: 'Scan your site', desc: 'Enter your URL. Our AI pipeline crawls your site, extracts every capability, and gives you an AI Readiness Score in under 2 minutes.', icon: '🔍' },
-            { step: '02', title: 'Install one line', desc: 'Add a single <script> tag to your site\'s <head>. We handle WebMCP registration, llms.txt generation, and AI agent detection automatically.', icon: '</>' },
-            { step: '03', title: 'Get discovered', desc: 'Your site is now readable and actionable by every major AI agent. Your score updates in real time as you improve.', icon: '🤖' },
-          ].map(({ step, title, desc, icon }) => (
-            <div key={step} style={{ background: '#f8f8ff', border: '1px solid #e8e8f0', borderRadius: 16, padding: '28px 24px' }}>
+            {
+              step: '01', icon: '🔍', title: 'Scan your site free',
+              desc: 'Enter your URL. Galui crawls every page, runs a 4-pass AI analysis pipeline, extracts your site\'s capabilities, and gives you an AI Readiness Score (0–100) in under 2 minutes. No account needed.',
+              tag: null,
+            },
+            {
+              step: '02', icon: '</>', title: 'Add one script tag',
+              desc: 'Copy one line into your site\'s <head>. That\'s it. Galui automatically generates your llms.txt, registers WebMCP tools, injects schema.org markup, and starts logging AI agent visits — with zero configuration.',
+              tag: '30 seconds to install',
+            },
+            {
+              step: '03', icon: '🤖', title: 'Get found by AI',
+              desc: 'ChatGPT, Claude, Perplexity, Gemini, and every other LLM can now read, understand, and cite your site. Your AI Readiness Score updates automatically as your content changes.',
+              tag: null,
+            },
+          ].map(({ step, title, desc, icon, tag }) => (
+            <div key={step} style={{ background: '#f8f8ff', border: '1px solid #e8e8f0', borderRadius: 16, padding: '28px 24px', position: 'relative' }}>
+              {tag && (
+                <div style={{ position: 'absolute', top: 20, right: 20, fontSize: 10, background: '#6366f110', border: '1px solid #6366f130', color: '#6366f1', padding: '3px 10px', borderRadius: 20, fontWeight: 700 }}>
+                  {tag}
+                </div>
+              )}
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
                 <span style={{ fontSize: 22 }}>{icon}</span>
                 <span style={{ fontSize: 11, fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '1px' }}>Step {step}</span>
               </div>
               <h3 style={{ fontSize: 17, fontWeight: 800, marginBottom: 10, color: '#0a0a14' }}>{title}</h3>
-              <p style={{ fontSize: 13, color: '#64648a', lineHeight: 1.7 }}>{desc}</p>
+              <p style={{ fontSize: 13, color: '#64648a', lineHeight: 1.75 }}>{desc}</p>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* ── What is AI Readability ── */}
+      <div style={{ background: '#06060f', padding: '72px 32px' }}>
+        <div style={{ maxWidth: 920, margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'start' }}>
+            <div>
+              <p style={{ fontSize: 12, fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 16 }}>What is AI Readability?</p>
+              <h2 style={{ fontSize: 28, fontWeight: 900, letterSpacing: '-0.5px', color: '#f0f0ff', marginBottom: 20, lineHeight: 1.2 }}>
+                Search engines read HTML.<br />AI reads meaning.
+              </h2>
+              <p style={{ color: '#8888aa', fontSize: 15, lineHeight: 1.8, marginBottom: 24 }}>
+                Traditional SEO optimizes for Google's crawler — keywords, backlinks, meta tags. AI readability is different. LLMs like ChatGPT and Claude need to <em style={{ color: '#a5b4fc' }}>understand</em> what your site <em style={{ color: '#a5b4fc' }}>does</em>, who it's <em style={{ color: '#a5b4fc' }}>for</em>, and what <em style={{ color: '#a5b4fc' }}>actions</em> are possible.
+              </p>
+              <p style={{ color: '#8888aa', fontSize: 15, lineHeight: 1.8 }}>
+                Galui bridges this gap by extracting your site's capabilities into structured formats that every AI system understands — without you having to touch a single line of backend code.
+              </p>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {[
+                { term: 'llms.txt', color: '#818cf8', desc: 'A plain-text file at /llms.txt on your domain that tells LLMs what your site does, what pages matter, and how to interpret your content. Like a sitemap, but for AI.' },
+                { term: 'WebMCP', color: '#34d399', desc: 'A new W3C browser standard (shipping in Chrome) that lets AI agents directly interact with your site\'s forms, search, and checkout — without scraping. Galui registers your pages automatically.' },
+                { term: 'AI Plugin Manifest', color: '#f59e0b', desc: 'A /.well-known/ai-plugin.json file that tells ChatGPT and compatible agents what tools your site exposes and how to call them.' },
+                { term: 'AI Readiness Score', color: '#60a5fa', desc: 'A 0–100 score across 5 dimensions: content coverage, structure quality, freshness, WebMCP compliance, and output formats. Think PageSpeed, but for AI visibility.' },
+              ].map(({ term, color, desc }) => (
+                <div key={term} style={{ background: '#0f0f1a', border: '1px solid #1e1e30', borderLeft: `3px solid ${color}`, borderRadius: 10, padding: '14px 18px' }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color, marginBottom: 6 }}>{term}</div>
+                  <div style={{ fontSize: 12, color: '#64648a', lineHeight: 1.65 }}>{desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -276,18 +326,85 @@ export function LandingPage({ onScanComplete }) {
           <p style={{ textAlign: 'center', color: '#64648a', fontSize: 15, marginBottom: 48 }}>One script tag unlocks all of this</p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
             {[
-              ['🎯', 'AI Readiness Score', '0–100 score across 5 dimensions with actionable suggestions'],
-              ['📡', 'AI Agent Analytics', 'See which AI crawlers visit your site and what they read'],
-              ['⬡', 'WebMCP Auto-Setup', 'World-first automatic WebMCP tool registration via snippet'],
-              ['📄', 'llms.txt Generation', 'Auto-generated machine-readable description of your site'],
-              ['🔌', 'AI Plugin Manifest', 'OpenAI-compatible plugin manifest, generated automatically'],
-              ['🔄', 'Smart Auto-refresh', 'Detects page changes and re-indexes only what changed'],
+              ['🎯', 'AI Readiness Score', '0–100 score across 5 dimensions: content coverage, structure, freshness, WebMCP compliance, and output formats. Includes specific fixes for each weak area.'],
+              ['📡', 'AI Agent Analytics', 'See exactly which AI crawlers visit your site, which pages they read, and how often — updated in real time via the snippet.'],
+              ['⬡', 'WebMCP Auto-Setup', 'The snippet registers your site\'s forms and actions as WebMCP tools, making them callable by Chrome-based AI agents without any backend changes.'],
+              ['📄', 'llms.txt Generation', 'Galui auto-generates a /llms.txt file for your domain — the emerging standard for making sites machine-readable by LLMs at inference time.'],
+              ['🔌', 'AI Plugin Manifest', 'A /.well-known/ai-plugin.json is generated automatically so ChatGPT and compatible AI agents can discover and call your site\'s capabilities.'],
+              ['🔄', 'Smart Auto-refresh', 'The snippet hashes page content on every load. When content changes, Galui re-indexes automatically — your score is always current.'],
             ].map(([icon, title, desc]) => (
               <div key={title} style={{ background: '#ffffff', border: '1px solid #e8e8f0', borderRadius: 12, padding: '20px 18px' }}>
                 <span style={{ fontSize: 22, display: 'block', marginBottom: 10 }}>{icon}</span>
                 <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 6, color: '#0a0a14' }}>{title}</div>
-                <div style={{ fontSize: 12, color: '#64648a', lineHeight: 1.6 }}>{desc}</div>
+                <div style={{ fontSize: 12, color: '#64648a', lineHeight: 1.65 }}>{desc}</div>
               </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Score scale ── */}
+      <div style={{ maxWidth: 860, margin: '0 auto', padding: '72px 32px' }}>
+        <h2 style={{ textAlign: 'center', fontSize: 30, fontWeight: 900, letterSpacing: '-0.5px', color: '#0a0a14', marginBottom: 10 }}>What does your score mean?</h2>
+        <p style={{ textAlign: 'center', color: '#64648a', fontSize: 14, marginBottom: 44 }}>AI Readiness Score is 0–100 across 5 dimensions. Here's how to read it.</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12 }}>
+          {[
+            { range: '90–100', grade: 'A+', color: '#10b981', bg: '#f0fdf4', border: '#bbf7d0', label: 'Elite', desc: 'Your site is fully optimized for every AI system. ChatGPT and Claude will confidently cite you.' },
+            { range: '70–89',  grade: 'B',  color: '#3b82f6', bg: '#eff6ff', border: '#bfdbfe', label: 'Good', desc: 'Solid AI readability. A few improvements would push you to the top.' },
+            { range: '50–69',  grade: 'C',  color: '#f59e0b', bg: '#fffbeb', border: '#fde68a', label: 'Average', desc: 'AI agents can find you but may miss key capabilities or misunderstand what you do.' },
+            { range: '30–49',  grade: 'D',  color: '#ef4444', bg: '#fef2f2', border: '#fecaca', label: 'Poor', desc: 'AI agents struggle to parse your site. High risk of being invisible in AI-generated answers.' },
+            { range: '0–29',   grade: 'F',  color: '#991b1b', bg: '#fef2f2', border: '#fca5a5', label: 'Not readable', desc: 'Your site is essentially invisible to AI. Galui\'s snippet can fix this in minutes.' },
+          ].map(({ range, grade, color, bg, border, label, desc }) => (
+            <div key={grade} style={{ background: bg, border: `1px solid ${border}`, borderRadius: 12, padding: '18px 16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <div style={{ width: 32, height: 32, borderRadius: 8, background: color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, color: 'white', fontSize: 14 }}>{grade}</div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: 13, color: '#0a0a14' }}>{label}</div>
+                  <div style={{ fontSize: 10, color: '#64648a' }}>{range}</div>
+                </div>
+              </div>
+              <p style={{ fontSize: 11, color: '#64648a', lineHeight: 1.6, margin: 0 }}>{desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── FAQ ── */}
+      <div style={{ background: '#f8f8ff', borderTop: '1px solid #e8e8f0', padding: '72px 32px' }}>
+        <div style={{ maxWidth: 760, margin: '0 auto' }}>
+          <h2 style={{ textAlign: 'center', fontSize: 30, fontWeight: 900, letterSpacing: '-0.5px', color: '#0a0a14', marginBottom: 48 }}>Frequently asked questions</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {[
+              {
+                q: 'How is this different from regular SEO?',
+                a: 'SEO optimizes for Google\'s crawler — keywords, backlinks, structured metadata. AI readability is about making your site understandable to LLMs at inference time, when they\'re generating answers. Galui handles both: it improves your schema.org markup (good for SEO too) and adds AI-specific formats like llms.txt and WebMCP that search engines don\'t need but AI agents do.',
+              },
+              {
+                q: 'What exactly does the snippet do?',
+                a: 'The snippet (one <script> tag) runs in the browser when visitors load your pages. It extracts content, detects forms and CTAs, logs AI agent visits, registers WebMCP tools, and pushes updated data to Galui\'s backend. It\'s ~12KB, async (never blocks page load), and has zero impact on your Core Web Vitals.',
+              },
+              {
+                q: 'Do I need to change my website\'s backend?',
+                a: 'No. The snippet is purely client-side JavaScript. Add it to your <head> and everything works automatically — no server changes, no API integrations, no CMS plugins required.',
+              },
+              {
+                q: 'What is WebMCP?',
+                a: 'WebMCP is a new W3C standard (Chrome early preview, February 2026) that lets websites expose their interactions — forms, search, checkout — as callable "tools" for browser-based AI agents. When you install Galui, your site\'s forms are automatically registered as WebMCP tools. This means an AI agent inside Chrome can fill your contact form, search your catalog, or book a demo without any extra work from you.',
+              },
+              {
+                q: 'What is llms.txt?',
+                a: 'llms.txt is a plain-text file at /llms.txt on your domain (like robots.txt, but for LLMs). It gives AI systems a curated, machine-readable summary of what your site does and which pages are most important. Galui generates and hosts it automatically based on your indexed content.',
+              },
+              {
+                q: 'Which AI systems will be able to find my site?',
+                a: 'ChatGPT (GPTBot + ChatGPT-User), Claude (ClaudeBot), Perplexity (PerplexityBot), Gemini (Google-Extended), Bing Copilot (BingBot), Apple Intelligence (Applebot), and any WebMCP-compatible browser agent. Galui tracks all of them in your analytics dashboard.',
+              },
+              {
+                q: 'Is the scan really free?',
+                a: 'Yes — scanning any URL is free with no account required. You get the full AI Readiness Score, score breakdown across 5 dimensions, extracted capabilities, and improvement suggestions. Installing the snippet and getting live tracking requires a paid plan (from $49/year).',
+              },
+            ].map(({ q, a }, i) => (
+              <FaqItem key={i} q={q} a={a} />
             ))}
           </div>
         </div>
@@ -366,6 +483,32 @@ export function LandingPage({ onScanComplete }) {
           .hero-animation { display: none !important; }
         }
       `}</style>
+    </div>
+  )
+}
+
+// ── FAQ accordion item ────────────────────────────────────────────────────────
+function FaqItem({ q, a }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div style={{ borderBottom: '1px solid #e8e8f0' }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
+          width: '100%', textAlign: 'left', padding: '18px 4px',
+          background: 'none', border: 'none', cursor: 'pointer',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16,
+          fontFamily: 'inherit',
+        }}
+      >
+        <span style={{ fontSize: 15, fontWeight: 600, color: '#0a0a14', lineHeight: 1.4 }}>{q}</span>
+        <span style={{ fontSize: 18, color: '#6366f1', flexShrink: 0, fontWeight: 300, transition: 'transform 0.2s', transform: open ? 'rotate(45deg)' : 'none' }}>+</span>
+      </button>
+      {open && (
+        <div style={{ padding: '0 4px 20px', fontSize: 14, color: '#64648a', lineHeight: 1.8 }}>
+          {a}
+        </div>
+      )}
     </div>
   )
 }
