@@ -320,23 +320,39 @@ export function LandingPage({ onScanComplete }) {
       </div>
 
       {/* ── Features grid ── */}
-      <div style={{ background: '#f8f8ff', borderTop: '1px solid #e8e8f0', borderBottom: '1px solid #e8e8f0', padding: '72px 32px' }}>
-        <div style={{ maxWidth: 900, margin: '0 auto' }}>
-          <h2 style={{ textAlign: 'center', fontSize: 34, fontWeight: 900, marginBottom: 10, letterSpacing: '-0.5px', color: '#0a0a14' }}>Everything included. Zero configuration.</h2>
-          <p style={{ textAlign: 'center', color: '#64648a', fontSize: 15, marginBottom: 48 }}>One script tag unlocks all of this</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
+      <div style={{ background: '#06060f', padding: '96px 32px' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <p style={{ textAlign: 'center', fontSize: 12, fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 18 }}>What you get</p>
+          <h2 style={{ textAlign: 'center', fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, marginBottom: 16, letterSpacing: '-1px', color: '#f0f0ff', lineHeight: 1.1 }}>Everything included.<br />Zero configuration.</h2>
+          <p style={{ textAlign: 'center', color: '#6666aa', fontSize: 17, marginBottom: 64, lineHeight: 1.6 }}>Add one script tag. Every feature below activates automatically.</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 2 }}>
             {[
-              ['🎯', 'AI Readiness Score', '0–100 score across 5 dimensions: content coverage, structure, freshness, WebMCP compliance, and output formats. Includes specific fixes for each weak area.'],
-              ['📡', 'AI Agent Analytics', 'See exactly which AI crawlers visit your site, which pages they read, and how often — updated in real time via the snippet.'],
-              ['⬡', 'WebMCP Auto-Setup', 'The snippet registers your site\'s forms and actions as WebMCP tools, making them callable by Chrome-based AI agents without any backend changes.'],
-              ['📄', 'llms.txt Generation', 'Galui auto-generates a /llms.txt file for your domain — the emerging standard for making sites machine-readable by LLMs at inference time.'],
-              ['🔌', 'AI Plugin Manifest', 'A /.well-known/ai-plugin.json is generated automatically so ChatGPT and compatible AI agents can discover and call your site\'s capabilities.'],
-              ['🔄', 'Smart Auto-refresh', 'The snippet hashes page content on every load. When content changes, Galui re-indexes automatically — your score is always current.'],
-            ].map(([icon, title, desc]) => (
-              <div key={title} style={{ background: '#ffffff', border: '1px solid #e8e8f0', borderRadius: 12, padding: '20px 18px' }}>
-                <span style={{ fontSize: 22, display: 'block', marginBottom: 10 }}>{icon}</span>
-                <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 6, color: '#0a0a14' }}>{title}</div>
-                <div style={{ fontSize: 12, color: '#64648a', lineHeight: 1.65 }}>{desc}</div>
+              { icon: '🎯', title: 'AI Readiness Score', desc: '0–100 score across 5 dimensions: content coverage, structure, freshness, WebMCP compliance, and output formats. Includes specific fixes for each weak area.', color: '#818cf8' },
+              { icon: '📡', title: 'AI Agent Analytics', desc: 'See exactly which AI crawlers visit your site, which pages they read, and how often — updated in real time via the snippet.', color: '#34d399' },
+              { icon: '⬡', title: 'WebMCP Auto-Setup', desc: 'The snippet registers your site\'s forms and actions as WebMCP tools, making them callable by Chrome-based AI agents without any backend changes.', color: '#60a5fa' },
+              { icon: '📄', title: 'llms.txt Generation', desc: 'Galui auto-generates a /llms.txt file for your domain — the emerging standard for making sites machine-readable by LLMs at inference time.', color: '#f59e0b' },
+              { icon: '🔌', title: 'AI Plugin Manifest', desc: 'A /.well-known/ai-plugin.json is generated automatically so ChatGPT and compatible AI agents can discover and call your site\'s capabilities.', color: '#fb7185' },
+              { icon: '🔄', title: 'Smart Auto-refresh', desc: 'The snippet hashes page content on every load. When content changes, Galui re-indexes automatically — your score is always current.', color: '#a78bfa' },
+            ].map(({ icon, title, desc, color }, i) => (
+              <div key={title} className="feat-card" style={{
+                background: '#0d0d1a',
+                border: '1px solid #1a1a2e',
+                padding: '36px 32px',
+                position: 'relative',
+                overflow: 'hidden',
+                borderRadius: i === 0 ? '20px 0 0 0' : i === 1 ? '0' : i === 2 ? '0 20px 0 0' : i === 3 ? '0 0 0 20px' : i === 4 ? '0' : '0 0 20px 0',
+              }}>
+                {/* Glow accent */}
+                <div style={{ position: 'absolute', top: -40, left: -40, width: 120, height: 120, borderRadius: '50%', background: color, opacity: 0.06, filter: 'blur(30px)', pointerEvents: 'none' }} />
+                {/* Top accent line */}
+                <div style={{ position: 'absolute', top: 0, left: 32, right: 32, height: 2, background: `linear-gradient(90deg, transparent, ${color}60, transparent)`, borderRadius: 2 }} />
+                <div style={{ fontSize: 40, marginBottom: 20, display: 'block', lineHeight: 1 }}>{icon}</div>
+                <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 12, color: '#f0f0ff', letterSpacing: '-0.3px' }}>{title}</div>
+                <div style={{ fontSize: 14, color: '#6666aa', lineHeight: 1.8 }}>{desc}</div>
+                <div style={{ marginTop: 24, display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                  <div style={{ width: 16, height: 2, background: color, borderRadius: 2 }} />
+                  Included
+                </div>
               </div>
             ))}
           </div>
@@ -344,28 +360,65 @@ export function LandingPage({ onScanComplete }) {
       </div>
 
       {/* ── Score scale ── */}
-      <div style={{ maxWidth: 860, margin: '0 auto', padding: '72px 32px' }}>
-        <h2 style={{ textAlign: 'center', fontSize: 30, fontWeight: 900, letterSpacing: '-0.5px', color: '#0a0a14', marginBottom: 10 }}>What does your score mean?</h2>
-        <p style={{ textAlign: 'center', color: '#64648a', fontSize: 14, marginBottom: 44 }}>AI Readiness Score is 0–100 across 5 dimensions. Here's how to read it.</p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12 }}>
-          {[
-            { range: '90–100', grade: 'A+', color: '#10b981', bg: '#f0fdf4', border: '#bbf7d0', label: 'Elite', desc: 'Your site is fully optimized for every AI system. ChatGPT and Claude will confidently cite you.' },
-            { range: '70–89',  grade: 'B',  color: '#3b82f6', bg: '#eff6ff', border: '#bfdbfe', label: 'Good', desc: 'Solid AI readability. A few improvements would push you to the top.' },
-            { range: '50–69',  grade: 'C',  color: '#f59e0b', bg: '#fffbeb', border: '#fde68a', label: 'Average', desc: 'AI agents can find you but may miss key capabilities or misunderstand what you do.' },
-            { range: '30–49',  grade: 'D',  color: '#ef4444', bg: '#fef2f2', border: '#fecaca', label: 'Poor', desc: 'AI agents struggle to parse your site. High risk of being invisible in AI-generated answers.' },
-            { range: '0–29',   grade: 'F',  color: '#991b1b', bg: '#fef2f2', border: '#fca5a5', label: 'Not readable', desc: 'Your site is essentially invisible to AI. Galui\'s snippet can fix this in minutes.' },
-          ].map(({ range, grade, color, bg, border, label, desc }) => (
-            <div key={grade} style={{ background: bg, border: `1px solid ${border}`, borderRadius: 12, padding: '18px 16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <div style={{ width: 32, height: 32, borderRadius: 8, background: color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, color: 'white', fontSize: 14 }}>{grade}</div>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: 13, color: '#0a0a14' }}>{label}</div>
-                  <div style={{ fontSize: 10, color: '#64648a' }}>{range}</div>
+      <div style={{ background: '#ffffff', padding: '96px 32px', borderTop: '1px solid #e8e8f0' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <p style={{ textAlign: 'center', fontSize: 12, fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 18 }}>The scoring system</p>
+          <h2 style={{ textAlign: 'center', fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, letterSpacing: '-1px', color: '#0a0a14', marginBottom: 16, lineHeight: 1.1 }}>What does your score mean?</h2>
+          <p style={{ textAlign: 'center', color: '#64648a', fontSize: 17, marginBottom: 64, lineHeight: 1.6 }}>AI Readiness Score is 0–100. Every point is a real signal — here's how to read it.</p>
+
+          {/* Score bars — horizontal stacked layout */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 56 }}>
+            {[
+              { range: '90–100', grade: 'A+', color: '#10b981', pct: 100, label: 'Elite — Fully AI-Optimized', desc: 'ChatGPT, Claude, and Perplexity will confidently cite your site. You appear in AI-generated answers.' },
+              { range: '70–89',  grade: 'B',  color: '#3b82f6', pct: 80,  label: 'Good — AI-Readable',          desc: 'Solid visibility. A few targeted improvements would push you into Elite territory.' },
+              { range: '50–69',  grade: 'C',  color: '#f59e0b', pct: 60,  label: 'Average — Partially Visible',  desc: 'AI agents can find you but may miss capabilities or misunderstand your offering.' },
+              { range: '30–49',  grade: 'D',  color: '#ef4444', pct: 40,  label: 'Poor — Hard to Parse',         desc: 'Significant gaps. High risk of being skipped or misrepresented in AI answers.' },
+              { range: '0–29',   grade: 'F',  color: '#991b1b', pct: 20,  label: 'Not Readable — Invisible',     desc: 'Essentially invisible to AI. One Galui snippet install changes everything.' },
+            ].map(({ range, grade, color, pct, label, desc }) => (
+              <div key={grade} style={{ display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
+                {/* Grade badge */}
+                <div style={{
+                  width: 64, height: 64, borderRadius: 16, background: color,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontWeight: 900, color: 'white', fontSize: 22, flexShrink: 0,
+                  boxShadow: `0 4px 20px ${color}40`,
+                }}>{grade}</div>
+                {/* Bar + label */}
+                <div style={{ flex: 1, minWidth: 200 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
+                    <span style={{ fontWeight: 800, fontSize: 16, color: '#0a0a14', letterSpacing: '-0.2px' }}>{label}</span>
+                    <span style={{ fontSize: 13, color: '#b0b0c8', fontWeight: 600, flexShrink: 0, marginLeft: 12 }}>{range}</span>
+                  </div>
+                  <div style={{ background: '#f0f0f8', borderRadius: 6, height: 8, overflow: 'hidden', marginBottom: 8 }}>
+                    <div style={{ height: '100%', borderRadius: 6, background: color, width: `${pct}%` }} />
+                  </div>
+                  <div style={{ fontSize: 13, color: '#64648a', lineHeight: 1.6 }}>{desc}</div>
                 </div>
               </div>
-              <p style={{ fontSize: 11, color: '#64648a', lineHeight: 1.6, margin: 0 }}>{desc}</p>
+            ))}
+          </div>
+
+          {/* 5 dimensions callout */}
+          <div style={{ background: '#f8f8ff', border: '1px solid #e8e8f0', borderRadius: 20, padding: '32px 40px' }}>
+            <div style={{ textAlign: 'center', marginBottom: 28 }}>
+              <p style={{ fontWeight: 800, fontSize: 16, color: '#0a0a14', marginBottom: 6 }}>Score is calculated across 5 dimensions</p>
+              <p style={{ fontSize: 14, color: '#64648a' }}>Each dimension is scored independently — see exactly where you're losing points</p>
             </div>
-          ))}
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
+              {[
+                { name: 'Content Coverage', color: '#818cf8', icon: '📝' },
+                { name: 'Structure Quality', color: '#10b981', icon: '🏗️' },
+                { name: 'Freshness',         color: '#3b82f6', icon: '⚡' },
+                { name: 'WebMCP Compliance', color: '#8b5cf6', icon: '⬡' },
+                { name: 'Output Formats',    color: '#f59e0b', icon: '📤' },
+              ].map(({ name, color, icon }) => (
+                <div key={name} style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#ffffff', border: `1.5px solid ${color}30`, borderRadius: 12, padding: '12px 18px', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+                  <span style={{ fontSize: 18 }}>{icon}</span>
+                  <span style={{ fontWeight: 700, fontSize: 14, color: '#0a0a14' }}>{name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -440,6 +493,10 @@ export function LandingPage({ onScanComplete }) {
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         * { box-sizing: border-box; }
+
+        /* Feature card hover */
+        .feat-card { transition: background 0.2s, transform 0.2s, border-color 0.2s; }
+        .feat-card:hover { background: #11111f !important; transform: translateY(-3px); border-color: #2a2a44 !important; }
 
         /* Hero animation keyframes */
         @keyframes fadeSlideUp {
