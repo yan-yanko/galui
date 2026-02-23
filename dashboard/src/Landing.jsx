@@ -69,13 +69,21 @@ export function LandingPage({ onScanComplete }) {
       const job = await scanSite(fullUrl)
       const domain = job.domain
 
-      if (job.status === 'complete') {
-        // cached — load immediately
-        setProgress(100)
+      const finishScan = async (domain) => {
+        setProgress(95)
         setStatusText('Loading results…')
-        const [score, registry] = await Promise.all([getScore(domain), getRegistry(domain)])
+        const [score, registry] = await Promise.all([
+          getScore(domain).catch(() => ({ total: 0, grade: 'F', label: 'Not scored yet', dimensions: {}, suggestions: [] })),
+          getRegistry(domain).catch(() => ({ capabilities: [], metadata: {} })),
+        ])
+        setProgress(100)
         setStage('done')
         onScanComplete({ domain, score, registry })
+      }
+
+      if (job.status === 'complete') {
+        // cached — load immediately
+        await finishScan(domain)
         return
       }
 
@@ -97,12 +105,7 @@ export function LandingPage({ onScanComplete }) {
 
           if (updated.status === 'complete') {
             clearInterval(interval)
-            setProgress(95)
-            setStatusText('Loading results…')
-            const [score, registry] = await Promise.all([getScore(domain), getRegistry(domain)])
-            setProgress(100)
-            setStage('done')
-            onScanComplete({ domain, score, registry })
+            await finishScan(domain)
           } else if (updated.status === 'failed') {
             clearInterval(interval)
             throw new Error(updated.error || 'Scan failed')
@@ -558,7 +561,18 @@ function FlowArrow({ delay }) {
 
 // ── Results page (blurred until registered) ────────────────────────────────────
 export function ResultsPage({ data, onRegistered }) {
-  const { domain, score, registry } = data
+  const { domain, score: rawScore, registry: rawRegistry } = data
+
+  // Defensive defaults — API may return partial data
+  const score = {
+    total: 0, grade: 'F', label: 'Pending', dimensions: {}, suggestions: [],
+    ...rawScore,
+  }
+  const registry = {
+    capabilities: [], metadata: {},
+    ...rawRegistry,
+  }
+
   const [showModal, setShowModal] = useState(true)
   const [registered, setRegistered] = useState(() => !!localStorage.getItem('galui_user'))
   const [form, setForm] = useState({ name: '', email: '' })
