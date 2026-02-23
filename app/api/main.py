@@ -147,17 +147,20 @@ async def serve_snippet():
 _dashboard_path = _pathlib.Path(__file__).parent.parent.parent / "static" / "dashboard"
 
 if _dashboard_path.exists():
+    # Serve the React SPA at both / and /dashboard/
+    # The React app itself handles routing between landing and dashboard
     app.mount("/dashboard", StaticFiles(directory=str(_dashboard_path), html=True), name="dashboard")
     logger.info(f"  Dashboard:    /dashboard (React SPA)")
+    logger.info(f"  Landing:      / (served from same SPA)")
 
     @app.get("/", include_in_schema=False)
-    async def root_redirect():
-        """Redirect root to dashboard."""
-        from fastapi.responses import RedirectResponse
-        return RedirectResponse(url="/dashboard")
+    async def serve_landing():
+        """Serve the React SPA at root — landing page."""
+        index_path = _dashboard_path / "index.html"
+        return FileResponse(str(index_path), media_type="text/html")
 else:
     logger.info("  Dashboard:    not built (run Docker to build)")
 
     @app.get("/", include_in_schema=False)
-    async def root_redirect():
+    async def serve_landing():
         return {"service": "galui", "version": "2.0.0", "docs": "/docs", "dashboard": "not built"}
