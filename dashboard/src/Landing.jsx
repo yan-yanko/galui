@@ -121,70 +121,90 @@ export function LandingPage({ onScanComplete }) {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#06060f', color: '#e8e8f8', fontFamily: "'Inter', -apple-system, sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: '#ffffff', color: '#0f0f1a', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
 
       {/* Nav */}
-      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 48px', height: 60, borderBottom: '1px solid #1c1c2e', position: 'sticky', top: 0, background: '#06060fdd', backdropFilter: 'blur(12px)', zIndex: 100 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 800, fontSize: 18, color: '#818cf8', letterSpacing: '-0.5px' }}>
+      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 48px', height: 64, borderBottom: '1px solid #e8e8f0', position: 'sticky', top: 0, background: '#ffffffee', backdropFilter: 'blur(12px)', zIndex: 100 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 900, fontSize: 20, color: '#6366f1', letterSpacing: '-0.5px' }}>
           <span style={{ fontSize: 22 }}>⬡</span> galui
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <a href="/dashboard/" style={{ padding: '7px 16px', borderRadius: 8, fontSize: 13, color: '#64648a', textDecoration: 'none' }}>Dashboard</a>
-          <a href="/dashboard/" style={{ padding: '7px 16px', borderRadius: 8, fontSize: 13, background: '#6366f1', color: 'white', textDecoration: 'none', fontWeight: 600 }}>Get started free</a>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <a href="/dashboard/" style={{ padding: '8px 18px', borderRadius: 8, fontSize: 13, color: '#64648a', textDecoration: 'none', fontWeight: 500 }}>Dashboard</a>
+          <a href="/dashboard/" style={{ padding: '8px 20px', borderRadius: 8, fontSize: 13, background: '#6366f1', color: 'white', textDecoration: 'none', fontWeight: 700, boxShadow: '0 2px 8px rgba(99,102,241,0.3)' }}>Get started free</a>
         </div>
       </nav>
 
-      {/* Hero */}
-      <div style={{ maxWidth: 860, margin: '0 auto', padding: '96px 32px 80px', textAlign: 'center' }}>
+      {/* ── HERO ── */}
+      <div style={{ maxWidth: 780, margin: '0 auto', padding: '88px 32px 72px' }}>
 
-        {/* Badge */}
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#6366f115', border: '1px solid #6366f130', borderRadius: 20, padding: '5px 14px', fontSize: 12, color: '#818cf8', fontWeight: 600, marginBottom: 28, letterSpacing: '0.3px' }}>
-          <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 6px #10b981', display: 'inline-block' }} />
-          NEW · WebMCP auto-implementation — first in the world
-        </div>
-
-        <h1 style={{ fontSize: 'clamp(36px, 6vw, 68px)', fontWeight: 900, lineHeight: 1.1, letterSpacing: '-2px', marginBottom: 24 }}>
-          Is your website{' '}
-          <span style={{ background: 'linear-gradient(135deg, #818cf8, #a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            invisible to AI?
-          </span>
-        </h1>
-
-        <p style={{ fontSize: 'clamp(16px, 2vw, 20px)', color: '#9898b8', lineHeight: 1.7, maxWidth: 600, margin: '0 auto 48px', fontWeight: 400 }}>
-          As AI replaces search, websites that aren't AI-readable lose traffic, visibility, and customers.
-          Galui fixes this automatically — one script tag, zero configuration.
+        {/* Eyebrow */}
+        <p style={{ fontSize: 13, fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 20 }}>
+          AI Readability is Galui
         </p>
 
-        {/* Scan form */}
+        {/* Title */}
+        <h1 style={{ fontSize: 'clamp(38px, 5.5vw, 64px)', fontWeight: 900, lineHeight: 1.08, letterSpacing: '-2px', marginBottom: 24, color: '#0a0a14' }}>
+          Make your website<br />
+          <span style={{ color: '#6366f1' }}>visible to AI.</span>
+        </h1>
+
+        {/* Explainer */}
+        <p style={{ fontSize: 18, color: '#64648a', lineHeight: 1.7, maxWidth: 540, marginBottom: 40, fontWeight: 400 }}>
+          ChatGPT, Claude, and Perplexity are replacing Google. Websites that aren't AI-readable are already losing traffic. Galui fixes this automatically — one line of code.
+        </p>
+
+        {/* 3 benefits */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 44 }}>
+          {[
+            { icon: '✓', label: 'Affordable.', detail: 'From $49/year, free scan, no credit card required' },
+            { icon: '✓', label: 'Effortless.', detail: 'One line of code for full AI readability — automated' },
+            { icon: '✓', label: 'Visible.', detail: 'All major LLMs will find, read, and recommend your site' },
+          ].map(({ icon, label, detail }) => (
+            <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 16 }}>
+              <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#6366f115', border: '1.5px solid #6366f140', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6366f1', fontWeight: 900, fontSize: 13, flexShrink: 0 }}>
+                {icon}
+              </div>
+              <span>
+                <strong style={{ color: '#0a0a14' }}>{label}</strong>{' '}
+                <span style={{ color: '#64648a' }}>{detail}</span>
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA — scan form */}
         {stage === 'idle' && (
-          <form onSubmit={handleScan} style={{ display: 'flex', gap: 10, maxWidth: 600, margin: '0 auto', flexWrap: 'wrap', justifyContent: 'center' }}>
+          <form onSubmit={handleScan} style={{ display: 'flex', gap: 10, maxWidth: 560, flexWrap: 'wrap' }}>
             <input
               ref={inputRef}
               value={url}
               onChange={e => setUrl(e.target.value)}
               placeholder="yourwebsite.com"
               style={{
-                flex: 1, minWidth: 240,
-                padding: '14px 20px', borderRadius: 12, border: '1px solid #252538',
-                background: '#0f0f1a', color: '#e8e8f8', fontSize: 15,
+                flex: 1, minWidth: 220,
+                padding: '14px 20px', borderRadius: 10,
+                border: '1.5px solid #d0d0e0',
+                background: '#ffffff', color: '#0a0a14', fontSize: 15,
                 outline: 'none', fontFamily: 'inherit',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
               }}
             />
             <button type="submit" style={{
-              padding: '14px 28px', borderRadius: 12, background: '#6366f1', color: 'white',
-              fontWeight: 700, fontSize: 15, border: 'none', cursor: 'pointer', whiteSpace: 'nowrap',
-              boxShadow: '0 4px 20px rgba(99,102,241,0.4)',
-              transition: 'all 0.2s',
+              padding: '14px 28px', borderRadius: 10,
+              background: '#6366f1', color: 'white',
+              fontWeight: 700, fontSize: 15, border: 'none', cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              boxShadow: '0 4px 16px rgba(99,102,241,0.35)',
             }}>
               Scan my site free →
             </button>
           </form>
         )}
 
-        {/* Error state */}
+        {/* Error */}
         {stage === 'error' && (
-          <div style={{ maxWidth: 520, margin: '0 auto' }}>
-            <div style={{ background: '#ef444412', border: '1px solid #ef444430', borderRadius: 12, padding: '16px 20px', color: '#f87171', marginBottom: 16, fontSize: 14 }}>
+          <div style={{ maxWidth: 520 }}>
+            <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 10, padding: '14px 18px', color: '#dc2626', marginBottom: 14, fontSize: 14 }}>
               {error}
             </div>
             <button onClick={() => setStage('idle')} style={{ padding: '12px 24px', borderRadius: 10, background: '#6366f1', color: 'white', fontWeight: 600, fontSize: 14, border: 'none', cursor: 'pointer' }}>
@@ -193,40 +213,34 @@ export function LandingPage({ onScanComplete }) {
           </div>
         )}
 
-        {/* Scanning state */}
+        {/* Scanning */}
         {stage === 'scanning' && (
-          <div style={{ maxWidth: 520, margin: '0 auto' }}>
-            <div style={{ background: '#0f0f1a', border: '1px solid #1c1c2e', borderRadius: 16, padding: '32px 36px' }}>
-              <div style={{ fontSize: 13, color: '#64648a', marginBottom: 16, fontWeight: 500 }}>
-                Scanning <strong style={{ color: '#818cf8' }}>{url}</strong>
+          <div style={{ maxWidth: 500 }}>
+            <div style={{ background: '#f8f8ff', border: '1.5px solid #e0e0f0', borderRadius: 14, padding: '28px 32px' }}>
+              <div style={{ fontSize: 13, color: '#64648a', marginBottom: 14, fontWeight: 500 }}>
+                Scanning <strong style={{ color: '#6366f1' }}>{url}</strong>
               </div>
-
-              {/* Progress bar */}
-              <div style={{ background: '#1c1c2e', borderRadius: 8, height: 8, overflow: 'hidden', marginBottom: 16 }}>
+              <div style={{ background: '#e8e8f8', borderRadius: 8, height: 8, overflow: 'hidden', marginBottom: 14 }}>
                 <div style={{
                   height: '100%', borderRadius: 8,
                   background: 'linear-gradient(90deg, #6366f1, #a78bfa)',
-                  width: `${progress}%`,
-                  transition: 'width 0.6s ease',
-                  boxShadow: '0 0 10px rgba(99,102,241,0.5)',
+                  width: `${progress}%`, transition: 'width 0.6s ease',
+                  boxShadow: '0 0 8px rgba(99,102,241,0.4)',
                 }} />
               </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: '#9898b8' }}>
-                <div style={{ width: 14, height: 14, border: '2px solid #252538', borderTopColor: '#6366f1', borderRadius: '50%', animation: 'spin 0.65s linear infinite', flexShrink: 0 }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: '#9898b8', marginBottom: 20 }}>
+                <div style={{ width: 13, height: 13, border: '2px solid #c7c7e0', borderTopColor: '#6366f1', borderRadius: '50%', animation: 'spin 0.65s linear infinite', flexShrink: 0 }} />
                 {statusText}
               </div>
-
-              {/* Animated steps */}
-              <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {[
                   { label: 'Crawling pages', done: progress > 20 },
                   { label: 'AI comprehension (4 passes)', done: progress > 60 },
                   { label: 'Extracting capabilities', done: progress > 75 },
                   { label: 'Calculating AI Readiness Score', done: progress > 90 },
                 ].map(({ label, done }) => (
-                  <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: done ? '#10b981' : '#252538', transition: 'color 0.4s' }}>
-                    <span>{done ? '✓' : '○'}</span>
+                  <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: done ? '#10b981' : '#c0c0d8', transition: 'color 0.4s', fontWeight: done ? 600 : 400 }}>
+                    <span style={{ fontSize: 14 }}>{done ? '✓' : '○'}</span>
                     <span>{label}</span>
                   </div>
                 ))}
@@ -235,60 +249,62 @@ export function LandingPage({ onScanComplete }) {
           </div>
         )}
 
-        <p style={{ fontSize: 12, color: '#3a3a5c', marginTop: 20 }}>
+        <p style={{ fontSize: 12, color: '#b0b0c8', marginTop: 18 }}>
           Free scan · No credit card · Results in ~60 seconds
         </p>
       </div>
 
-      {/* Social proof / logos */}
-      <div style={{ borderTop: '1px solid #1c1c2e', borderBottom: '1px solid #1c1c2e', padding: '24px 48px', textAlign: 'center' }}>
-        <p style={{ fontSize: 12, color: '#3a3a5c', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>AI agents that will read your site after installing Galui</p>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 40, flexWrap: 'wrap' }}>
-          {['ChatGPT', 'Claude', 'Perplexity', 'Gemini', 'Bing AI', 'WebMCP'].map(name => (
-            <span key={name} style={{ fontSize: 14, color: '#3a3a5c', fontWeight: 600 }}>{name}</span>
+      {/* ── AI agents strip ── */}
+      <div style={{ borderTop: '1px solid #e8e8f0', borderBottom: '1px solid #e8e8f0', padding: '20px 48px', background: '#fafaff' }}>
+        <div style={{ maxWidth: 860, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 32, flexWrap: 'wrap', justifyContent: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 700, color: '#b0b0c8', textTransform: 'uppercase', letterSpacing: '1px', flexShrink: 0 }}>
+            Visible to
+          </span>
+          {['ChatGPT', 'Claude', 'Perplexity', 'Gemini', 'Bing AI', 'WebMCP Agents'].map(name => (
+            <span key={name} style={{ fontSize: 14, color: '#64648a', fontWeight: 700 }}>{name}</span>
           ))}
         </div>
       </div>
 
-      {/* How it works */}
-      <div style={{ maxWidth: 960, margin: '0 auto', padding: '80px 32px' }}>
-        <h2 style={{ textAlign: 'center', fontSize: 32, fontWeight: 800, marginBottom: 12, letterSpacing: '-0.5px' }}>How it works</h2>
-        <p style={{ textAlign: 'center', color: '#64648a', fontSize: 15, marginBottom: 56 }}>Three steps to full AI visibility</p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 24 }}>
+      {/* ── How it works ── */}
+      <div style={{ maxWidth: 900, margin: '0 auto', padding: '80px 32px' }}>
+        <h2 style={{ textAlign: 'center', fontSize: 34, fontWeight: 900, marginBottom: 10, letterSpacing: '-0.5px', color: '#0a0a14' }}>How it works</h2>
+        <p style={{ textAlign: 'center', color: '#64648a', fontSize: 15, marginBottom: 52 }}>Three steps to full AI visibility</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 20 }}>
           {[
-            { step: '01', title: 'Scan your site', desc: 'Enter your URL. Our AI pipeline crawls your site and extracts every capability, pricing tier, and integration — automatically.', icon: '🔍' },
-            { step: '02', title: 'Install one script', desc: 'Add a single <script> tag to your site\'s <head>. That\'s it. We handle WebMCP registration, AI agent detection, and llms.txt generation.', icon: '⟨/⟩' },
-            { step: '03', title: 'Become AI-readable', desc: 'Your site is now visible to ChatGPT, Claude, Perplexity, and every AI agent. Your AI Readiness Score improves in real time.', icon: '🤖' },
+            { step: '01', title: 'Scan your site', desc: 'Enter your URL. Our AI pipeline crawls your site, extracts every capability, and gives you an AI Readiness Score in under 2 minutes.', icon: '🔍' },
+            { step: '02', title: 'Install one line', desc: 'Add a single <script> tag to your site\'s <head>. We handle WebMCP registration, llms.txt generation, and AI agent detection automatically.', icon: '</>' },
+            { step: '03', title: 'Get discovered', desc: 'Your site is now readable and actionable by every major AI agent. Your score updates in real time as you improve.', icon: '🤖' },
           ].map(({ step, title, desc, icon }) => (
-            <div key={step} style={{ background: '#0f0f1a', border: '1px solid #1c1c2e', borderRadius: 16, padding: '28px 24px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                <span style={{ fontSize: 24 }}>{icon}</span>
+            <div key={step} style={{ background: '#f8f8ff', border: '1px solid #e8e8f0', borderRadius: 16, padding: '28px 24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                <span style={{ fontSize: 22 }}>{icon}</span>
                 <span style={{ fontSize: 11, fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '1px' }}>Step {step}</span>
               </div>
-              <h3 style={{ fontSize: 17, fontWeight: 700, marginBottom: 10 }}>{title}</h3>
+              <h3 style={{ fontSize: 17, fontWeight: 800, marginBottom: 10, color: '#0a0a14' }}>{title}</h3>
               <p style={{ fontSize: 13, color: '#64648a', lineHeight: 1.7 }}>{desc}</p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* What you get */}
-      <div style={{ background: '#0a0a14', borderTop: '1px solid #1c1c2e', borderBottom: '1px solid #1c1c2e', padding: '72px 32px' }}>
+      {/* ── Features grid ── */}
+      <div style={{ background: '#f8f8ff', borderTop: '1px solid #e8e8f0', borderBottom: '1px solid #e8e8f0', padding: '72px 32px' }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
-          <h2 style={{ textAlign: 'center', fontSize: 32, fontWeight: 800, marginBottom: 12, letterSpacing: '-0.5px' }}>Everything included. Zero configuration.</h2>
-          <p style={{ textAlign: 'center', color: '#64648a', fontSize: 15, marginBottom: 52 }}>One script tag unlocks all of this</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
+          <h2 style={{ textAlign: 'center', fontSize: 34, fontWeight: 900, marginBottom: 10, letterSpacing: '-0.5px', color: '#0a0a14' }}>Everything included. Zero configuration.</h2>
+          <p style={{ textAlign: 'center', color: '#64648a', fontSize: 15, marginBottom: 48 }}>One script tag unlocks all of this</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
             {[
-              ['🤖', 'AI Readiness Score', '0–100 score across 5 dimensions with improvement suggestions'],
-              ['📡', 'AI Agent Analytics', 'See which AI agents visit your site and what they read'],
-              ['⬡', 'WebMCP Auto-Setup', 'First-in-world automatic WebMCP tool registration'],
-              ['📄', 'llms.txt Generation', 'Auto-generated machine-readable site description'],
-              ['🔌', 'AI Plugin Manifest', 'OpenAI plugin manifest generated automatically'],
-              ['🔄', 'Auto-updates', 'Registry stays fresh — detects page changes automatically'],
+              ['🎯', 'AI Readiness Score', '0–100 score across 5 dimensions with actionable suggestions'],
+              ['📡', 'AI Agent Analytics', 'See which AI crawlers visit your site and what they read'],
+              ['⬡', 'WebMCP Auto-Setup', 'World-first automatic WebMCP tool registration via snippet'],
+              ['📄', 'llms.txt Generation', 'Auto-generated machine-readable description of your site'],
+              ['🔌', 'AI Plugin Manifest', 'OpenAI-compatible plugin manifest, generated automatically'],
+              ['🔄', 'Smart Auto-refresh', 'Detects page changes and re-indexes only what changed'],
             ].map(([icon, title, desc]) => (
-              <div key={title} style={{ background: '#0f0f1a', border: '1px solid #1c1c2e', borderRadius: 12, padding: '20px 18px' }}>
+              <div key={title} style={{ background: '#ffffff', border: '1px solid #e8e8f0', borderRadius: 12, padding: '20px 18px' }}>
                 <span style={{ fontSize: 22, display: 'block', marginBottom: 10 }}>{icon}</span>
-                <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 6 }}>{title}</div>
+                <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 6, color: '#0a0a14' }}>{title}</div>
                 <div style={{ fontSize: 12, color: '#64648a', lineHeight: 1.6 }}>{desc}</div>
               </div>
             ))}
@@ -296,27 +312,36 @@ export function LandingPage({ onScanComplete }) {
         </div>
       </div>
 
-      {/* Bottom CTA */}
+      {/* ── Bottom CTA ── */}
       <div style={{ textAlign: 'center', padding: '80px 32px' }}>
-        <h2 style={{ fontSize: 36, fontWeight: 900, letterSpacing: '-1px', marginBottom: 16 }}>
+        <h2 style={{ fontSize: 38, fontWeight: 900, letterSpacing: '-1px', marginBottom: 14, color: '#0a0a14' }}>
           Ready to be found by AI?
         </h2>
-        <p style={{ color: '#64648a', fontSize: 16, marginBottom: 36 }}>Free scan. See your score in 60 seconds.</p>
-        <form onSubmit={handleScan} style={{ display: 'flex', gap: 10, maxWidth: 520, margin: '0 auto', flexWrap: 'wrap', justifyContent: 'center' }}>
+        <p style={{ color: '#64648a', fontSize: 16, marginBottom: 36 }}>Free scan. See your AI Readiness Score in 60 seconds.</p>
+        <form onSubmit={handleScan} style={{ display: 'flex', gap: 10, maxWidth: 480, margin: '0 auto', flexWrap: 'wrap', justifyContent: 'center' }}>
           <input
             value={url}
             onChange={e => setUrl(e.target.value)}
             placeholder="yourwebsite.com"
-            style={{ flex: 1, minWidth: 200, padding: '13px 18px', borderRadius: 10, border: '1px solid #252538', background: '#0f0f1a', color: '#e8e8f8', fontSize: 14, outline: 'none', fontFamily: 'inherit' }}
+            style={{ flex: 1, minWidth: 200, padding: '13px 18px', borderRadius: 10, border: '1.5px solid #d0d0e0', background: '#fff', color: '#0a0a14', fontSize: 14, outline: 'none', fontFamily: 'inherit' }}
           />
-          <button type="submit" style={{ padding: '13px 24px', borderRadius: 10, background: '#6366f1', color: 'white', fontWeight: 700, fontSize: 14, border: 'none', cursor: 'pointer', boxShadow: '0 4px 16px rgba(99,102,241,0.35)' }}>
+          <button type="submit" style={{ padding: '13px 24px', borderRadius: 10, background: '#6366f1', color: 'white', fontWeight: 700, fontSize: 14, border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(99,102,241,0.35)' }}>
             Get free scan →
           </button>
         </form>
+        <p style={{ fontSize: 12, color: '#b0b0c8', marginTop: 14 }}>From $49/year · Cancel anytime</p>
+      </div>
+
+      {/* Footer */}
+      <div style={{ borderTop: '1px solid #e8e8f0', padding: '24px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+        <div style={{ fontWeight: 800, fontSize: 15, color: '#6366f1' }}>⬡ galui</div>
+        <div style={{ fontSize: 12, color: '#b0b0c8' }}>© 2026 Galui · Make every website AI-readable</div>
+        <a href="/dashboard/" style={{ fontSize: 12, color: '#64648a', textDecoration: 'none' }}>Dashboard →</a>
       </div>
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
+        * { box-sizing: border-box; }
       `}</style>
     </div>
   )
