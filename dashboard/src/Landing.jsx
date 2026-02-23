@@ -135,92 +135,93 @@ export function LandingPage({ onScanComplete }) {
       </nav>
 
       {/* ── HERO ── */}
-      <div style={{ maxWidth: 780, margin: '0 auto', padding: '88px 32px 72px' }}>
+      <div className="hero-grid" style={{ maxWidth: 1200, margin: '0 auto', padding: '80px 48px 72px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
 
-        {/* Eyebrow */}
-        <p style={{ fontSize: 13, fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 20 }}>
-          AI Readability is Galui
-        </p>
+        {/* ── LEFT: content ── */}
+        <div>
+          {/* Eyebrow */}
+          <p style={{ fontSize: 13, fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 20 }}>
+            AI Readability is Galui
+          </p>
 
-        {/* Title */}
-        <h1 style={{ fontSize: 'clamp(38px, 5.5vw, 64px)', fontWeight: 900, lineHeight: 1.08, letterSpacing: '-2px', marginBottom: 24, color: '#0a0a14' }}>
-          Make your website<br />
-          <span style={{ color: '#6366f1' }}>visible to AI.</span>
-        </h1>
+          {/* Title */}
+          <h1 style={{ fontSize: 'clamp(34px, 4vw, 58px)', fontWeight: 900, lineHeight: 1.08, letterSpacing: '-2px', marginBottom: 24, color: '#0a0a14' }}>
+            Make your website<br />
+            <span style={{ color: '#6366f1' }}>visible to AI.</span>
+          </h1>
 
-        {/* Explainer */}
-        <p style={{ fontSize: 18, color: '#64648a', lineHeight: 1.7, maxWidth: 540, marginBottom: 40, fontWeight: 400 }}>
-          More and more people are getting answers from AI instead of clicking links. If your site isn't AI-readable, you're invisible to them. Galui fixes this automatically with one line of code.
-        </p>
+          {/* Explainer */}
+          <p style={{ fontSize: 17, color: '#64648a', lineHeight: 1.75, marginBottom: 36, fontWeight: 400 }}>
+            More and more people are getting answers from AI instead of clicking links. If your site isn't AI-readable, you're invisible to them. Galui fixes this automatically with one line of code.
+          </p>
 
-        {/* 3 benefits */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 44 }}>
-          {[
-            { icon: '✓', label: 'Affordable.', detail: 'From $49/year, free scan, no credit card required' },
-            { icon: '✓', label: 'Effortless.', detail: 'One line of code for full AI readability — automated' },
-            { icon: '✓', label: 'Visible.', detail: 'All major LLMs will find, read, and recommend your site' },
-          ].map(({ icon, label, detail }) => (
-            <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 16 }}>
-              <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#6366f115', border: '1.5px solid #6366f140', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6366f1', fontWeight: 900, fontSize: 13, flexShrink: 0 }}>
-                {icon}
+          {/* 3 benefits */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 40 }}>
+            {[
+              { icon: '✓', label: 'Affordable.', detail: 'From $49/year, free scan, no credit card required' },
+              { icon: '✓', label: 'Effortless.', detail: 'One line of code for full AI readability — automated' },
+              { icon: '✓', label: 'Visible.', detail: 'All major LLMs will find, read, and recommend your site' },
+            ].map(({ icon, label, detail }) => (
+              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 15 }}>
+                <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#6366f115', border: '1.5px solid #6366f140', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6366f1', fontWeight: 900, fontSize: 12, flexShrink: 0 }}>
+                  {icon}
+                </div>
+                <span>
+                  <strong style={{ color: '#0a0a14' }}>{label}</strong>{' '}
+                  <span style={{ color: '#64648a' }}>{detail}</span>
+                </span>
               </div>
-              <span>
-                <strong style={{ color: '#0a0a14' }}>{label}</strong>{' '}
-                <span style={{ color: '#64648a' }}>{detail}</span>
-              </span>
-            </div>
-          ))}
-        </div>
-
-        {/* CTA — scan form */}
-        {stage === 'idle' && (
-          <form onSubmit={handleScan} style={{ display: 'flex', gap: 10, maxWidth: 560, flexWrap: 'wrap' }}>
-            <input
-              ref={inputRef}
-              value={url}
-              onChange={e => setUrl(e.target.value)}
-              placeholder="yourwebsite.com"
-              style={{
-                flex: 1, minWidth: 220,
-                padding: '14px 20px', borderRadius: 10,
-                border: '1.5px solid #d0d0e0',
-                background: '#ffffff', color: '#0a0a14', fontSize: 15,
-                outline: 'none', fontFamily: 'inherit',
-                boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-              }}
-            />
-            <button type="submit" style={{
-              padding: '14px 28px', borderRadius: 10,
-              background: '#6366f1', color: 'white',
-              fontWeight: 700, fontSize: 15, border: 'none', cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              boxShadow: '0 4px 16px rgba(99,102,241,0.35)',
-            }}>
-              Scan my site free →
-            </button>
-          </form>
-        )}
-
-        {/* Error */}
-        {stage === 'error' && (
-          <div style={{ maxWidth: 520 }}>
-            <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 10, padding: '14px 18px', color: '#dc2626', marginBottom: 14, fontSize: 14 }}>
-              {error}
-            </div>
-            <button onClick={() => setStage('idle')} style={{ padding: '12px 24px', borderRadius: 10, background: '#6366f1', color: 'white', fontWeight: 600, fontSize: 14, border: 'none', cursor: 'pointer' }}>
-              Try again
-            </button>
+            ))}
           </div>
-        )}
 
-        {/* Scanning */}
-        {stage === 'scanning' && (
-          <div style={{ maxWidth: 500 }}>
-            <div style={{ background: '#f8f8ff', border: '1.5px solid #e0e0f0', borderRadius: 14, padding: '28px 32px' }}>
-              <div style={{ fontSize: 13, color: '#64648a', marginBottom: 14, fontWeight: 500 }}>
+          {/* CTA — scan form */}
+          {stage === 'idle' && (
+            <form onSubmit={handleScan} style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              <input
+                ref={inputRef}
+                value={url}
+                onChange={e => setUrl(e.target.value)}
+                placeholder="yourwebsite.com"
+                style={{
+                  flex: 1, minWidth: 200,
+                  padding: '14px 20px', borderRadius: 10,
+                  border: '1.5px solid #d0d0e0',
+                  background: '#ffffff', color: '#0a0a14', fontSize: 15,
+                  outline: 'none', fontFamily: 'inherit',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+                }}
+              />
+              <button type="submit" style={{
+                padding: '14px 28px', borderRadius: 10,
+                background: '#6366f1', color: 'white',
+                fontWeight: 700, fontSize: 15, border: 'none', cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                boxShadow: '0 4px 16px rgba(99,102,241,0.35)',
+              }}>
+                Scan my site free →
+              </button>
+            </form>
+          )}
+
+          {/* Error */}
+          {stage === 'error' && (
+            <div>
+              <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 10, padding: '14px 18px', color: '#dc2626', marginBottom: 14, fontSize: 14 }}>
+                {error}
+              </div>
+              <button onClick={() => setStage('idle')} style={{ padding: '12px 24px', borderRadius: 10, background: '#6366f1', color: 'white', fontWeight: 600, fontSize: 14, border: 'none', cursor: 'pointer' }}>
+                Try again
+              </button>
+            </div>
+          )}
+
+          {/* Scanning */}
+          {stage === 'scanning' && (
+            <div style={{ background: '#f8f8ff', border: '1.5px solid #e0e0f0', borderRadius: 14, padding: '24px 28px' }}>
+              <div style={{ fontSize: 13, color: '#64648a', marginBottom: 12, fontWeight: 500 }}>
                 Scanning <strong style={{ color: '#6366f1' }}>{url}</strong>
               </div>
-              <div style={{ background: '#e8e8f8', borderRadius: 8, height: 8, overflow: 'hidden', marginBottom: 14 }}>
+              <div style={{ background: '#e8e8f8', borderRadius: 8, height: 8, overflow: 'hidden', marginBottom: 12 }}>
                 <div style={{
                   height: '100%', borderRadius: 8,
                   background: 'linear-gradient(90deg, #6366f1, #a78bfa)',
@@ -228,7 +229,7 @@ export function LandingPage({ onScanComplete }) {
                   boxShadow: '0 0 8px rgba(99,102,241,0.4)',
                 }} />
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: '#9898b8', marginBottom: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: '#9898b8', marginBottom: 16 }}>
                 <div style={{ width: 13, height: 13, border: '2px solid #c7c7e0', borderTopColor: '#6366f1', borderRadius: '50%', animation: 'spin 0.65s linear infinite', flexShrink: 0 }} />
                 {statusText}
               </div>
@@ -246,12 +247,18 @@ export function LandingPage({ onScanComplete }) {
                 ))}
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        <p style={{ fontSize: 12, color: '#b0b0c8', marginTop: 18 }}>
-          Free scan · No credit card · Results in ~60 seconds
-        </p>
+          <p style={{ fontSize: 12, color: '#b0b0c8', marginTop: 16 }}>
+            Free scan · No credit card · Results in ~60 seconds
+          </p>
+        </div>
+
+        {/* ── RIGHT: animated illustration ── */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <HeroAnimation />
+        </div>
+
       </div>
 
       {/* ── AI agents strip ── */}
@@ -342,7 +349,209 @@ export function LandingPage({ onScanComplete }) {
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         * { box-sizing: border-box; }
+
+        /* Hero animation keyframes */
+        @keyframes fadeSlideUp {
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse-dot {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50%       { opacity: 0.4; transform: scale(0.75); }
+        }
+        @keyframes flow-line {
+          0%   { stroke-dashoffset: 60; opacity: 0.2; }
+          50%  { opacity: 1; }
+          100% { stroke-dashoffset: 0; opacity: 0.2; }
+        }
+        @keyframes score-ring-fill {
+          from { stroke-dasharray: 0 220; }
+          to   { stroke-dasharray: 154 220; }
+        }
+        @keyframes score-count {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+        }
+        @keyframes ai-pass {
+          0%   { opacity: 0.2; transform: scaleX(0.3); }
+          50%  { opacity: 1;   transform: scaleX(1); }
+          100% { opacity: 0.2; transform: scaleX(0.3); }
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50%       { transform: translateY(-8px); }
+        }
+        @keyframes crawl-blink {
+          0%, 49% { opacity: 1; }
+          50%, 100% { opacity: 0; }
+        }
+
+        /* Responsive hero grid */
+        @media (max-width: 860px) {
+          .hero-grid { grid-template-columns: 1fr !important; }
+          .hero-animation { display: none !important; }
+        }
       `}</style>
+    </div>
+  )
+}
+
+// ── Hero animation ─────────────────────────────────────────────────────────────
+function HeroAnimation() {
+  return (
+    <div className="hero-animation" style={{
+      width: 420, height: 480,
+      position: 'relative',
+      animation: 'float 5s ease-in-out infinite',
+    }}>
+      {/* Card background */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'linear-gradient(145deg, #f0f0ff 0%, #fafaff 60%, #eef0ff 100%)',
+        borderRadius: 28,
+        border: '1.5px solid #ddddf5',
+        boxShadow: '0 20px 60px rgba(99,102,241,0.12), 0 4px 20px rgba(0,0,0,0.06)',
+        overflow: 'hidden',
+      }}>
+        {/* Decorative top gradient bar */}
+        <div style={{ height: 4, background: 'linear-gradient(90deg, #6366f1, #a78bfa, #60a5fa)', borderRadius: '28px 28px 0 0' }} />
+      </div>
+
+      {/* Content layers */}
+      <div style={{ position: 'relative', zIndex: 1, padding: '28px 28px 24px', display: 'flex', flexDirection: 'column', height: '100%' }}>
+
+        {/* ── Step 1: Website URL ── */}
+        <AnimStep delay={0} label="01" title="Your website">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#ffffff', border: '1.5px solid #e0e0f0', borderRadius: 10, padding: '10px 14px' }}>
+            <div style={{ width: 28, height: 20, background: '#e8e8ff', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <div style={{ width: 12, height: 2, background: '#6366f1', borderRadius: 2 }} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#0a0a14', letterSpacing: '-0.2px' }}>yourwebsite.com</div>
+              <div style={{ fontSize: 10, color: '#a0a0c0', marginTop: 2, display: 'flex', gap: 6 }}>
+                <span>12 pages</span>
+                <span>·</span>
+                <span>4.2k words</span>
+              </div>
+            </div>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 0 3px #10b98120' }} />
+          </div>
+        </AnimStep>
+
+        {/* Connector arrow */}
+        <FlowArrow delay={0.5} />
+
+        {/* ── Step 2: AI pipeline ── */}
+        <AnimStep delay={0.7} label="02" title="AI pipeline · 4 passes">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+            {[
+              { label: 'Content extraction', color: '#818cf8', delay: 0.9 },
+              { label: 'Capability mapping',  color: '#60a5fa', delay: 1.2 },
+              { label: 'Structure analysis',  color: '#a78bfa', delay: 1.5 },
+              { label: 'Intent classification', color: '#34d399', delay: 1.8 },
+            ].map(({ label, color, delay }) => (
+              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: color, animation: `pulse-dot 1.8s ease-in-out ${delay}s infinite`, flexShrink: 0 }} />
+                <div style={{ flex: 1, height: 5, borderRadius: 3, background: '#e8e8f8', overflow: 'hidden' }}>
+                  <div style={{
+                    height: '100%', borderRadius: 3,
+                    background: `linear-gradient(90deg, ${color}80, ${color})`,
+                    animation: `ai-pass 1.8s ease-in-out ${delay}s infinite`,
+                    transformOrigin: 'left',
+                  }} />
+                </div>
+                <div style={{ fontSize: 10, color: '#9898b8', minWidth: 110, fontWeight: 500 }}>{label}</div>
+              </div>
+            ))}
+          </div>
+        </AnimStep>
+
+        {/* Connector arrow */}
+        <FlowArrow delay={2.0} />
+
+        {/* ── Step 3: Score result ── */}
+        <AnimStep delay={2.2} label="03" title="AI Readiness Score">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, background: '#ffffff', border: '1.5px solid #e0e0f0', borderRadius: 12, padding: '12px 16px' }}>
+            {/* Mini score ring */}
+            <div style={{ position: 'relative', width: 56, height: 56, flexShrink: 0 }}>
+              <svg width={56} height={56} style={{ transform: 'rotate(-90deg)' }}>
+                <circle cx={28} cy={28} r={22} fill="none" stroke="#e8e8f5" strokeWidth={6} />
+                <circle cx={28} cy={28} r={22} fill="none" stroke="#6366f1" strokeWidth={6}
+                  strokeLinecap="round"
+                  style={{ animation: 'score-ring-fill 1.2s ease-out 2.4s both', strokeDasharray: '0 138' }}
+                />
+              </svg>
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', animation: 'score-count 0.4s ease-out 3.4s both', opacity: 0 }}>
+                <span style={{ fontSize: 13, fontWeight: 800, color: '#6366f1', lineHeight: 1 }}>78</span>
+                <span style={{ fontSize: 9, color: '#9898b8' }}>B+</span>
+              </div>
+            </div>
+            {/* Score details */}
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 7 }}>Ready for AI</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {[
+                  { d: 'Content', v: 85, c: '#818cf8' },
+                  { d: 'Structure', v: 72, c: '#60a5fa' },
+                  { d: 'WebMCP', v: 40, c: '#f59e0b' },
+                ].map(({ d, v, c }) => (
+                  <div key={d} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <div style={{ fontSize: 9, color: '#a0a0c0', width: 46 }}>{d}</div>
+                    <div style={{ flex: 1, height: 4, background: '#e8e8f5', borderRadius: 2, overflow: 'hidden' }}>
+                      <div style={{ height: '100%', background: c, borderRadius: 2, width: `${v}%`, transition: 'width 0.8s ease 3s' }} />
+                    </div>
+                    <div style={{ fontSize: 9, color: '#9898b8', width: 18, textAlign: 'right' }}>{v}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </AnimStep>
+
+        {/* Bottom badge */}
+        <div style={{
+          marginTop: 'auto', paddingTop: 16,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+          animation: 'fadeSlideUp 0.5s ease-out 3.8s both', opacity: 0,
+        }}>
+          <div style={{ display: 'flex', gap: 4 }}>
+            {['ChatGPT', 'Claude', 'Perplexity'].map(name => (
+              <span key={name} style={{ fontSize: 9, background: '#6366f110', border: '1px solid #6366f130', color: '#6366f1', padding: '3px 8px', borderRadius: 20, fontWeight: 700 }}>
+                {name} ✓
+              </span>
+            ))}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  )
+}
+
+function AnimStep({ delay, label, title, children }) {
+  return (
+    <div style={{ animation: `fadeSlideUp 0.45s ease-out ${delay}s both`, opacity: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 9 }}>
+        <div style={{ width: 20, height: 20, borderRadius: 6, background: 'linear-gradient(135deg, #6366f1, #818cf8)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <span style={{ fontSize: 9, fontWeight: 800, color: 'white' }}>{label}</span>
+        </div>
+        <span style={{ fontSize: 11, fontWeight: 700, color: '#4a4a7a', textTransform: 'uppercase', letterSpacing: '0.8px' }}>{title}</span>
+      </div>
+      {children}
+    </div>
+  )
+}
+
+function FlowArrow({ delay }) {
+  return (
+    <div style={{
+      display: 'flex', justifyContent: 'center', alignItems: 'center',
+      padding: '6px 0', animation: `fadeSlideUp 0.3s ease-out ${delay}s both`, opacity: 0,
+    }}>
+      <svg width={24} height={20} viewBox="0 0 24 20" fill="none">
+        <line x1={12} y1={0} x2={12} y2={14} stroke="#c0c0e0" strokeWidth={1.5} strokeDasharray="3 2" />
+        <polyline points="6,12 12,18 18,12" stroke="#c0c0e0" strokeWidth={1.5} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
     </div>
   )
 }
