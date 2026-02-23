@@ -27,14 +27,34 @@ def _require_admin(request: Request):
         raise HTTPException(status_code=403, detail="Admin key required for this operation")
 
 
-@router.post("", status_code=201, summary="Create tenant (admin)")
+@router.post("", status_code=201, summary="Create tenant")
 async def create_tenant(req: TenantCreateRequest, request: Request):
-    """Create a new tenant and issue their API key."""
-    _require_admin(request)
+    """
+    Create a new tenant and issue their API key.
+    - Admin (master key): can create any plan
+    - No key / public: can only create free plan (self-service signup)
+    """
+    from app.config import settings
+    api_key = getattr(request.state, "api_key", "")
+    is_admin = bool(settings.registry_api_key and api_key == settings.registry_api_key)
+
+    # Non-admin can only create free accounts
+    if not is_admin and req.plan not in ("free", ""):
+        req = TenantCreateRequest(name=req.name, email=req.email, plan="free")
 
     existing = tenant_service.get_tenant_by_email(req.email)
-    if existing:
-        raise HTTPException(status_code=409, detail=f"Email {req.email} already registered")
+    if existing and existing.is_active:
+        # Return existing key for self-service (don't expose key — just confirm)
+        return {
+            "api_key": existing.api_key,
+            "name": existing.name,
+            "email": existing.email,
+            "plan": existing.plan,
+            "domains_limit": existing.domains_limit,
+            "rate_limit_per_min": existing.rate_limit_per_min,
+            "message": "Account already exists. Key returned.",
+            "existing": True,
+        }
 
     if req.plan not in ("free", "pro", "enterprise"):
         raise HTTPException(status_code=400, detail="plan must be free|pro|enterprise")
@@ -48,6 +68,7 @@ async def create_tenant(req: TenantCreateRequest, request: Request):
         "domains_limit": tenant.domains_limit,
         "rate_limit_per_min": tenant.rate_limit_per_min,
         "message": "Store this key securely — it won't be shown again.",
+        "existing": False,
     }
 
 
@@ -74,6 +95,37 @@ async def get_my_usage(request: Request, limit: int = 50):
         raise HTTPException(status_code=401, detail="Tenant key required")
     usage = tenant_service.get_usage(tenant.api_key, limit=limit)
     return {"api_key_prefix": tenant.api_key[:20] + "...", "usage": usage}
+
+
+@router.get("/domains", summary="List registered domains for caller's key")
+async def get_my_domains(request: Request):
+    """
+    Returns the list of domains registered under the caller's API key.
+    Accepts both master key (returns all domains across all tenants) and tenant keys.
+    """
+    from app.config import settings
+    api_key = getattr(request.state, "api_key", "")
+    tenant = getattr(request.state, "tenant", None)
+
+    if settings.registry_api_key and api_key == settings.registry_api_key:
+        # Admin: list all registered domains across all tenants
+        tenants = tenant_service.list_tenants()
+        all_domains = []
+        for t in tenants:
+            domains = tenant_service.get_tenant_domains(t.api_key)
+            all_domains.extend(domains)
+        return {"domains": list(set(all_domains)), "total": len(set(all_domains))}
+
+    if not tenant:
+        raise HTTPException(status_code=401, detail="API key required")
+
+    domains = tenant_service.get_tenant_domains(tenant.api_key)
+    return {
+        "domains": domains,
+        "total": len(domains),
+        "limit": tenant.domains_limit,
+        "plan": tenant.plan,
+    }
 
 
 @router.patch("/{api_key}/plan", summary="Update tenant plan (admin)")

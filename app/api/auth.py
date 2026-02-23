@@ -17,6 +17,8 @@ logger = logging.getLogger(__name__)
 
 PUBLIC_EXACT = {"/health", "/docs", "/redoc", "/openapi.json", "/docs/oauth2-redirect", "/", "/galui.js"}
 PUBLIC_PREFIXES = ("/registry/", "/dashboard", "/assets/", "/dashboard/assets/")  # Registry + SPA files always public
+# Self-service signup: POST /api/v1/tenants is public (creates free accounts)
+PUBLIC_POST_EXACT = {"/api/v1/tenants"}
 
 # Endpoints that accept tenant keys (ingest, jobs)
 TENANT_ENDPOINTS = ("/api/v1/ingest", "/api/v1/jobs")
@@ -37,6 +39,9 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
         if path in PUBLIC_EXACT:
             return await call_next(request)
         if any(path.startswith(p) for p in PUBLIC_PREFIXES):
+            return await call_next(request)
+        # Self-service POST endpoints (no key needed)
+        if request.method == "POST" and path in PUBLIC_POST_EXACT:
             return await call_next(request)
 
         # No auth configured → open (dev mode)

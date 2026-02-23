@@ -113,77 +113,84 @@ function EmptyState({ icon, title, description, action }) {
 
 // ── Nav ─────────────────────────────────────────────────────────────────────
 const NAV_LINKS = [
-  { id: 'overview',   label: 'Overview',   icon: '◎' },
-  { id: 'ingest',     label: 'Index a Site', icon: '↓' },
-  { id: 'score',      label: 'AI Score',   icon: '◈' },
-  { id: 'analytics',  label: 'Analytics',  icon: '◉' },
-  { id: 'registries', label: 'Registries', icon: '▦' },
-  { id: 'snippet',    label: 'Snippet',    icon: '</>' },
-  { id: 'tenants',    label: 'Tenants',    icon: '⊞' },
-  { id: 'settings',   label: 'Settings',   icon: '⚙' },
+  { id: 'overview',  label: 'Overview'  },
+  { id: 'score',     label: 'AI Score'  },
+  { id: 'analytics', label: 'Analytics' },
+  { id: 'snippet',   label: 'Snippet'   },
+  { id: 'settings',  label: 'Settings'  },
 ]
 
-function Nav({ page, setPage, health }) {
+function Nav({ page, setPage, health, theme, toggleTheme }) {
   return (
     <nav style={{
       background: 'var(--surface)', borderBottom: '1px solid var(--border)',
-      padding: '0 24px', display: 'flex', alignItems: 'center', gap: 2,
-      height: 54, position: 'sticky', top: 0, zIndex: 100,
+      padding: '0 20px', display: 'flex', alignItems: 'center', gap: 2,
+      height: 52, position: 'sticky', top: 0, zIndex: 100,
       boxShadow: '0 1px 0 var(--border)',
     }}>
       {/* Logo */}
-      <div style={{
-        fontWeight: 800, fontSize: 16, color: 'var(--accent2)',
-        letterSpacing: '-0.5px', marginRight: 20, flexShrink: 0,
-        display: 'flex', alignItems: 'center', gap: 8,
+      <a href="/" style={{
+        fontWeight: 800, fontSize: 16, color: 'var(--accent)',
+        letterSpacing: '-0.5px', marginRight: 24, flexShrink: 0,
+        display: 'flex', alignItems: 'center', gap: 7,
+        textDecoration: 'none',
       }}>
-        <span style={{ fontSize: 18 }}>⬡</span> galui
-      </div>
+        <span>⬡</span> galui
+      </a>
 
       {/* Links */}
-      <div style={{ display: 'flex', gap: 2, flex: 1, overflowX: 'auto' }}>
+      <div style={{ display: 'flex', gap: 1, flex: 1, overflowX: 'auto' }}>
         {NAV_LINKS.map(l => (
           <button key={l.id} onClick={() => setPage(l.id)} style={{
             background: page === l.id ? 'var(--border)' : 'none',
             color: page === l.id ? 'var(--text)' : 'var(--muted)',
-            padding: '5px 12px', borderRadius: 7,
+            padding: '6px 14px', borderRadius: 7,
             fontWeight: page === l.id ? 600 : 400,
             fontSize: 13, whiteSpace: 'nowrap', flexShrink: 0,
-            transition: 'all 0.15s',
+            transition: 'color 0.12s, background 0.12s',
           }}>{l.label}</button>
         ))}
       </div>
 
-      {/* Status indicators */}
-      {health && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0, marginLeft: 8 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--muted)' }}>
+      {/* Right: status + theme toggle */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0, marginLeft: 8 }}>
+        {health && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--muted)' }}>
             <span className={`dot dot-${health.anthropic_configured ? 'green' : 'red'}`} />
-            <span>AI {health.anthropic_configured ? 'ready' : 'offline'}</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--muted)' }}>
-            <span className="dot dot-green" />
             <span>{health.registries_indexed} site{health.registries_indexed !== 1 ? 's' : ''}</span>
           </div>
-        </div>
-      )}
+        )}
+        {/* Dark / Light toggle */}
+        <button
+          onClick={toggleTheme}
+          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          style={{
+            width: 32, height: 32, borderRadius: 8,
+            background: 'var(--surface2)', border: '1px solid var(--border2)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 15, color: 'var(--muted)', cursor: 'pointer',
+            transition: 'background 0.15s, color 0.15s',
+          }}
+        >
+          {theme === 'dark' ? '☀' : '🌙'}
+        </button>
+      </div>
     </nav>
   )
 }
 
 // ── Overview ─────────────────────────────────────────────────────────────────
 function OverviewPage({ setPage }) {
-  const [health, setHealth] = useState(null)
   const [registries, setRegistries] = useState([])
   const [scores, setScores] = useState({})
   const [loading, setLoading] = useState(true)
+  const [scanUrl, setScanUrl] = useState('')
+  const [scanning, setScanning] = useState(false)
 
   useEffect(() => {
     Promise.all([
-      api.health().catch(() => null),
       api.listRegistries().catch(() => ({ registries: [] })),
-    ]).then(([h, r]) => {
-      setHealth(h)
+    ]).then(([r]) => {
       const regs = r?.registries || []
       setRegistries(regs)
       regs.forEach(reg => {
@@ -194,147 +201,125 @@ function OverviewPage({ setPage }) {
     }).finally(() => setLoading(false))
   }, [])
 
-  const hasData = registries.length > 0
+  const handleScan = async (e) => {
+    e.preventDefault()
+    if (!scanUrl.trim()) return
+    setScanning(true)
+    try {
+      const res = await api.ingest(scanUrl.trim(), false)
+      toast.info(`Scanning ${res.domain}… check AI Score tab in ~60s`)
+      setScanUrl('')
+    } catch (err) {
+      toast.error(err.message)
+    } finally {
+      setScanning(false)
+    }
+  }
 
   if (loading) return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 48, color: 'var(--muted)' }}>
+    <div className="flex center gap-12" style={{ padding: 48, color: 'var(--muted)' }}>
       <span className="spinner" /> Loading…
     </div>
   )
 
-  return (
-    <div className="flex col gap-24">
-      <PageHeader
-        title="Overview"
-        subtitle="Your AI readability hub — see how visible your sites are to AI agents."
-      />
+  const hasData = registries.length > 0
+  const scores_arr = Object.values(scores)
+  const avgScore = scores_arr.length > 0
+    ? Math.round(scores_arr.reduce((a, b) => a + b.total, 0) / scores_arr.length)
+    : null
 
-      {/* Empty state hero */}
-      {!hasData && (
-        <div className="card" style={{
-          borderColor: 'var(--accent)', borderWidth: 1,
-          background: 'linear-gradient(135deg, #0f0f1a 0%, #13102a 100%)',
-          padding: '40px 36px',
-        }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 20 }}>
-            <div style={{ fontSize: 48, lineHeight: 1 }}>🚀</div>
-            <div>
-              <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 12 }}>
-                Make your first site AI-readable
-              </h2>
-              <p style={{ color: 'var(--muted)', fontSize: 14, maxWidth: 540, lineHeight: 1.8 }}>
-                Enter any URL below. Galui crawls every page, runs a 4-pass AI pipeline, extracts your site's capabilities,
-                and generates an <strong style={{ color: 'var(--text)' }}>AI Readiness Score (0–100)</strong> — in under 2 minutes. Free, no credit card.
-              </p>
+  return (
+    <div className="flex col gap-20">
+      <PageHeader title="Overview" subtitle="Your AI readability dashboard" />
+
+      {/* Quick scan */}
+      <div className="card" style={{ padding: '20px 24px' }}>
+        <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 12 }}>Scan a site</div>
+        <form onSubmit={handleScan} style={{ display: 'flex', gap: 8 }}>
+          <input
+            value={scanUrl}
+            onChange={e => setScanUrl(e.target.value)}
+            placeholder="https://yoursite.com"
+            style={{ flex: 1 }}
+            disabled={scanning}
+          />
+          <button className="btn btn-primary" disabled={scanning || !scanUrl.trim()} style={{ flexShrink: 0, minWidth: 100 }}>
+            {scanning ? <><span className="spinner" style={{ width: 14, height: 14 }} /> Scanning…</> : 'Scan →'}
+          </button>
+        </form>
+        <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 8 }}>
+          Free · Results appear in AI Score tab in ~60 seconds
+        </p>
+      </div>
+
+      {/* Stats row */}
+      {hasData && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 12 }}>
+          {[
+            { label: 'Sites indexed', value: registries.length, color: 'var(--accent)' },
+            { label: 'Avg AI score',  value: avgScore !== null ? `${avgScore}/100` : '—', color: avgScore >= 70 ? 'var(--green)' : avgScore >= 50 ? 'var(--yellow)' : 'var(--red)' },
+            { label: 'WebMCP sites',  value: scores_arr.filter(s => s?.dimensions?.webmcp_compliance?.webmcp_enabled).length, color: 'var(--purple)' },
+          ].map(c => (
+            <div key={c.label} className="stat-card">
+              <div className="stat-value" style={{ color: c.color, fontSize: 26 }}>{c.value}</div>
+              <div className="stat-label">{c.label}</div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, maxWidth: 560, width: '100%' }}>
-              {[
-                { icon: '📊', label: 'AI Readiness Score', sub: '0–100 across 5 dimensions' },
-                { icon: '🔍', label: 'Capabilities extracted', sub: 'What AI agents will know' },
-                { icon: '💡', label: 'Improvement plan', sub: 'Specific fixes, ranked by impact' },
-              ].map(({ icon, label, sub }) => (
-                <div key={label} style={{ background: '#0a0a18', border: '1px solid var(--border2)', borderRadius: 10, padding: '14px 12px', textAlign: 'center' }}>
-                  <div style={{ fontSize: 22, marginBottom: 6 }}>{icon}</div>
-                  <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 3 }}>{label}</div>
-                  <div style={{ fontSize: 11, color: 'var(--muted)' }}>{sub}</div>
-                </div>
-              ))}
-            </div>
-            <button
-              className="btn btn-primary"
-              style={{ fontSize: 14, padding: '12px 32px' }}
-              onClick={() => setPage('ingest')}
-            >
-              Index your first site →
-            </button>
-          </div>
+          ))}
         </div>
       )}
 
-      {/* Indexed sites */}
+      {/* Sites list */}
       {hasData && (
-        <>
-          <div>
-            <div className="flex between center" style={{ marginBottom: 14 }}>
-              <h2 style={{ fontSize: 16, fontWeight: 700 }}>Your indexed sites</h2>
-              <button className="btn btn-primary btn-sm" onClick={() => setPage('ingest')}>
-                + Index another site
-              </button>
-            </div>
-            <div className="flex col gap-12">
-              {registries.map(r => {
-                const s = scores[r.domain]
-                return (
-                  <div key={r.domain} className="card" style={{ padding: '16px 20px' }}>
-                    <div className="flex center gap-20 wrap">
-                      {s
-                        ? <ScoreRing score={s.total} size={68} />
-                        : <div style={{ width: 68, height: 68, borderRadius: '50%', background: 'var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span className="spinner" /></div>
-                      }
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text)', marginBottom: 4 }}>
-                          {r.domain}
-                        </div>
-                        {s ? (
-                          <>
-                            <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 6 }}>
-                              Grade <strong style={{ color: s.total >= 70 ? 'var(--green)' : s.total >= 50 ? 'var(--yellow)' : 'var(--red)' }}>{s.grade}</strong>
-                              {' · '}{s.total}/100{' · '}{s.label}
-                            </div>
-                            {s.suggestions?.[0] && (
-                              <div style={{ fontSize: 12, color: 'var(--yellow)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                                <span>💡</span> {s.suggestions[0].issue}
-                              </div>
-                            )}
-                          </>
-                        ) : (
-                          <div style={{ fontSize: 13, color: 'var(--muted)' }}>Loading score…</div>
-                        )}
-                      </div>
-                      <div className="flex gap-8 wrap" style={{ flexShrink: 0 }}>
-                        <button className="btn btn-ghost btn-sm" onClick={() => setPage('score')}>Score →</button>
-                        <button className="btn btn-ghost btn-sm" onClick={() => setPage('analytics')}>Analytics →</button>
-                        <button className="btn btn-ghost btn-sm" onClick={() => setPage('snippet')}>Install →</button>
-                      </div>
-                    </div>
+        <div className="flex col gap-2">
+          <div className="flex between center" style={{ marginBottom: 8 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--subtle)' }}>Indexed sites</span>
+            <button className="btn btn-ghost btn-sm" onClick={() => setPage('registries')}>View all →</button>
+          </div>
+          {registries.map(r => {
+            const s = scores[r.domain]
+            const scoreColor = s ? (s.total >= 70 ? 'var(--green)' : s.total >= 50 ? 'var(--yellow)' : 'var(--red)') : 'var(--muted)'
+            return (
+              <div key={r.domain} className="card" style={{ padding: '14px 18px' }}>
+                <div className="flex center gap-16 wrap">
+                  {s ? <ScoreRing score={s.total} size={56} /> : <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span className="spinner" style={{ width: 16, height: 16 }} /></div>}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 2 }}>{r.domain}</div>
+                    {s && <div style={{ fontSize: 12, color: scoreColor }}>{s.label} · {s.total}/100 · Grade {s.grade}</div>}
+                    {s?.suggestions?.[0] && <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 3 }}>💡 {s.suggestions[0].issue}</div>}
                   </div>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
-            {[
-              { label: 'Sites indexed',       value: registries.length,                          color: 'var(--accent2)' },
-              { label: 'AI traffic domains',  value: health?.domains_with_ai_traffic ?? 0,        color: 'var(--blue)'    },
-              { label: 'Avg score',           value: scores && Object.values(scores).length > 0 ? Math.round(Object.values(scores).reduce((a,b) => a + b.total, 0) / Object.values(scores).length) + '/100' : '—', color: 'var(--green)' },
-              { label: 'WebMCP enabled',      value: Object.values(scores).filter(s => s?.dimensions?.webmcp_compliance?.webmcp_enabled).length, color: 'var(--purple)' },
-            ].map(c => (
-              <div key={c.label} className="stat-card">
-                <div className="stat-value" style={{ color: c.color }}>{c.value}</div>
-                <div className="stat-label">{c.label}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* Snippet CTA */}
-          <div className="card" style={{ background: 'var(--surface2)', border: '1px solid var(--border2)' }}>
-            <div className="flex between center wrap gap-16">
-              <div>
-                <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>
-                  Unlock real-time AI traffic analytics
-                </div>
-                <div style={{ color: 'var(--muted)', fontSize: 13 }}>
-                  Install one script tag → track every AI agent that visits your site + WebMCP auto-registration.
+                  <div className="flex gap-6 wrap" style={{ flexShrink: 0 }}>
+                    <button className="btn btn-ghost btn-sm" onClick={() => setPage('score')}>Score</button>
+                    <button className="btn btn-ghost btn-sm" onClick={() => setPage('analytics')}>Analytics</button>
+                    <button className="btn btn-ghost btn-sm" onClick={() => setPage('snippet')}>Install</button>
+                  </div>
                 </div>
               </div>
-              <button className="btn btn-primary btn-sm" onClick={() => setPage('snippet')}>
-                View install guide →
-              </button>
-            </div>
+            )
+          })}
+        </div>
+      )}
+
+      {/* Empty state */}
+      {!hasData && (
+        <div className="card" style={{ padding: '40px 32px', textAlign: 'center' }}>
+          <div style={{ fontSize: 40, marginBottom: 16 }}>🚀</div>
+          <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 8 }}>Scan your first site</div>
+          <div style={{ color: 'var(--muted)', fontSize: 13, maxWidth: 420, margin: '0 auto 20px', lineHeight: 1.7 }}>
+            Enter any URL above. We crawl every page, run a 4-pass AI analysis, and give you an AI Readiness Score in under 2 minutes.
           </div>
-        </>
+          <button className="btn btn-primary" onClick={() => setPage('snippet')}>View install guide →</button>
+        </div>
+      )}
+
+      {/* Snippet CTA — only if no snippet yet */}
+      {hasData && scores_arr.every(s => !s?.dimensions?.webmcp_compliance?.webmcp_enabled) && (
+        <div className="card flex between center wrap gap-16" style={{ background: 'var(--surface2)', border: '1px solid var(--border2)', padding: '16px 20px' }}>
+          <div>
+            <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 3 }}>Snippet not installed</div>
+            <div style={{ color: 'var(--muted)', fontSize: 12 }}>Add one script tag to unlock live AI agent tracking + WebMCP.</div>
+          </div>
+          <button className="btn btn-primary btn-sm" onClick={() => setPage('snippet')}>Get install code →</button>
+        </div>
       )}
     </div>
   )
@@ -977,104 +962,172 @@ function AnalyticsPage({ setPage }) {
 
 // ── Snippet ───────────────────────────────────────────────────────────────────
 function SnippetPage() {
-  const apiKey = localStorage.getItem('galui_api_key') || 'YOUR_KEY'
-  const snippetTag = `<script src="${api.base()}/galui.js?key=${apiKey}" async></script>`
-  const debugTag = `<script src="${api.base()}/galui.js?key=${apiKey}&debug=1" async></script>`
+  const [tenants, setTenants] = useState([])
+  const [selectedKey, setSelectedKey] = useState(localStorage.getItem('galui_api_key') || '')
+  const [domains, setDomains] = useState([])
+  const [creatingTenant, setCreatingTenant] = useState(false)
+  const [newForm, setNewForm] = useState({ name: '', email: '' })
+
+  useEffect(() => {
+    api.listTenants().then(r => {
+      const list = r.tenants || []
+      setTenants(list)
+      // Auto-select first key if none set
+      if (!selectedKey && list.length > 0) setSelectedKey(list[0].api_key)
+    }).catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    if (!selectedKey) return
+    // Fetch domains for the currently selected key
+    fetch(`${api.base()}/api/v1/tenants/domains`, {
+      headers: { 'X-API-Key': selectedKey, 'Content-Type': 'application/json' },
+    }).then(r => r.ok ? r.json() : { domains: [] })
+      .then(d => setDomains(d.domains || []))
+      .catch(() => setDomains([]))
+  }, [selectedKey])
+
+  const handleCreateTenant = async (e) => {
+    e.preventDefault()
+    setCreatingTenant(true)
+    try {
+      const res = await api.createTenant(newForm.name, newForm.email, 'free')
+      toast.success('Key created!')
+      setSelectedKey(res.api_key)
+      localStorage.setItem('galui_api_key', res.api_key)
+      setNewForm({ name: '', email: '' })
+      const r = await api.listTenants()
+      setTenants(r.tenants || [])
+    } catch (err) {
+      toast.error(err.message)
+    } finally {
+      setCreatingTenant(false)
+    }
+  }
+
+  const activeKey = selectedKey || 'YOUR_KEY'
+  const snippetTag = `<script src="${api.base()}/galui.js?key=${activeKey}" async></script>`
+  const debugTag   = `<script src="${api.base()}/galui.js?key=${activeKey}&debug=1" async></script>`
 
   return (
-    <div className="flex col gap-24" style={{ maxWidth: 760 }}>
+    <div className="flex col gap-20" style={{ maxWidth: 760 }}>
       <PageHeader
         title="Install the Snippet"
-        subtitle="One script tag. Your site becomes AI-readable, WebMCP-compliant, and analytics-enabled."
+        subtitle="One script tag. Your site becomes AI-readable, WebMCP-compliant, and fully tracked."
       />
 
-      {/* Step 1 */}
+      {/* ── Step 1: Get your key ── */}
       <div className="card flex col gap-16">
-        <div className="flex center gap-14">
-          <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--accent)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 13, flexShrink: 0 }}>1</div>
-          <div>
-            <div style={{ fontWeight: 700, fontSize: 14 }}>Add the script to your site's <code>&lt;head&gt;</code></div>
-            <div style={{ color: 'var(--muted)', fontSize: 12, marginTop: 2 }}>Works on any site — WordPress, Webflow, custom HTML, React, anything.</div>
-          </div>
-        </div>
+        <div style={{ fontWeight: 700, fontSize: 14 }}>Step 1 — Your API key</div>
+
+        {tenants.length > 0 ? (
+          <>
+            <div>
+              <label className="label">Select key</label>
+              <select value={selectedKey} onChange={e => { setSelectedKey(e.target.value); localStorage.setItem('galui_api_key', e.target.value) }}>
+                {tenants.map(t => (
+                  <option key={t.api_key} value={t.api_key}>{t.email} — {t.plan} plan</option>
+                ))}
+              </select>
+            </div>
+            <div style={{ background: 'var(--surface2)', border: '1px solid var(--border2)', borderRadius: 8, padding: '10px 14px', fontFamily: 'monospace', fontSize: 12, color: 'var(--accent2)', wordBreak: 'break-all', position: 'relative' }}>
+              {selectedKey}
+              <div style={{ position: 'absolute', top: 6, right: 8 }}><CopyBtn text={selectedKey} label="Copy key" /></div>
+            </div>
+            {/* Registered domains */}
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted)', marginBottom: 8 }}>
+                Domains using this key {domains.length > 0 ? `(${domains.length})` : '— none yet'}
+              </div>
+              {domains.length > 0 ? (
+                <div className="flex col gap-4">
+                  {domains.map(d => (
+                    <div key={d} className="flex center gap-8" style={{ fontSize: 12, padding: '5px 10px', background: 'var(--surface2)', borderRadius: 6, border: '1px solid var(--border)' }}>
+                      <span className="dot dot-green" style={{ width: 6, height: 6 }} />
+                      <span style={{ color: 'var(--text)', fontFamily: 'monospace' }}>{d}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+                  Domains register automatically the first time the snippet runs on that site.
+                </div>
+              )}
+            </div>
+          </>
+        ) : (
+          <>
+            <div style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.6 }}>
+              You need an API key to activate the snippet. Create one below — it's free.
+            </div>
+            <form onSubmit={handleCreateTenant} className="flex col gap-12">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                <div>
+                  <label className="label">Your name</label>
+                  <input value={newForm.name} onChange={e => setNewForm(f => ({ ...f, name: e.target.value }))} placeholder="Jane Smith" required />
+                </div>
+                <div>
+                  <label className="label">Email</label>
+                  <input type="email" value={newForm.email} onChange={e => setNewForm(f => ({ ...f, email: e.target.value }))} placeholder="jane@company.com" required />
+                </div>
+              </div>
+              <button className="btn btn-primary" disabled={creatingTenant} style={{ alignSelf: 'flex-start' }}>
+                {creatingTenant ? <><span className="spinner" style={{ width: 14, height: 14 }} /> Creating…</> : 'Create free API key →'}
+              </button>
+            </form>
+          </>
+        )}
+      </div>
+
+      {/* ── Step 2: Add snippet ── */}
+      <div className="card flex col gap-14">
+        <div style={{ fontWeight: 700, fontSize: 14 }}>Step 2 — Add to your site's <code>&lt;head&gt;</code></div>
+        <div style={{ fontSize: 13, color: 'var(--muted)' }}>Works on WordPress, Webflow, Shopify, custom HTML, React — anything.</div>
         <div className="code-block">
           {snippetTag}
           <div className="copy-btn-abs"><CopyBtn text={snippetTag} /></div>
         </div>
-        <div style={{ fontSize: 13, color: 'var(--muted)' }}>
-          Replace <code>YOUR_KEY</code> with your tenant key. Create one in the <strong>Tenants</strong> tab.
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {['WordPress: paste in Appearance → Theme Editor → header.php',
+            'Webflow: Project Settings → Custom Code → Head Code',
+            'Shopify: theme.liquid before </head>',
+          ].map(s => (
+            <span key={s} style={{ fontSize: 11, background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 6, padding: '4px 10px', color: 'var(--muted)' }}>{s}</span>
+          ))}
         </div>
       </div>
 
-      {/* What it does */}
-      <div className="card flex col gap-16">
-        <div style={{ fontWeight: 700, fontSize: 14 }}>What happens automatically when the snippet loads</div>
-        {[
-          { icon: '🔍', title: 'Page analysis', desc: 'Detects page type, extracts headings, CTAs, forms, schema.org markup, and the full readable text of every page — then pushes it to your registry.' },
-          { icon: '🤖', title: 'WebMCP tool registration', desc: 'WebMCP (W3C standard, Chrome Feb 2026) lets browser-based AI agents call your site\'s forms and interactions directly. The snippet auto-registers forms as WebMCP tools via navigator.modelContext — no backend changes needed.' },
-          { icon: '📡', title: 'AI agent detection', desc: 'Identifies 30+ AI crawlers by User-Agent (GPTBot, ClaudeBot, PerplexityBot, Gemini, Applebot…) and logs each visit — agent name, page, timestamp — to your analytics dashboard.' },
-          { icon: '🔗', title: 'Discovery link injection', desc: 'Injects <link> tags in your <head> pointing to your llms.txt, ai-plugin.json, and canonical URL — so AI crawlers scanning your HTML immediately find the machine-readable endpoints.' },
-          { icon: '📄', title: 'Auto JSON-LD schema', desc: 'If your page has no structured data, the snippet injects Organization + WebSite + WebPage schema.org markup — improving AI entity recognition and AI Overview eligibility.' },
-          { icon: '♻️', title: 'Smart content hashing', desc: 'Hashes page content on every load. Only re-indexes when content actually changes — zero redundant API calls, no performance impact.' },
-        ].map(({ icon, title, desc }) => (
-          <div key={title} className="flex gap-14">
-            <span style={{ fontSize: 20, flexShrink: 0, lineHeight: 1, marginTop: 2 }}>{icon}</span>
-            <div>
-              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 4 }}>{title}</div>
-              <div style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.6 }}>{desc}</div>
+      {/* ── Step 3: Done ── */}
+      <div className="card flex col gap-12" style={{ background: 'var(--surface2)', border: '1px solid var(--border2)' }}>
+        <div style={{ fontWeight: 700, fontSize: 14 }}>Step 3 — Done. Here's what activates automatically:</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: 10 }}>
+          {[
+            { icon: '📡', title: 'AI agent tracking', desc: '30+ crawlers detected in real time' },
+            { icon: '⬡', title: 'WebMCP tools', desc: 'Forms registered as AI-callable tools' },
+            { icon: '📄', title: 'llms.txt generated', desc: 'Machine-readable at /llms.txt' },
+            { icon: '🔗', title: 'Discovery links', desc: 'Injected into your <head>' },
+            { icon: '📊', title: 'Schema.org markup', desc: 'Auto-injected if missing' },
+            { icon: '♻️', title: 'Smart re-indexing', desc: 'Only when content actually changes' },
+          ].map(({ icon, title, desc }) => (
+            <div key={title} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+              <span style={{ fontSize: 18, flexShrink: 0 }}>{icon}</span>
+              <div>
+                <div style={{ fontWeight: 600, fontSize: 12, marginBottom: 2 }}>{title}</div>
+                <div style={{ fontSize: 11, color: 'var(--muted)' }}>{desc}</div>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
-
-      {/* What gets generated */}
-      <div className="card flex col gap-14">
-        <div style={{ fontWeight: 700, fontSize: 14 }}>What gets generated for your domain</div>
-        <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 4 }}>
-          Once installed, these URLs are live and served automatically by Galui:
+          ))}
         </div>
-        {[
-          { label: 'llms.txt', url: `${api.base()}/registry/YOUR_DOMAIN/llms.txt`, what: 'Plain-text file LLMs read at inference time — lists your site\'s key pages and capabilities in a format every AI understands.' },
-          { label: 'AI Plugin manifest', url: `${api.base()}/registry/YOUR_DOMAIN/ai-plugin.json`, what: 'OpenAI-compatible manifest at /.well-known/ai-plugin.json — tells ChatGPT and AI agents what tools your site exposes.' },
-          { label: 'JSON registry', url: `${api.base()}/registry/YOUR_DOMAIN`, what: 'Full structured data: capabilities, pricing, integrations, WebMCP tools — machine-readable by any AI system.' },
-          { label: 'AI Readiness Score', url: `${api.base()}/api/v1/score/YOUR_DOMAIN`, what: '0–100 score with dimension breakdown and improvement suggestions. Updates automatically when content changes.' },
-          { label: 'Embeddable badge', url: `${api.base()}/api/v1/score/YOUR_DOMAIN/badge`, what: 'SVG badge you can add to your README or website showing your current AI Readiness Score.' },
-        ].map(({ label, url, what }) => (
-          <div key={label} style={{ borderLeft: '3px solid var(--accent)', paddingLeft: 14 }}>
-            <div style={{ fontWeight: 600, fontSize: 12, marginBottom: 3 }}>{label}</div>
-            <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 5, lineHeight: 1.5 }}>{what}</div>
-            <code style={{ fontSize: 10, color: 'var(--accent2)', background: 'var(--border)', padding: '2px 8px', borderRadius: 4 }}>{url}</code>
-          </div>
-        ))}
       </div>
 
-      {/* Debug mode */}
+      {/* ── Debug + verify (collapsed) ── */}
       <div className="card flex col gap-12">
-        <div style={{ fontWeight: 700, fontSize: 14 }}>Debug mode</div>
-        <div style={{ fontSize: 13, color: 'var(--muted)' }}>
-          Add <code>debug=1</code> to see detailed logs in your browser console while testing.
-        </div>
+        <div style={{ fontWeight: 600, fontSize: 13 }}>Debug mode</div>
         <div className="code-block">
           {debugTag}
           <div className="copy-btn-abs"><CopyBtn text={debugTag} /></div>
         </div>
-      </div>
-
-      {/* Verify */}
-      <div className="card flex col gap-12">
-        <div style={{ fontWeight: 700, fontSize: 14 }}>Verify installation</div>
-        <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 4 }}>After installing, these URLs should return data for your domain:</div>
-        {[
-          [`${api.base()}/registry/YOUR_DOMAIN`, 'Full JSON registry'],
-          [`${api.base()}/registry/YOUR_DOMAIN/llms.txt`, 'LLM-readable text'],
-          [`${api.base()}/api/v1/score/YOUR_DOMAIN`, 'AI Readiness Score (0–100)'],
-          [`${api.base()}/api/v1/score/YOUR_DOMAIN/badge`, 'Embeddable SVG badge'],
-        ].map(([url, label]) => (
-          <div key={url} className="info-row">
-            <span className="info-row-label">{label}</span>
-            <code style={{ fontSize: 11 }}>{url}</code>
-          </div>
-        ))}
+        <div style={{ fontSize: 12, color: 'var(--muted)' }}>Add <code>debug=1</code> to see detailed logs in your browser console.</div>
       </div>
     </div>
   )
@@ -1539,6 +1592,17 @@ function SettingsPage() {
 export default function App() {
   const [page, setPage] = useState('overview')
   const [health, setHealth] = useState(null)
+  const [theme, setTheme] = useState(() => localStorage.getItem('galui_theme') || 'dark')
+
+  // Apply theme class to <html> on mount + change
+  useEffect(() => {
+    const root = document.documentElement
+    if (theme === 'light') root.classList.add('light')
+    else root.classList.remove('light')
+    localStorage.setItem('galui_theme', theme)
+  }, [theme])
+
+  const toggleTheme = () => setTheme(t => t === 'dark' ? 'light' : 'dark')
 
   useEffect(() => {
     api.health().then(setHealth).catch(() => {})
@@ -1546,24 +1610,21 @@ export default function App() {
 
   const pages = {
     overview:   <OverviewPage setPage={setPage} />,
-    ingest:     <IngestPage />,
     score:      <ScorePage />,
     analytics:  <AnalyticsPage setPage={setPage} />,
-    registries: <RegistriesPage />,
     snippet:    <SnippetPage />,
-    tenants:    <TenantsPage />,
     settings:   <SettingsPage />,
+    // Hidden pages — reachable via buttons, not main nav
+    ingest:     <IngestPage />,
+    registries: <RegistriesPage />,
+    tenants:    <TenantsPage />,
   }
 
   return (
     <>
-      <Nav page={page} setPage={setPage} health={health} />
-      <main style={{
-        padding: '28px 32px',
-        maxWidth: page === 'registries' ? '100%' : 1080,
-        margin: '0 auto',
-      }}>
-        {pages[page]}
+      <Nav page={page} setPage={setPage} health={health} theme={theme} toggleTheme={toggleTheme} />
+      <main style={{ padding: '28px 32px', maxWidth: 1080, margin: '0 auto' }}>
+        {pages[page] ?? <OverviewPage setPage={setPage} />}
       </main>
       <ToastContainer />
     </>

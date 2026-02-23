@@ -73,7 +73,18 @@ async def push_page(payload: PushPayload, background_tasks: BackgroundTasks):
     tenant_svc = TenantService()
     tenant = tenant_svc.get_tenant(payload.tenant_key)
     if not tenant:
-        raise HTTPException(status_code=401, detail="Invalid tenant key")
+        raise HTTPException(status_code=401, detail="Invalid tenant key — get your key at galui dashboard")
+
+    # Check domain is allowed for this tenant (auto-registers up to plan limit)
+    if not tenant_svc.is_domain_allowed(payload.tenant_key, domain):
+        raise HTTPException(
+            status_code=403,
+            detail=f"Domain '{domain}' not allowed on this plan. "
+                   f"Upgrade or remove another domain at your Galui dashboard."
+        )
+
+    # Track usage
+    tenant_svc.record_request(payload.tenant_key, "/api/v1/ingest/push", domain)
 
     # Check if content changed (hash comparison)
     page_hash = payload.content_hash or _hash_page(payload.page)

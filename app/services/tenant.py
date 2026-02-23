@@ -46,6 +46,15 @@ CREATE TABLE IF NOT EXISTS usage_log (
 )
 """
 
+CREATE_TENANT_DOMAINS = """
+CREATE TABLE IF NOT EXISTS tenant_domains (
+    api_key     TEXT NOT NULL,
+    domain      TEXT NOT NULL,
+    registered_at TEXT NOT NULL,
+    PRIMARY KEY (api_key, domain)
+)
+"""
+
 PLAN_LIMITS = {
     "free":       {"domains": 3,   "rate_per_min": 10,  "requests_today": 50},
     "pro":        {"domains": 50,  "rate_per_min": 60,  "requests_today": 2000},
@@ -98,6 +107,7 @@ class TenantService:
         with self._get_conn() as conn:
             conn.execute(CREATE_TENANTS)
             conn.execute(CREATE_USAGE_LOG)
+            conn.execute(CREATE_TENANT_DOMAINS)
             conn.commit()
 
     def create_tenant(self, name: str, email: str, plan: str = "free") -> Tenant:
@@ -141,6 +151,56 @@ class TenantService:
                 "SELECT * FROM tenants ORDER BY created_at DESC"
             ).fetchall()
             return [self._row_to_tenant(dict(r)) for r in rows]
+
+    def get_tenant_domains(self, api_key: str) -> List[str]:
+        """Return list of domains registered to this tenant."""
+        with self._get_conn() as conn:
+            rows = conn.execute(
+                "SELECT domain FROM tenant_domains WHERE api_key = ? ORDER BY registered_at",
+                (api_key,)
+            ).fetchall()
+            return [r["domain"] for r in rows]
+
+    def register_domain(self, api_key: str, domain: str) -> bool:
+        """
+        Register a domain for a tenant. Checks plan limits.
+        Returns True if registered (or already registered), False if limit exceeded.
+        """
+        tenant = self.get_tenant(api_key)
+        if not tenant:
+            return False
+
+        existing = self.get_tenant_domains(api_key)
+        if domain in existing:
+            return True  # already registered
+
+        if len(existing) >= tenant.domains_limit:
+            logger.warning(f"Tenant {api_key[:16]}… hit domain limit ({tenant.domains_limit}) trying to add {domain}")
+            return False
+
+        now = datetime.utcnow().isoformat()
+        try:
+            with self._get_conn() as conn:
+                conn.execute(
+                    "INSERT OR IGNORE INTO tenant_domains (api_key, domain, registered_at) VALUES (?, ?, ?)",
+                    (api_key, domain, now)
+                )
+                conn.commit()
+            logger.info(f"Registered domain {domain} for tenant {api_key[:16]}…")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to register domain: {e}")
+            return False
+
+    def is_domain_allowed(self, api_key: str, domain: str) -> bool:
+        """
+        Check if a domain is registered for this tenant.
+        Auto-registers if tenant is under their domain limit.
+        """
+        tenant = self.get_tenant(api_key)
+        if not tenant:
+            return False
+        return self.register_domain(api_key, domain)
 
     def record_request(self, api_key: str, endpoint: str, domain: str = None, status: int = 200):
         """Track usage. Fire-and-forget — never blocks the request."""

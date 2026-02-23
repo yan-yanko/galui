@@ -77,9 +77,10 @@ export const api = {
   getStats:        ()       => req('/api/v1/admin/stats'),
 
   // ── Tenants ───────────────────────────────────────────────────────────────
-  createTenant: (name, email, plan) =>
+  createTenant:  (name, email, plan) =>
     req('/api/v1/tenants', { method: 'POST', body: JSON.stringify({ name, email, plan }) }),
-  listTenants:  () => req('/api/v1/tenants'),
-  getMe:        () => req('/api/v1/tenants/me'),
-  getMyUsage:   () => req('/api/v1/tenants/me/usage'),
+  listTenants:   () => req('/api/v1/tenants'),
+  getMe:         () => req('/api/v1/tenants/me'),
+  getMyUsage:    () => req('/api/v1/tenants/me/usage'),
+  getMyDomains:  () => req('/api/v1/tenants/domains'),
 };
