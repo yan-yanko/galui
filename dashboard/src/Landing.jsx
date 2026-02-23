@@ -150,7 +150,7 @@ export function LandingPage({ onScanComplete }) {
 
         {/* Explainer */}
         <p style={{ fontSize: 18, color: '#64648a', lineHeight: 1.7, maxWidth: 540, marginBottom: 40, fontWeight: 400 }}>
-          ChatGPT, Claude, and Perplexity are replacing Google. Websites that aren't AI-readable are already losing traffic. Galui fixes this automatically — one line of code.
+          More and more people are getting answers from AI instead of clicking links. If your site isn't AI-readable, you're invisible to them. Galui fixes this automatically — one line of code.
         </p>
 
         {/* 3 benefits */}
