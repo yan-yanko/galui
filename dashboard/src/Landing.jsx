@@ -286,6 +286,46 @@ export function LandingPage({ onScanComplete }) {
         </div>
       </div>
 
+      {/* ── Features grid ── */}
+      <div style={{ background: '#ffffff', borderTop: '1px solid #e8e8f0', padding: '96px 32px' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <p style={{ textAlign: 'center', fontSize: 12, fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 18 }}>What you get</p>
+          <h2 style={{ textAlign: 'center', fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, marginBottom: 16, letterSpacing: '-1px', color: '#0a0a14', lineHeight: 1.1 }}>Everything included.<br />Zero configuration.</h2>
+          <p style={{ textAlign: 'center', color: '#64648a', fontSize: 17, marginBottom: 64, lineHeight: 1.6 }}>Add one script tag. Every feature below activates automatically.</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 2 }}>
+            {[
+              { icon: '🎯', title: 'AI Readiness Score', desc: '0–100 score across 5 dimensions: content coverage, structure, freshness, WebMCP compliance, and output formats. Includes specific fixes for each weak area.', color: '#6366f1' },
+              { icon: '📡', title: 'AI Agent Analytics', desc: 'See exactly which AI crawlers visit your site, which pages they read, and how often — updated in real time via the snippet.', color: '#10b981' },
+              { icon: '⬡', title: 'WebMCP Auto-Setup', desc: 'The snippet registers your site\'s forms and actions as WebMCP tools, making them callable by Chrome-based AI agents without any backend changes.', color: '#3b82f6' },
+              { icon: '📄', title: 'llms.txt Generation', desc: 'Galui auto-generates a /llms.txt file for your domain — the emerging standard for making sites machine-readable by LLMs at inference time.', color: '#f59e0b' },
+              { icon: '🔌', title: 'AI Plugin Manifest', desc: 'A /.well-known/ai-plugin.json is generated automatically so ChatGPT and compatible AI agents can discover and call your site\'s capabilities.', color: '#ef4444' },
+              { icon: '🔄', title: 'Smart Auto-refresh', desc: 'The snippet hashes page content on every load. When content changes, Galui re-indexes automatically — your score is always current.', color: '#8b5cf6' },
+            ].map(({ icon, title, desc, color }, i) => (
+              <div key={title} className="feat-card" style={{
+                background: '#fafafe',
+                border: '1px solid #e8e8f0',
+                padding: '36px 32px',
+                position: 'relative',
+                overflow: 'hidden',
+                borderRadius: i === 0 ? '20px 0 0 0' : i === 1 ? '0' : i === 2 ? '0 20px 0 0' : i === 3 ? '0 0 0 20px' : i === 4 ? '0' : '0 0 20px 0',
+              }}>
+                {/* Glow accent */}
+                <div style={{ position: 'absolute', top: -40, left: -40, width: 120, height: 120, borderRadius: '50%', background: color, opacity: 0.07, filter: 'blur(30px)', pointerEvents: 'none' }} />
+                {/* Top accent line */}
+                <div style={{ position: 'absolute', top: 0, left: 32, right: 32, height: 2, background: `linear-gradient(90deg, transparent, ${color}50, transparent)`, borderRadius: 2 }} />
+                <div style={{ fontSize: 40, marginBottom: 20, display: 'block', lineHeight: 1 }}>{icon}</div>
+                <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 12, color: '#0a0a14', letterSpacing: '-0.3px' }}>{title}</div>
+                <div style={{ fontSize: 14, color: '#64648a', lineHeight: 1.8 }}>{desc}</div>
+                <div style={{ marginTop: 24, display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                  <div style={{ width: 16, height: 2, background: color, borderRadius: 2 }} />
+                  Included
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* ── What is AI Readability ── */}
       <div style={{ background: '#06060f', padding: '72px 32px' }}>
         <div style={{ maxWidth: 920, margin: '0 auto' }}>
@@ -315,46 +355,6 @@ export function LandingPage({ onScanComplete }) {
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Features grid ── */}
-      <div style={{ background: '#06060f', padding: '96px 32px' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <p style={{ textAlign: 'center', fontSize: 12, fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 18 }}>What you get</p>
-          <h2 style={{ textAlign: 'center', fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 900, marginBottom: 16, letterSpacing: '-1px', color: '#f0f0ff', lineHeight: 1.1 }}>Everything included.<br />Zero configuration.</h2>
-          <p style={{ textAlign: 'center', color: '#6666aa', fontSize: 17, marginBottom: 64, lineHeight: 1.6 }}>Add one script tag. Every feature below activates automatically.</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 2 }}>
-            {[
-              { icon: '🎯', title: 'AI Readiness Score', desc: '0–100 score across 5 dimensions: content coverage, structure, freshness, WebMCP compliance, and output formats. Includes specific fixes for each weak area.', color: '#818cf8' },
-              { icon: '📡', title: 'AI Agent Analytics', desc: 'See exactly which AI crawlers visit your site, which pages they read, and how often — updated in real time via the snippet.', color: '#34d399' },
-              { icon: '⬡', title: 'WebMCP Auto-Setup', desc: 'The snippet registers your site\'s forms and actions as WebMCP tools, making them callable by Chrome-based AI agents without any backend changes.', color: '#60a5fa' },
-              { icon: '📄', title: 'llms.txt Generation', desc: 'Galui auto-generates a /llms.txt file for your domain — the emerging standard for making sites machine-readable by LLMs at inference time.', color: '#f59e0b' },
-              { icon: '🔌', title: 'AI Plugin Manifest', desc: 'A /.well-known/ai-plugin.json is generated automatically so ChatGPT and compatible AI agents can discover and call your site\'s capabilities.', color: '#fb7185' },
-              { icon: '🔄', title: 'Smart Auto-refresh', desc: 'The snippet hashes page content on every load. When content changes, Galui re-indexes automatically — your score is always current.', color: '#a78bfa' },
-            ].map(({ icon, title, desc, color }, i) => (
-              <div key={title} className="feat-card" style={{
-                background: '#0d0d1a',
-                border: '1px solid #1a1a2e',
-                padding: '36px 32px',
-                position: 'relative',
-                overflow: 'hidden',
-                borderRadius: i === 0 ? '20px 0 0 0' : i === 1 ? '0' : i === 2 ? '0 20px 0 0' : i === 3 ? '0 0 0 20px' : i === 4 ? '0' : '0 0 20px 0',
-              }}>
-                {/* Glow accent */}
-                <div style={{ position: 'absolute', top: -40, left: -40, width: 120, height: 120, borderRadius: '50%', background: color, opacity: 0.06, filter: 'blur(30px)', pointerEvents: 'none' }} />
-                {/* Top accent line */}
-                <div style={{ position: 'absolute', top: 0, left: 32, right: 32, height: 2, background: `linear-gradient(90deg, transparent, ${color}60, transparent)`, borderRadius: 2 }} />
-                <div style={{ fontSize: 40, marginBottom: 20, display: 'block', lineHeight: 1 }}>{icon}</div>
-                <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 12, color: '#f0f0ff', letterSpacing: '-0.3px' }}>{title}</div>
-                <div style={{ fontSize: 14, color: '#6666aa', lineHeight: 1.8 }}>{desc}</div>
-                <div style={{ marginTop: 24, display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
-                  <div style={{ width: 16, height: 2, background: color, borderRadius: 2 }} />
-                  Included
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </div>
@@ -495,8 +495,8 @@ export function LandingPage({ onScanComplete }) {
         * { box-sizing: border-box; }
 
         /* Feature card hover */
-        .feat-card { transition: background 0.2s, transform 0.2s, border-color 0.2s; }
-        .feat-card:hover { background: #11111f !important; transform: translateY(-3px); border-color: #2a2a44 !important; }
+        .feat-card { transition: background 0.2s, transform 0.2s, border-color 0.2s, box-shadow 0.2s; }
+        .feat-card:hover { background: #f3f3ff !important; transform: translateY(-3px); border-color: #d0d0f0 !important; box-shadow: 0 8px 32px rgba(99,102,241,0.08); }
 
         /* Hero animation keyframes */
         @keyframes fadeSlideUp {
