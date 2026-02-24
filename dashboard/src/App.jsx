@@ -180,7 +180,7 @@ function Nav({ page, setPage, health, theme, toggleTheme }) {
 }
 
 // ── Overview ─────────────────────────────────────────────────────────────────
-function OverviewPage({ setPage }) {
+function OverviewPage({ setPage, setPendingScanDomain }) {
   const [registries, setRegistries] = useState([])
   const [scores, setScores] = useState({})
   const [loading, setLoading] = useState(true)
@@ -207,8 +207,10 @@ function OverviewPage({ setPage }) {
     setScanning(true)
     try {
       const res = await api.ingest(scanUrl.trim(), false)
-      toast.info(`Scanning ${res.domain}… check AI Score tab in ~60s`)
       setScanUrl('')
+      toast.success(`Scanning ${res.domain} — your AI Score will appear in ~60s`)
+      setPendingScanDomain(res.domain)
+      setPage('score')
     } catch (err) {
       toast.error(err.message)
     } finally {
@@ -597,25 +599,51 @@ function IndexResult({ result }) {
 }
 
 // ── AI Score ─────────────────────────────────────────────────────────────────
-function ScorePage() {
+function ScorePage({ pendingDomain, clearPending }) {
   const [registries, setRegistries] = useState([])
   const [selected, setSelected] = useState('')
   const [score, setScore] = useState(null)
   const [loading, setLoading] = useState(false)
   const [badgeTab, setBadgeTab] = useState('preview')
-
-  useEffect(() => {
-    api.listRegistries().then(r => {
-      const regs = r.registries || []
-      setRegistries(regs)
-      if (regs.length > 0) loadScore(regs[0].domain)
-    }).catch(() => {})
-  }, [])
+  const [polling, setPolling] = useState(false)
 
   const loadScore = (domain) => {
     setSelected(domain); setLoading(true); setScore(null)
     api.getScore(domain).then(setScore).catch(() => {}).finally(() => setLoading(false))
   }
+
+  useEffect(() => {
+    api.listRegistries().then(r => {
+      const regs = r.registries || []
+      setRegistries(regs)
+      // If we came from a scan, select that domain; else pick the first
+      const target = pendingDomain || (regs.length > 0 ? regs[0].domain : null)
+      if (target) loadScore(target)
+    }).catch(() => {})
+  }, [])
+
+  // Poll every 5s when there's a pending scan until score appears
+  useEffect(() => {
+    if (!pendingDomain) return
+    setPolling(true)
+    const interval = setInterval(() => {
+      api.listRegistries().then(r => {
+        const regs = r.registries || []
+        setRegistries(regs)
+        const found = regs.find(r => r.domain === pendingDomain)
+        if (found) {
+          api.getScore(pendingDomain).then(s => {
+            setScore(s)
+            setSelected(pendingDomain)
+            setPolling(false)
+            clearPending()
+            clearInterval(interval)
+          }).catch(() => {})
+        }
+      }).catch(() => {})
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [pendingDomain])
 
   const dimLabels = { content_coverage: 'Content Coverage', structure_quality: 'Structure Quality', freshness: 'Freshness', webmcp_compliance: 'WebMCP Compliance', output_formats: 'Output Formats' }
   const dimColors = { content_coverage: 'var(--accent2)', structure_quality: 'var(--green)', freshness: 'var(--blue)', webmcp_compliance: 'var(--purple)', output_formats: 'var(--yellow)' }
@@ -639,18 +667,43 @@ function ScorePage() {
         )}
       </div>
 
-      {registries.length === 0 && (
+      {/* Scanning / polling state */}
+      {polling && (
+        <div className="card flex col gap-16" style={{ padding: '32px 28px', textAlign: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <span className="spinner" style={{ width: 36, height: 36, borderWidth: 3 }} />
+          </div>
+          <div style={{ fontWeight: 700, fontSize: 16 }}>Scanning {pendingDomain}…</div>
+          <div style={{ color: 'var(--muted)', fontSize: 13, lineHeight: 1.7, maxWidth: 400, margin: '0 auto' }}>
+            We're crawling every page, running the 4-pass AI pipeline, and calculating your AI Readiness Score.
+            This usually takes <strong>30–90 seconds</strong>.
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxWidth: 320, margin: '8px auto 0' }}>
+            {[
+              { icon: '🔍', label: 'Crawling all pages' },
+              { icon: '🤖', label: 'Running AI comprehension pipeline' },
+              { icon: '📊', label: 'Calculating AI Readiness Score' },
+            ].map(({ icon, label }) => (
+              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'var(--subtle)' }}>
+                <span>{icon}</span><span>{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {!polling && registries.length === 0 && (
         <EmptyState
           icon="◈"
           title="No sites indexed yet"
-          description="Index a site first to see its AI Readiness Score."
-          action={<button className="btn btn-primary btn-sm" onClick={() => {}}>Go to Index a site</button>}
+          description="Go to Overview and enter a URL to scan your first site."
+          action={null}
         />
       )}
 
-      {loading && <div className="flex center gap-12" style={{ padding: 40, color: 'var(--muted)' }}><span className="spinner" /> Calculating score…</div>}
+      {!polling && loading && <div className="flex center gap-12" style={{ padding: 40, color: 'var(--muted)' }}><span className="spinner" /> Calculating score…</div>}
 
-      {!loading && score && (
+      {!polling && !loading && score && (
         <>
           {/* Score hero */}
           <div className="card" style={{ padding: '28px 32px' }}>
@@ -1759,7 +1812,8 @@ function SettingsPage({ setPage }) {
 export default function App() {
   const [page, setPage] = useState('overview')
   const [health, setHealth] = useState(null)
-  const [theme, setTheme] = useState(() => localStorage.getItem('galui_theme') || 'dark')
+  const [theme, setTheme] = useState(() => localStorage.getItem('galui_theme') || 'light')
+  const [pendingScanDomain, setPendingScanDomain] = useState(null)
 
   // Apply theme class to <html> on mount + change
   useEffect(() => {
@@ -1776,8 +1830,8 @@ export default function App() {
   }, [])
 
   const pages = {
-    overview:   <OverviewPage setPage={setPage} />,
-    score:      <ScorePage />,
+    overview:   <OverviewPage setPage={setPage} setPendingScanDomain={setPendingScanDomain} />,
+    score:      <ScorePage pendingDomain={pendingScanDomain} clearPending={() => setPendingScanDomain(null)} />,
     analytics:  <AnalyticsPage setPage={setPage} />,
     snippet:    <SnippetPage />,
     settings:   <SettingsPage setPage={setPage} />,
