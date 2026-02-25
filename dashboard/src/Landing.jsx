@@ -129,7 +129,7 @@ export function LandingPage({ onScanComplete }) {
       {/* Nav */}
       <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 48px', height: 64, borderBottom: '1px solid #e8e8f0', position: 'sticky', top: 0, background: '#ffffffee', backdropFilter: 'blur(12px)', zIndex: 100 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 900, fontSize: 20, color: '#6366f1', letterSpacing: '-0.5px' }}>
-          <span style={{ fontSize: 22 }}>⬡</span> galui
+          <span style={{ fontSize: 22 }}>⬡</span> galuli
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <a href="/dashboard/" style={{ padding: '8px 18px', borderRadius: 8, fontSize: 13, color: '#64648a', textDecoration: 'none', fontWeight: 500 }}>Dashboard</a>
@@ -144,7 +144,7 @@ export function LandingPage({ onScanComplete }) {
         <div>
           {/* Eyebrow */}
           <p style={{ fontSize: 13, fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 20 }}>
-            AI Readability is Galui
+            AI Readability is Galuli
           </p>
 
           {/* Title */}
@@ -155,7 +155,7 @@ export function LandingPage({ onScanComplete }) {
 
           {/* Explainer */}
           <p style={{ fontSize: 17, color: '#64648a', lineHeight: 1.75, marginBottom: 36, fontWeight: 400 }}>
-            More and more people are getting answers from AI instead of clicking links. If your site isn't AI-readable, you're invisible to them. Galui fixes this automatically with one line of code.
+            More and more people are getting answers from AI instead of clicking links. If your site isn't AI-readable, you're invisible to them. Galuli fixes this automatically with one line of code.
           </p>
 
           {/* 3 benefits */}
@@ -255,12 +255,12 @@ export function LandingPage({ onScanComplete }) {
           {[
             {
               step: '01', icon: '🔍', title: 'Scan your site free',
-              desc: 'Enter your URL. Galui crawls every page, runs a 4-pass AI analysis pipeline, extracts your site\'s capabilities, and gives you an AI Readiness Score (0–100) in under 2 minutes. No account needed.',
+              desc: 'Enter your URL. Galuli crawls every page, runs a 4-pass AI analysis pipeline, extracts your site\'s capabilities, and gives you an AI Readiness Score (0–100) in under 2 minutes. No account needed.',
               tag: null,
             },
             {
               step: '02', icon: '</>', title: 'Add one script tag',
-              desc: 'Copy one line into your site\'s <head>. That\'s it. Galui automatically generates your llms.txt, registers WebMCP tools, injects schema.org markup, and starts logging AI agent visits — with zero configuration.',
+              desc: 'Copy one line into your site\'s <head>. That\'s it. Galuli automatically generates your llms.txt, registers WebMCP tools, injects schema.org markup, and starts logging AI agent visits — with zero configuration.',
               tag: '30 seconds to install',
             },
             {
@@ -297,9 +297,9 @@ export function LandingPage({ onScanComplete }) {
               { icon: '🎯', title: 'AI Readiness Score', desc: '0–100 score across 5 dimensions: content coverage, structure, freshness, WebMCP compliance, and output formats. Includes specific fixes for each weak area.', color: '#6366f1' },
               { icon: '📡', title: 'AI Agent Analytics', desc: 'See exactly which AI crawlers visit your site, which pages they read, and how often — updated in real time via the snippet.', color: '#10b981' },
               { icon: '⬡', title: 'WebMCP Auto-Setup', desc: 'The snippet registers your site\'s forms and actions as WebMCP tools, making them callable by Chrome-based AI agents without any backend changes.', color: '#3b82f6' },
-              { icon: '📄', title: 'llms.txt Generation', desc: 'Galui auto-generates a /llms.txt file for your domain — the emerging standard for making sites machine-readable by LLMs at inference time.', color: '#f59e0b' },
+              { icon: '📄', title: 'llms.txt Generation', desc: 'Galuli auto-generates a /llms.txt file for your domain — the emerging standard for making sites machine-readable by LLMs at inference time.', color: '#f59e0b' },
               { icon: '🔌', title: 'AI Plugin Manifest', desc: 'A /.well-known/ai-plugin.json is generated automatically so ChatGPT and compatible AI agents can discover and call your site\'s capabilities.', color: '#ef4444' },
-              { icon: '🔄', title: 'Smart Auto-refresh', desc: 'The snippet hashes page content on every load. When content changes, Galui re-indexes automatically — your score is always current.', color: '#8b5cf6' },
+              { icon: '🔄', title: 'Smart Auto-refresh', desc: 'The snippet hashes page content on every load. When content changes, Galuli re-indexes automatically — your score is always current.', color: '#8b5cf6' },
             ].map(({ icon, title, desc, color }, i) => (
               <div key={title} className="feat-card" style={{
                 background: '#fafafe',
@@ -339,13 +339,13 @@ export function LandingPage({ onScanComplete }) {
                 Traditional SEO optimizes for Google's crawler — keywords, backlinks, meta tags. AI readability is different. LLMs like ChatGPT and Claude need to <em style={{ color: '#a5b4fc' }}>understand</em> what your site <em style={{ color: '#a5b4fc' }}>does</em>, who it's <em style={{ color: '#a5b4fc' }}>for</em>, and what <em style={{ color: '#a5b4fc' }}>actions</em> are possible.
               </p>
               <p style={{ color: '#8888aa', fontSize: 15, lineHeight: 1.8 }}>
-                Galui bridges this gap by extracting your site's capabilities into structured formats that every AI system understands — without you having to touch a single line of backend code.
+                Galuli bridges this gap by extracting your site's capabilities into structured formats that every AI system understands — without you having to touch a single line of backend code.
               </p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {[
                 { term: 'llms.txt', color: '#818cf8', desc: 'A plain-text file at /llms.txt on your domain that tells LLMs what your site does, what pages matter, and how to interpret your content. Like a sitemap, but for AI.' },
-                { term: 'WebMCP', color: '#34d399', desc: 'A new W3C browser standard (shipping in Chrome) that lets AI agents directly interact with your site\'s forms, search, and checkout — without scraping. Galui registers your pages automatically.' },
+                { term: 'WebMCP', color: '#34d399', desc: 'A new W3C browser standard (shipping in Chrome) that lets AI agents directly interact with your site\'s forms, search, and checkout — without scraping. Galuli registers your pages automatically.' },
                 { term: 'AI Plugin Manifest', color: '#f59e0b', desc: 'A /.well-known/ai-plugin.json file that tells ChatGPT and compatible agents what tools your site exposes and how to call them.' },
                 { term: 'AI Readiness Score', color: '#60a5fa', desc: 'A 0–100 score across 5 dimensions: content coverage, structure quality, freshness, WebMCP compliance, and output formats. Think PageSpeed, but for AI visibility.' },
               ].map(({ term, color, desc }) => (
@@ -373,7 +373,7 @@ export function LandingPage({ onScanComplete }) {
               { range: '70–89',  grade: 'B',  color: '#3b82f6', pct: 80,  label: 'Good — AI-Readable',          desc: 'Solid visibility. A few targeted improvements would push you into Elite territory.' },
               { range: '50–69',  grade: 'C',  color: '#f59e0b', pct: 60,  label: 'Average — Partially Visible',  desc: 'AI agents can find you but may miss capabilities or misunderstand your offering.' },
               { range: '30–49',  grade: 'D',  color: '#ef4444', pct: 40,  label: 'Poor — Hard to Parse',         desc: 'Significant gaps. High risk of being skipped or misrepresented in AI answers.' },
-              { range: '0–29',   grade: 'F',  color: '#991b1b', pct: 20,  label: 'Not Readable — Invisible',     desc: 'Essentially invisible to AI. One Galui snippet install changes everything.' },
+              { range: '0–29',   grade: 'F',  color: '#991b1b', pct: 20,  label: 'Not Readable — Invisible',     desc: 'Essentially invisible to AI. One Galuli snippet install changes everything.' },
             ].map(({ range, grade, color, pct, label, desc }) => (
               <div key={grade} style={{ display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
                 {/* Grade badge */}
@@ -430,11 +430,11 @@ export function LandingPage({ onScanComplete }) {
             {[
               {
                 q: 'How is this different from regular SEO?',
-                a: 'SEO optimizes for Google\'s crawler — keywords, backlinks, structured metadata. AI readability is about making your site understandable to LLMs at inference time, when they\'re generating answers. Galui handles both: it improves your schema.org markup (good for SEO too) and adds AI-specific formats like llms.txt and WebMCP that search engines don\'t need but AI agents do.',
+                a: 'SEO optimizes for Google\'s crawler — keywords, backlinks, structured metadata. AI readability is about making your site understandable to LLMs at inference time, when they\'re generating answers. Galuli handles both: it improves your schema.org markup (good for SEO too) and adds AI-specific formats like llms.txt and WebMCP that search engines don\'t need but AI agents do.',
               },
               {
                 q: 'What exactly does the snippet do?',
-                a: 'The snippet (one <script> tag) runs in the browser when visitors load your pages. It extracts content, detects forms and CTAs, logs AI agent visits, registers WebMCP tools, and pushes updated data to Galui\'s backend. It\'s ~12KB, async (never blocks page load), and has zero impact on your Core Web Vitals.',
+                a: 'The snippet (one <script> tag) runs in the browser when visitors load your pages. It extracts content, detects forms and CTAs, logs AI agent visits, registers WebMCP tools, and pushes updated data to Galuli\'s backend. It\'s ~12KB, async (never blocks page load), and has zero impact on your Core Web Vitals.',
               },
               {
                 q: 'Do I need to change my website\'s backend?',
@@ -442,15 +442,15 @@ export function LandingPage({ onScanComplete }) {
               },
               {
                 q: 'What is WebMCP?',
-                a: 'WebMCP is a new W3C standard (Chrome early preview, February 2026) that lets websites expose their interactions — forms, search, checkout — as callable "tools" for browser-based AI agents. When you install Galui, your site\'s forms are automatically registered as WebMCP tools. This means an AI agent inside Chrome can fill your contact form, search your catalog, or book a demo without any extra work from you.',
+                a: 'WebMCP is a new W3C standard (Chrome early preview, February 2026) that lets websites expose their interactions — forms, search, checkout — as callable "tools" for browser-based AI agents. When you install Galuli, your site\'s forms are automatically registered as WebMCP tools. This means an AI agent inside Chrome can fill your contact form, search your catalog, or book a demo without any extra work from you.',
               },
               {
                 q: 'What is llms.txt?',
-                a: 'llms.txt is a plain-text file at /llms.txt on your domain (like robots.txt, but for LLMs). It gives AI systems a curated, machine-readable summary of what your site does and which pages are most important. Galui generates and hosts it automatically based on your indexed content.',
+                a: 'llms.txt is a plain-text file at /llms.txt on your domain (like robots.txt, but for LLMs). It gives AI systems a curated, machine-readable summary of what your site does and which pages are most important. Galuli generates and hosts it automatically based on your indexed content.',
               },
               {
                 q: 'Which AI systems will be able to find my site?',
-                a: 'ChatGPT (GPTBot + ChatGPT-User), Claude (ClaudeBot), Perplexity (PerplexityBot), Gemini (Google-Extended), Bing Copilot (BingBot), Apple Intelligence (Applebot), and any WebMCP-compatible browser agent. Galui tracks all of them in your analytics dashboard.',
+                a: 'ChatGPT (GPTBot + ChatGPT-User), Claude (ClaudeBot), Perplexity (PerplexityBot), Gemini (Google-Extended), Bing Copilot (BingBot), Apple Intelligence (Applebot), and any WebMCP-compatible browser agent. Galuli tracks all of them in your analytics dashboard.',
               },
               {
                 q: 'Is the scan really free?',
@@ -485,8 +485,8 @@ export function LandingPage({ onScanComplete }) {
 
       {/* Footer */}
       <div style={{ borderTop: '1px solid #e8e8f0', padding: '24px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
-        <div style={{ fontWeight: 800, fontSize: 15, color: '#6366f1' }}>⬡ galui</div>
-        <div style={{ fontSize: 12, color: '#b0b0c8' }}>© 2026 Galui · Make every website AI-readable</div>
+        <div style={{ fontWeight: 800, fontSize: 15, color: '#6366f1' }}>⬡ galuli</div>
+        <div style={{ fontSize: 12, color: '#b0b0c8' }}>© 2026 Galuli · Make every website AI-readable</div>
         <a href="/dashboard/" style={{ fontSize: 12, color: '#64648a', textDecoration: 'none' }}>Dashboard →</a>
       </div>
 
@@ -612,7 +612,7 @@ function ScanAnimation({ url, progress }) {
         <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#febc2e' }} />
         <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }} />
         <div style={{ flex: 1, textAlign: 'center', fontSize: 11, color: '#4a4a6a', fontWeight: 600, letterSpacing: '0.3px' }}>
-          galui scanner
+          galuli scanner
         </div>
       </div>
 
@@ -877,7 +877,7 @@ export function ResultsPage({ data, onRegistered }) {
   }
 
   const [showModal, setShowModal] = useState(true)
-  const [registered, setRegistered] = useState(() => !!localStorage.getItem('galui_user'))
+  const [registered, setRegistered] = useState(() => !!localStorage.getItem('galuli_user'))
   const [form, setForm] = useState({ name: '', email: '' })
   const [submitting, setSubmitting] = useState(false)
   const [step, setStep] = useState('form') // form | confirm
@@ -889,7 +889,7 @@ export function ResultsPage({ data, onRegistered }) {
     setSubmitting(true)
     // Simulate email confirmation delay
     await new Promise(r => setTimeout(r, 900))
-    localStorage.setItem('galui_user', JSON.stringify({ name: form.name, email: form.email, registered_at: new Date().toISOString() }))
+    localStorage.setItem('galuli_user', JSON.stringify({ name: form.name, email: form.email, registered_at: new Date().toISOString() }))
     setStep('confirm')
     setSubmitting(false)
   }
@@ -990,11 +990,11 @@ export function ResultsPage({ data, onRegistered }) {
               <div style={{ background: 'linear-gradient(135deg, #13102a, #0f0f1a)', border: '1px solid #6366f140', borderRadius: 16, padding: '28px 32px', textAlign: 'center' }}>
                 <h3 style={{ fontWeight: 800, fontSize: 18, marginBottom: 10 }}>Make {domain} AI-readable in 30 seconds</h3>
                 <p style={{ color: '#64648a', fontSize: 14, marginBottom: 24, lineHeight: 1.6 }}>
-                  Add one script tag to your site. Galui handles everything else — WebMCP registration,<br />
+                  Add one script tag to your site. Galuli handles everything else — WebMCP registration,<br />
                   llms.txt generation, AI agent detection, and real-time score updates.
                 </p>
                 <div style={{ background: '#070710', border: '1px solid #252538', borderRadius: 10, padding: '14px 20px', fontFamily: 'monospace', fontSize: 13, color: '#a5b4fc', marginBottom: 20, textAlign: 'left', position: 'relative' }}>
-                  {`<script src="${API_BASE}/galui.js?key=YOUR_KEY" async></script>`}
+                  {`<script src="${API_BASE}/galuli.js?key=YOUR_KEY" async></script>`}
                 </div>
                 <a href="/dashboard/" style={{ display: 'inline-block', padding: '12px 28px', background: '#6366f1', color: 'white', borderRadius: 10, fontWeight: 700, fontSize: 14, textDecoration: 'none', boxShadow: '0 4px 16px rgba(99,102,241,0.35)' }}>
                   Get your snippet key →

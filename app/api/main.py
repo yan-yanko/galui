@@ -27,7 +27,7 @@ async def lifespan(app: FastAPI):
     from app.services.scheduler import start_scheduler, stop_scheduler
 
     logger.info("=" * 55)
-    logger.info("  Galui — AI Readability Engine")
+    logger.info("  Galuli — AI Readability Engine")
     logger.info("=" * 55)
     logger.info(f"  Anthropic:    {'OK' if settings.anthropic_api_key else 'MISSING'}")
     logger.info(f"  Auth:         {'master key' if settings.registry_api_key else 'open (dev)'}")
@@ -48,14 +48,14 @@ async def lifespan(app: FastAPI):
     yield
 
     stop_scheduler()
-    logger.info("Galui shut down")
+    logger.info("Galuli shut down")
 
 
 app = FastAPI(
-    title="Galui — AI Readability Engine",
+    title="Galuli — AI Readability Engine",
     description=(
         "Drop one script tag. Your site becomes AI-readable.\n\n"
-        "Galui automatically translates any website into structured, "
+        "Galuli automatically translates any website into structured, "
         "machine-readable formats for LLMs and AI agents — with WebMCP "
         "auto-registration, llms.txt generation, AI traffic analytics, "
         "and an AI Readiness Score.\n\n"
@@ -65,7 +65,7 @@ app = FastAPI(
         "- `GET /registry/{domain}/ai-plugin.json` — OpenAI plugin manifest\n"
         "- `GET /registry/{domain}/status` — Live liveness check\n\n"
         "### Snippet endpoints\n"
-        "- `POST /api/v1/ingest/push` — Receive page data from galui.js\n"
+        "- `POST /api/v1/ingest/push` — Receive page data from galuli.js\n"
         "- `GET  /api/v1/score/{domain}` — AI Readiness Score\n"
         "- `GET  /api/v1/score/{domain}/badge` — Embeddable SVG badge\n\n"
         "### Analytics\n"
@@ -73,7 +73,7 @@ app = FastAPI(
         "- `GET /api/v1/analytics/{domain}/agents` — Agent breakdown\n"
         "- `GET /api/v1/analytics/{domain}/pages` — Per-page breakdown\n"
     ),
-    version="2.0.0",
+    version="3.1.0",
     lifespan=lifespan,
 )
 
@@ -115,8 +115,8 @@ async def health():
 
     return {
         "status": "ok",
-        "service": "galui",
-        "version": "2.0.0",
+        "service": "galuli",
+        "version": "3.1.0",
         "anthropic_configured": anthropic_ok,
         "auth_enabled": bool(settings.registry_api_key),
         "registries_indexed": len(registries),
@@ -126,21 +126,43 @@ async def health():
 
 
 # ── Snippet delivery ───────────────────────────────────────────────────────
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 import pathlib as _pathlib
 
-@app.get("/galui.js", tags=["Snippet"], include_in_schema=False)
+SNIPPET_VERSION = "3.1.0"
+SNIPPET_RELEASED = "2026-02-25"
+
+@app.get("/galuli.js", tags=["Snippet"], include_in_schema=False)
 async def serve_snippet():
-    """Serve the galui.js snippet file."""
-    snippet_path = _pathlib.Path(__file__).parent.parent.parent / "static" / "galui.js"
+    """Serve the galuli.js snippet file (canonical URL)."""
+    snippet_path = _pathlib.Path(__file__).parent.parent.parent / "static" / "galuli.js"
+    if not snippet_path.exists():
+        # Fall back to galui.js if galuli.js not found yet
+        snippet_path = _pathlib.Path(__file__).parent.parent.parent / "static" / "galui.js"
     if not snippet_path.exists():
         from fastapi import HTTPException
-        raise HTTPException(status_code=404, detail="Snippet not built yet")
+        raise HTTPException(status_code=404, detail="Snippet not found")
     return FileResponse(str(snippet_path), media_type="application/javascript", headers={
-        "Cache-Control": "public, max-age=3600",
+        "Cache-Control": "public, max-age=300, stale-while-revalidate=60",
         "Access-Control-Allow-Origin": "*",
+        "X-Galuli-Version": SNIPPET_VERSION,
     })
+
+@app.get("/galui.js", tags=["Snippet"], include_in_schema=False)
+async def serve_snippet_legacy():
+    """Backward-compat redirect — existing installs keep working."""
+    return RedirectResponse(url="/galuli.js", status_code=301)
+
+@app.get("/galuli.js/version", tags=["Snippet"], include_in_schema=False)
+async def snippet_version():
+    """Returns the current snippet version — for monitoring and debugging."""
+    return {
+        "version": SNIPPET_VERSION,
+        "filename": "galuli.js",
+        "released": SNIPPET_RELEASED,
+        "legacy_redirect": "/galui.js → /galuli.js (301)",
+    }
 
 # ── Dashboard (React SPA) ──────────────────────────────────────────────────
 # Served from /dashboard — built by Docker frontend stage
@@ -163,4 +185,4 @@ else:
 
     @app.get("/", include_in_schema=False)
     async def serve_landing():
-        return {"service": "galui", "version": "2.0.0", "docs": "/docs", "dashboard": "not built"}
+        return {"service": "galuli", "version": "3.1.0", "docs": "/docs", "dashboard": "not built"}

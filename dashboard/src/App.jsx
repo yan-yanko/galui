@@ -115,6 +115,7 @@ function EmptyState({ icon, title, description, action }) {
 const NAV_LINKS = [
   { id: 'overview',  label: 'Overview'  },
   { id: 'score',     label: 'AI Score'  },
+  { id: 'geo',       label: 'GEO'       },
   { id: 'analytics', label: 'Analytics' },
   { id: 'snippet',   label: 'Snippet'   },
   { id: 'settings',  label: 'Settings'  },
@@ -135,7 +136,7 @@ function Nav({ page, setPage, health, theme, toggleTheme }) {
         display: 'flex', alignItems: 'center', gap: 7,
         textDecoration: 'none',
       }}>
-        <span>⬡</span> galui
+        <span>⬡</span> galuli
       </a>
 
       {/* Links */}
@@ -588,9 +589,9 @@ function IndexResult({ result }) {
           </div>
         </div>
         <div className="code-block">
-          {`<script src="${api.base()}/galui.js?key=${localStorage.getItem('galui_api_key') || 'YOUR_KEY'}" async></script>`}
+          {`<script src="${api.base()}/galuli.js?key=${localStorage.getItem('galuli_api_key') || 'YOUR_KEY'}" async></script>`}
           <div className="copy-btn-abs">
-            <CopyBtn text={`<script src="${api.base()}/galui.js?key=${localStorage.getItem('galui_api_key') || 'YOUR_KEY'}" async></script>`} />
+            <CopyBtn text={`<script src="${api.base()}/galuli.js?key=${localStorage.getItem('galuli_api_key') || 'YOUR_KEY'}" async></script>`} />
           </div>
         </div>
       </div>
@@ -651,7 +652,7 @@ function ScorePage({ pendingDomain, clearPending }) {
     content_coverage: 'How well your site\'s capabilities, use cases, and value proposition are extracted and described. Low score = AI agents can\'t explain what you do.',
     structure_quality: 'Completeness of structured data: pricing, API info, schema.org markup, headings hierarchy. Low score = AI gives incomplete or inaccurate answers about your product.',
     freshness: 'How recently your registry was updated relative to your actual site. Stale data = AI agents cite outdated information.',
-    webmcp_compliance: 'Whether the Galui snippet is installed and WebMCP tools are registered. Without this, AI agents can\'t interact with your site\'s forms or actions.',
+    webmcp_compliance: 'Whether the Galuli snippet is installed and WebMCP tools are registered. Without this, AI agents can\'t interact with your site\'s forms or actions.',
     output_formats: 'Whether your llms.txt, JSON registry, and AI plugin manifest are generated and accessible. These are what AI crawlers actually fetch.',
   }
   const priorityColor = { high: 'var(--red)', medium: 'var(--yellow)', low: 'var(--muted)' }
@@ -906,7 +907,7 @@ function AnalyticsPage({ setPage }) {
             <div className="empty-state-icon">📡</div>
             <div className="empty-state-title">No AI traffic recorded yet</div>
             <div className="empty-state-desc">
-              Install the Galui snippet on <strong>{selected || 'your site'}</strong> to start tracking AI agent visits in real time.
+              Install the Galuli snippet on <strong>{selected || 'your site'}</strong> to start tracking AI agent visits in real time.
               The snippet detects 30+ AI crawlers and logs every visit — agent name, page visited, timestamp.
             </div>
             <div style={{ marginTop: 16 }}>
@@ -1016,7 +1017,7 @@ function AnalyticsPage({ setPage }) {
 // ── Snippet ───────────────────────────────────────────────────────────────────
 function SnippetPage() {
   const [tenants, setTenants] = useState([])
-  const [selectedKey, setSelectedKey] = useState(localStorage.getItem('galui_api_key') || '')
+  const [selectedKey, setSelectedKey] = useState(localStorage.getItem('galuli_api_key') || '')
   const [domains, setDomains] = useState([])
   const [creatingTenant, setCreatingTenant] = useState(false)
   const [newForm, setNewForm] = useState({ name: '', email: '' })
@@ -1047,7 +1048,7 @@ function SnippetPage() {
       const res = await api.createTenant(newForm.name, newForm.email, 'free')
       toast.success('Key created!')
       setSelectedKey(res.api_key)
-      localStorage.setItem('galui_api_key', res.api_key)
+      localStorage.setItem('galuli_api_key', res.api_key)
       setNewForm({ name: '', email: '' })
       const r = await api.listTenants()
       setTenants(r.tenants || [])
@@ -1059,8 +1060,8 @@ function SnippetPage() {
   }
 
   const activeKey = selectedKey || 'YOUR_KEY'
-  const snippetTag = `<script src="${api.base()}/galui.js?key=${activeKey}" async></script>`
-  const debugTag   = `<script src="${api.base()}/galui.js?key=${activeKey}&debug=1" async></script>`
+  const snippetTag = `<script src="${api.base()}/galuli.js?key=${activeKey}" async></script>`
+  const debugTag   = `<script src="${api.base()}/galuli.js?key=${activeKey}&debug=1" async></script>`
 
   return (
     <div className="flex col gap-20" style={{ maxWidth: 760 }}>
@@ -1077,7 +1078,7 @@ function SnippetPage() {
           <>
             <div>
               <label className="label">Select key</label>
-              <select value={selectedKey} onChange={e => { setSelectedKey(e.target.value); localStorage.setItem('galui_api_key', e.target.value) }}>
+              <select value={selectedKey} onChange={e => { setSelectedKey(e.target.value); localStorage.setItem('galuli_api_key', e.target.value) }}>
                 {tenants.map(t => (
                   <option key={t.api_key} value={t.api_key}>{t.email} — {t.plan} plan</option>
                 ))}
@@ -1231,7 +1232,7 @@ function RegistriesPage() {
             <div style={{ fontSize: 32, opacity: 0.3 }}>▦</div>
             <div style={{ fontSize: 14, textAlign: 'center' }}>Select a domain from the list</div>
             <div style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'center', maxWidth: 340, lineHeight: 1.7 }}>
-              A <strong style={{ color: 'var(--subtle)' }}>registry</strong> is Galui's structured representation of your site — capabilities, pricing, integrations, and WebMCP tools — served as JSON, llms.txt, and an AI plugin manifest that AI systems can read directly.
+              A <strong style={{ color: 'var(--subtle)' }}>registry</strong> is Galuli's structured representation of your site — capabilities, pricing, integrations, and WebMCP tools — served as JSON, llms.txt, and an AI plugin manifest that AI systems can read directly.
             </div>
           </div>
         )}
@@ -1287,7 +1288,7 @@ function RegistriesPage() {
                 <div className="card flex col gap-10">
                   <div className="label">WebMCP status</div>
                   <div style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.6, marginBottom: 4 }}>
-                    WebMCP (W3C, Chrome 2026) lets AI agents call your site's forms and actions directly. Requires the Galui snippet.
+                    WebMCP (W3C, Chrome 2026) lets AI agents call your site's forms and actions directly. Requires the Galuli snippet.
                   </div>
                   <div className="flex between center">
                     <span style={{ fontSize: 13, color: 'var(--muted)' }}>Status</span>
@@ -1531,7 +1532,7 @@ function SettingsPage({ setPage }) {
   const [loading, setLoading] = useState(true)
   const [showKey, setShowKey] = useState(false)
   const [showAdvanced, setShowAdvanced] = useState(false)
-  const [apiUrl, setApiUrl] = useState(localStorage.getItem('galui_api_url') || '')
+  const [apiUrl, setApiUrl] = useState(localStorage.getItem('galuli_api_url') || '')
   const [savedUrl, setSavedUrl] = useState(false)
 
   useEffect(() => {
@@ -1547,7 +1548,7 @@ function SettingsPage({ setPage }) {
     }).finally(() => setLoading(false))
   }, [])
 
-  const activeKey = localStorage.getItem('galui_api_key') || ''
+  const activeKey = localStorage.getItem('galuli_api_key') || ''
 
   const PLAN_DETAILS = {
     free:       { label: 'Free',       color: 'var(--muted)',   price: '$0/mo',    sites: '3 sites',    rate: '10 req/min' },
@@ -1669,7 +1670,7 @@ function SettingsPage({ setPage }) {
             </div>
             <button
               className="btn btn-primary btn-sm"
-              onClick={() => toast.info('Billing coming soon — contact us at hello@galui.io')}
+              onClick={() => toast.info('Billing coming soon — contact us at hello@galuli.io')}
             >
               Upgrade →
             </button>
@@ -1683,7 +1684,7 @@ function SettingsPage({ setPage }) {
             </div>
             <button
               className="btn btn-ghost btn-sm"
-              onClick={() => toast.info('Contact us at hello@galui.io to discuss enterprise pricing')}
+              onClick={() => toast.info('Contact us at hello@galuli.io to discuss enterprise pricing')}
             >
               Contact us →
             </button>
@@ -1738,7 +1739,7 @@ function SettingsPage({ setPage }) {
             <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 3 }}>Stripe billing coming soon</div>
             <div style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.6 }}>
               Credit card management, invoices, and subscription changes will be available here.
-              For now, contact <a href="mailto:hello@galui.io" style={{ color: 'var(--accent2)' }}>hello@galui.io</a> to upgrade your plan.
+              For now, contact <a href="mailto:hello@galuli.io" style={{ color: 'var(--accent2)' }}>hello@galuli.io</a> to upgrade your plan.
             </div>
           </div>
         </div>
@@ -1778,7 +1779,7 @@ function SettingsPage({ setPage }) {
         {showAdvanced && (
           <div className="flex col gap-12" style={{ marginTop: 4 }}>
             <div style={{ fontSize: 12, color: 'var(--muted)' }}>
-              Override the API endpoint — only needed if you're self-hosting Galui.
+              Override the API endpoint — only needed if you're self-hosting Galuli.
             </div>
             <div>
               <label className="label">Custom API URL</label>
@@ -1786,15 +1787,15 @@ function SettingsPage({ setPage }) {
             </div>
             <div className="flex gap-10">
               <button className="btn btn-primary btn-sm" onClick={() => {
-                if (apiUrl) localStorage.setItem('galui_api_url', apiUrl)
-                else localStorage.removeItem('galui_api_url')
+                if (apiUrl) localStorage.setItem('galuli_api_url', apiUrl)
+                else localStorage.removeItem('galuli_api_url')
                 setSavedUrl(true); setTimeout(() => setSavedUrl(false), 2000)
                 toast.success('Saved')
               }}>
                 {savedUrl ? '✓ Saved' : 'Save URL'}
               </button>
               <button className="btn btn-ghost btn-sm" onClick={() => {
-                localStorage.removeItem('galui_api_url')
+                localStorage.removeItem('galuli_api_url')
                 setApiUrl('')
                 toast.info('Reset to default')
               }}>
@@ -1808,11 +1809,188 @@ function SettingsPage({ setPage }) {
   )
 }
 
+// ── GEO Score ─────────────────────────────────────────────────────────────────
+const GEO_LLM_META = {
+  chatgpt:    { name: 'ChatGPT',    company: 'OpenAI',     emoji: '🟢', color: '#10b981' },
+  perplexity: { name: 'Perplexity', company: 'Perplexity', emoji: '🔵', color: '#3b82f6' },
+  claude:     { name: 'Claude',     company: 'Anthropic',  emoji: '🟠', color: '#f59e0b' },
+  gemini:     { name: 'Gemini',     company: 'Google',     emoji: '🟣', color: '#8b5cf6' },
+  grok:       { name: 'Grok',       company: 'xAI',        emoji: '🩵', color: '#06b6d4' },
+  llama:      { name: 'Llama',      company: 'Meta',       emoji: '🔴', color: '#ef4444' },
+}
+
+function GeoPage() {
+  const [registries, setRegistries] = useState([])
+  const [selected, setSelected] = useState('')
+  const [geo, setGeo] = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  const loadGeo = (domain) => {
+    setSelected(domain); setLoading(true); setGeo(null)
+    api.getGeoScore(domain).then(setGeo).catch(() => {}).finally(() => setLoading(false))
+  }
+
+  useEffect(() => {
+    api.listRegistries().then(r => {
+      const regs = r.registries || []
+      setRegistries(regs)
+      if (regs.length > 0) loadGeo(regs[0].domain)
+    }).catch(() => {})
+  }, [])
+
+  const gradeColor = (score) => score >= 80 ? 'var(--green)' : score >= 60 ? 'var(--blue)' : score >= 40 ? 'var(--yellow)' : 'var(--red)'
+  const statusBadge = (status) => {
+    if (status === 'good') return { bg: '#10b98120', color: '#10b981', label: 'Good' }
+    if (status === 'needs_work') return { bg: '#f59e0b20', color: '#f59e0b', label: 'Needs work' }
+    return { bg: '#ef444420', color: '#ef4444', label: 'Missing' }
+  }
+
+  return (
+    <div className="flex col gap-24">
+      <div className="flex between center wrap gap-12">
+        <PageHeader
+          title="GEO Score"
+          subtitle="How likely each major AI is to cite and recommend your site"
+        />
+        {registries.length > 0 && (
+          <select value={selected} onChange={e => loadGeo(e.target.value)} style={{ width: 'auto', minWidth: 200 }}>
+            {registries.map(r => <option key={r.domain} value={r.domain}>{r.domain}</option>)}
+          </select>
+        )}
+      </div>
+
+      {registries.length === 0 && !loading && (
+        <EmptyState
+          icon="🌐"
+          title="No sites indexed yet"
+          description="Go to Overview and scan a site first to see its GEO score."
+          action={null}
+        />
+      )}
+
+      {loading && (
+        <div className="flex center gap-12" style={{ padding: 40, color: 'var(--muted)' }}>
+          <span className="spinner" /> Calculating GEO score…
+        </div>
+      )}
+
+      {!loading && geo && (
+        <>
+          {/* Hero */}
+          <div className="card" style={{ padding: '28px 32px' }}>
+            <div className="flex center gap-32 wrap">
+              <ScoreRing score={geo.geo_total} size={130} />
+              <div className="flex col gap-10" style={{ flex: 1 }}>
+                <div style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.3px' }}>{geo.geo_label}</div>
+                <div style={{ color: 'var(--muted)', fontSize: 14 }}>{selected}</div>
+                <div className="flex gap-8 wrap" style={{ marginTop: 4 }}>
+                  <span className="badge badge-blue">GEO: {geo.geo_total}/100</span>
+                  <span className={`badge ${geo.geo_total >= 70 ? 'badge-green' : geo.geo_total >= 50 ? 'badge-yellow' : 'badge-red'}`}>Grade: {geo.geo_grade}</span>
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2, lineHeight: 1.6 }}>
+                  GEO measures how well each AI system understands, trusts, and cites your site.
+                  Higher score = more AI-generated referrals.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* LLM cards grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 14 }}>
+            {Object.entries(geo.llms || {}).map(([key, dim]) => {
+              const meta = GEO_LLM_META[key] || { name: key, emoji: '🤖', color: '#6b7280' }
+              const badge = statusBadge(dim.status)
+              const pct = Math.round((dim.score / dim.max) * 100)
+              return (
+                <div key={key} className="card flex col gap-12" style={{ borderTop: `3px solid ${meta.color}` }}>
+                  {/* Card header */}
+                  <div className="flex between center">
+                    <div className="flex center gap-10">
+                      <span style={{ fontSize: 20 }}>{meta.emoji}</span>
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: 14 }}>{meta.name}</div>
+                        <div style={{ fontSize: 11, color: 'var(--muted)' }}>{meta.company}</div>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+                      <span style={{ fontWeight: 800, fontSize: 18, color: meta.color, fontVariantNumeric: 'tabular-nums' }}>{dim.score}<span style={{ fontSize: 12, fontWeight: 400, color: 'var(--muted)' }}>/{dim.max}</span></span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: badge.color, background: badge.bg, padding: '2px 8px', borderRadius: 10 }}>{badge.label}</span>
+                    </div>
+                  </div>
+
+                  {/* Score bar */}
+                  <div style={{ background: 'var(--border)', borderRadius: 4, height: 6 }}>
+                    <div style={{ height: 6, borderRadius: 4, background: meta.color, width: `${pct}%`, transition: 'width 0.6s', opacity: 0.85 }} />
+                  </div>
+
+                  {/* Recommendations */}
+                  {dim.recommendations?.length > 0 && (
+                    <div className="flex col gap-6">
+                      {dim.recommendations.map((rec, i) => (
+                        <div key={i} className="flex gap-8" style={{ fontSize: 12, color: 'var(--subtle)' }}>
+                          <span style={{ color: meta.color, flexShrink: 0, marginTop: 1 }}>•</span>
+                          <span style={{ lineHeight: 1.5 }}>{rec}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Top recommendations */}
+          {geo.top_recommendations?.length > 0 && (
+            <div className="card flex col gap-12">
+              <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 2 }}>
+                🎯 Top actions to improve your GEO score
+              </div>
+              <div className="flex col gap-8">
+                {geo.top_recommendations.map((rec, i) => (
+                  <div key={i} className="flex gap-12 center" style={{ padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 13 }}>
+                    <span style={{ fontSize: 16, flexShrink: 0, width: 24, textAlign: 'center', fontWeight: 700, color: i === 0 ? '#f59e0b' : i === 1 ? 'var(--muted)' : 'var(--border2)' }}>{i + 1}</span>
+                    <span style={{ color: 'var(--subtle)', lineHeight: 1.5 }}>{rec}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* What is GEO */}
+          <div className="card flex col gap-10" style={{ background: 'var(--surface2)', border: '1px solid var(--border2)' }}>
+            <div style={{ fontWeight: 700, fontSize: 13 }}>What is GEO?</div>
+            <div style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.7 }}>
+              <strong style={{ color: 'var(--subtle)' }}>Generative Engine Optimization (GEO)</strong> is the practice of making your site more likely to be cited, recommended, and used as a source by AI systems like ChatGPT, Perplexity, Claude, Gemini, Grok, and Llama.
+              Unlike traditional SEO which targets search ranking algorithms, GEO targets the training data signals and real-time retrieval signals that LLMs use to determine which sources to cite.
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: 10, marginTop: 4 }}>
+              {[
+                { icon: '📝', title: 'Content depth', desc: 'Rich capabilities + use cases' },
+                { icon: '🔗', title: 'Authority signals', desc: 'Docs, pricing, status page URLs' },
+                { icon: '🏗️', title: 'Structured data', desc: 'Schema.org, OpenAPI, SDKs' },
+                { icon: '⚡', title: 'Freshness', desc: 'Recently updated registries' },
+              ].map(({ icon, title, desc }) => (
+                <div key={title} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                  <span style={{ fontSize: 16, flexShrink: 0 }}>{icon}</span>
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 2 }}>{title}</div>
+                    <div style={{ fontSize: 11, color: 'var(--muted)' }}>{desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
 // ── App root ──────────────────────────────────────────────────────────────────
 export default function App() {
   const [page, setPage] = useState('overview')
   const [health, setHealth] = useState(null)
-  const [theme, setTheme] = useState(() => localStorage.getItem('galui_theme') || 'light')
+  const [theme, setTheme] = useState(() => localStorage.getItem('galuli_theme') || 'light')
   const [pendingScanDomain, setPendingScanDomain] = useState(null)
 
   // Apply theme class to <html> on mount + change
@@ -1820,7 +1998,7 @@ export default function App() {
     const root = document.documentElement
     if (theme === 'light') root.classList.add('light')
     else root.classList.remove('light')
-    localStorage.setItem('galui_theme', theme)
+    localStorage.setItem('galuli_theme', theme)
   }, [theme])
 
   const toggleTheme = () => setTheme(t => t === 'dark' ? 'light' : 'dark')
@@ -1832,6 +2010,7 @@ export default function App() {
   const pages = {
     overview:   <OverviewPage setPage={setPage} setPendingScanDomain={setPendingScanDomain} />,
     score:      <ScorePage pendingDomain={pendingScanDomain} clearPending={() => setPendingScanDomain(null)} />,
+    geo:        <GeoPage />,
     analytics:  <AnalyticsPage setPage={setPage} />,
     snippet:    <SnippetPage />,
     settings:   <SettingsPage setPage={setPage} />,

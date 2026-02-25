@@ -2,22 +2,35 @@
 // - When served from Railway (/dashboard), use same origin → no config needed
 // - When running locally, use localhost:8000
 // - Can always be overridden via Settings (localStorage)
+
+// ── Silent migration: galui_ → galuli_ localStorage keys ──────────────────
+;(function migrateLegacyKeys() {
+  const keys = ['api_key', 'api_url', 'theme', 'user']
+  keys.forEach(k => {
+    const oldKey = `galui_${k}`
+    const newKey = `galuli_${k}`
+    if (localStorage.getItem(oldKey) && !localStorage.getItem(newKey)) {
+      localStorage.setItem(newKey, localStorage.getItem(oldKey))
+    }
+  })
+})()
+
 const _autoBase = window.location.hostname === 'localhost'
   ? 'http://localhost:8000'
   : window.location.origin;
 
-const BASE = localStorage.getItem('galui_api_url') || _autoBase;
+const BASE = localStorage.getItem('galuli_api_url') || _autoBase;
 
 // Default API key — works out of the box for the hosted dashboard.
 // Users can override in Settings if needed.
 const DEFAULT_KEY = 'kotleryan1984';
 
 function getKey() {
-  return localStorage.getItem('galui_api_key') || DEFAULT_KEY;
+  return localStorage.getItem('galuli_api_key') || DEFAULT_KEY;
 }
 
 function getBase() {
-  return localStorage.getItem('galui_api_url') || BASE;
+  return localStorage.getItem('galuli_api_url') || BASE;
 }
 
 async function req(path, options = {}) {
@@ -65,6 +78,7 @@ export const api = {
   getScore:       (domain) => req(`/api/v1/score/${domain}`),
   getSuggestions: (domain) => req(`/api/v1/score/${domain}/suggestions`),
   getBadgeUrl:    (domain) => `${getBase()}/api/v1/score/${domain}/badge`,
+  getGeoScore:    (domain) => req(`/api/v1/geo/${domain}`),
 
   // ── Analytics ─────────────────────────────────────────────────────────────
   getAnalytics:      (domain, days = 30) => req(`/api/v1/analytics/${domain}?days=${days}`),

@@ -73,14 +73,14 @@ async def push_page(payload: PushPayload, background_tasks: BackgroundTasks):
     tenant_svc = TenantService()
     tenant = tenant_svc.get_tenant(payload.tenant_key)
     if not tenant:
-        raise HTTPException(status_code=401, detail="Invalid tenant key — get your key at galui dashboard")
+        raise HTTPException(status_code=401, detail="Invalid tenant key — get your key at galuli dashboard")
 
     # Check domain is allowed for this tenant (auto-registers up to plan limit)
     if not tenant_svc.is_domain_allowed(payload.tenant_key, domain):
         raise HTTPException(
             status_code=403,
             detail=f"Domain '{domain}' not allowed on this plan. "
-                   f"Upgrade or remove another domain at your Galui dashboard."
+                   f"Upgrade or remove another domain at your Galuli dashboard."
         )
 
     # Track usage
@@ -256,7 +256,7 @@ async def get_score(domain: str):
     if not registry:
         raise HTTPException(
             status_code=404,
-            detail=f"No registry for '{domain}'. Install the galui snippet first."
+            detail=f"No registry for '{domain}'. Install the galuli snippet first."
         )
     score = calculate_score(registry.model_dump())
     suggestions = generate_suggestions(score)
@@ -319,3 +319,20 @@ async def get_suggestions(domain: str):
         "grade": score["grade"],
         "suggestions": generate_suggestions(score),
     }
+
+
+@router.get("/geo/{domain}", summary="GEO (Generative Engine Optimization) Score")
+async def get_geo_score(domain: str):
+    """
+    Per-LLM citation readiness score: how likely is each major AI to cite your site?
+    Returns scores for ChatGPT, Perplexity, Claude, Gemini, Grok, and Llama.
+    """
+    from app.services.geo import calculate_geo_score
+    domain = domain.replace("www.", "").lower().strip()
+    registry = storage.get_registry(domain)
+    if not registry:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No registry for '{domain}'. Install the Galuli snippet first."
+        )
+    return calculate_geo_score(registry.model_dump())
