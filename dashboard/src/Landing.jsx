@@ -421,6 +421,17 @@ export function LandingPage({ onScanComplete }) {
         </div>
       </div>
 
+      {/* FAQ */}
+      <div className="container" style={{ padding: '80px 24px 60px', maxWidth: 760, margin: '0 auto' }}>
+        <div className="text-center" style={{ marginBottom: 48 }}>
+          <div className="badge badge-blue" style={{ display: 'inline-block', marginBottom: 14 }}>FAQ</div>
+          <h2 style={{ fontSize: 'clamp(1.6rem, 3.5vw, 2.4rem)', fontWeight: 800, letterSpacing: '-0.4px', lineHeight: 1.2 }}>
+            Questions we get asked a lot
+          </h2>
+        </div>
+        <FaqAccordion />
+      </div>
+
       {/* Bottom CTA */}
       <div className="container text-center" style={{ padding: '80px 24px' }}>
         <h2 className="headline" style={{ marginBottom: 14 }}>Ready to be found by AI?</h2>
@@ -459,6 +470,104 @@ export function LandingPage({ onScanComplete }) {
           .what-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
+    </div>
+  )
+}
+
+const FAQ_ITEMS = [
+  {
+    q: "What is GEO — Generative Engine Optimization?",
+    a: "GEO is the discipline of making your website visible to and recommended by AI systems like ChatGPT, Claude, Perplexity, and Gemini. Traditional SEO gets you ranked in Google. GEO gets you cited in AI answers — which now reach billions of users daily. The two disciplines share some DNA (quality content, authority) but diverge sharply on signals, mechanics, and measurement."
+  },
+  {
+    q: "Which AI systems does Galuli optimize for?",
+    a: "Six: ChatGPT (OpenAI), Perplexity, Claude (Anthropic), Gemini (Google), Grok (xAI), and Llama (Meta / open-source). Each weights different signals differently. Galuli gives you an individual GEO Score for each so you know exactly which systems you're underperforming on and why."
+  },
+  {
+    q: "What is an AI Readiness Score?",
+    a: "A 0–100 score across 5 dimensions: Content Clarity (can AI extract accurate facts from your pages?), Structural Legibility (schema markup, headers, sitemap quality), Machine-Readable Signals (llms.txt, ai-plugin.json, WebMCP registration), Authority & Citation (third-party mentions in trusted sources), and Freshness & Activity (how current is your content?). Each dimension is scored independently so you know exactly where to improve."
+  },
+  {
+    q: "What is llms.txt and do I need one?",
+    a: "llms.txt is a Markdown file at /llms.txt on your domain that summarizes your site specifically for AI language models — in a clean, structured format they can read directly. Without it, AI systems infer your product from marketing copy, which leads to incomplete or inaccurate representations. Galuli generates yours automatically from your crawl data."
+  },
+  {
+    q: "What is WebMCP?",
+    a: "WebMCP (Web Multi-agent Communication Protocol) is an emerging standard for registering your service capabilities with AI agent frameworks. When registered, AI agents can discover and interact with your tools directly — without guessing from your homepage. Galuli handles registration automatically when you install the snippet."
+  },
+  {
+    q: "How does AI agent analytics work?",
+    a: "AI crawlers (ChatGPT-User, ClaudeBot, PerplexityBot, etc.) don't execute JavaScript, so they never appear in Google Analytics. Galuli's snippet layer detects AI-specific request patterns and correlates them with server-side signals to give you visibility into which AI systems are reading your site, which pages they visit, and how that traffic trends over time."
+  },
+  {
+    q: "How long does a scan take?",
+    a: "A typical scan completes in 60–90 seconds. The pipeline crawls your pages, runs a 4-pass AI comprehension analysis using Claude, extracts your site's capabilities, calculates your AI Readiness Score, and generates a draft llms.txt — all automatically."
+  },
+  {
+    q: "Is Galuli free?",
+    a: "Yes — the free tier lets you scan up to 3 sites with no credit card required. You get the full AI Readiness Score, GEO Score across all 6 LLMs, and AI agent analytics. The Pro plan ($49/year) adds 50 sites, priority crawling, automated weekly re-scans, and a badge you can embed anywhere."
+  },
+  {
+    q: "How is Galuli different from SEMrush or Ahrefs?",
+    a: "SEMrush and Ahrefs measure traditional search visibility — keyword rankings, backlinks, organic Google traffic. Galuli measures AI visibility — how AI systems understand and recommend your site. These are complementary, not competing. You can have a high domain authority and terrible AI readiness, or a small site with near-perfect AI visibility. We built Galuli to be the SEMrush of the AI era."
+  },
+]
+
+function FaqAccordion() {
+  const [open, setOpen] = useState(null)
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+      {FAQ_ITEMS.map((item, i) => {
+        const isOpen = open === i
+        return (
+          <div
+            key={i}
+            style={{
+              borderBottom: '1px solid var(--border)',
+              overflow: 'hidden',
+            }}
+          >
+            <button
+              onClick={() => setOpen(isOpen ? null : i)}
+              style={{
+                width: '100%',
+                textAlign: 'left',
+                padding: '20px 0',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: 16,
+              }}
+            >
+              <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', lineHeight: 1.4, flex: 1 }}>
+                {item.q}
+              </span>
+              <span style={{
+                fontSize: 20,
+                color: 'var(--accent)',
+                flexShrink: 0,
+                transform: isOpen ? 'rotate(45deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s ease',
+                lineHeight: 1,
+              }}>+</span>
+            </button>
+            {isOpen && (
+              <div style={{
+                paddingBottom: 24,
+                fontSize: 15,
+                color: 'var(--muted)',
+                lineHeight: 1.75,
+                animation: 'fadeSlideUp 0.2s ease forwards',
+              }}>
+                {item.a}
+              </div>
+            )}
+          </div>
+        )
+      })}
     </div>
   )
 }
