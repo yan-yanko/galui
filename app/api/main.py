@@ -125,10 +125,116 @@ async def health():
     }
 
 
-# ── Snippet delivery ───────────────────────────────────────────────────────
-from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
+# ── Crawler-critical public files ──────────────────────────────────────────
+# These MUST be served publicly with no auth. AI crawlers and search engines
+# check these before doing anything else. A 401 here breaks all discovery.
+from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 import pathlib as _pathlib
+
+@app.get("/robots.txt", include_in_schema=False)
+async def robots_txt():
+    """robots.txt — public, no auth. Directs all crawlers including AI agents."""
+    content = (
+        "User-agent: *\n"
+        "Allow: /\n"
+        "\n"
+        "# AI training crawlers — allow all\n"
+        "User-agent: GPTBot\n"
+        "Allow: /\n"
+        "\n"
+        "User-agent: ChatGPT-User\n"
+        "Allow: /\n"
+        "\n"
+        "User-agent: ClaudeBot\n"
+        "Allow: /\n"
+        "\n"
+        "User-agent: anthropic-ai\n"
+        "Allow: /\n"
+        "\n"
+        "User-agent: PerplexityBot\n"
+        "Allow: /\n"
+        "\n"
+        "User-agent: Google-Extended\n"
+        "Allow: /\n"
+        "\n"
+        "User-agent: Amazonbot\n"
+        "Allow: /\n"
+        "\n"
+        "User-agent: meta-externalagent\n"
+        "Allow: /\n"
+        "\n"
+        "Sitemap: https://galuli.io/sitemap.xml\n"
+        "# AI discovery: https://galuli.io/llms.txt\n"
+    )
+    return PlainTextResponse(content, headers={"Cache-Control": "public, max-age=3600"})
+
+
+@app.get("/sitemap.xml", include_in_schema=False)
+async def sitemap_xml():
+    """XML sitemap — public, for search engines and AI crawlers."""
+    content = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        '  <url><loc>https://galuli.io/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>\n'
+        '  <url><loc>https://galuli.io/blog</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>\n'
+        '  <url><loc>https://galuli.io/blog/what-is-geo</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>\n'
+        '  <url><loc>https://galuli.io/blog/llms-txt-guide</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>\n'
+        '  <url><loc>https://galuli.io/blog/ai-readiness-score</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>\n'
+        '  <url><loc>https://galuli.io/blog/ai-agent-analytics</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>\n'
+        '  <url><loc>https://galuli.io/blog/future-of-search</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>\n'
+        '  <url><loc>https://galuli.io/about</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>\n'
+        '  <url><loc>https://galuli.io/roadmap</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>\n'
+        '</urlset>\n'
+    )
+    return HTMLResponse(content, media_type="application/xml",
+                        headers={"Cache-Control": "public, max-age=3600"})
+
+
+@app.get("/llms.txt", include_in_schema=False)
+async def llms_txt():
+    """
+    llms.txt — AI-readable summary of Galuli for language models.
+    Spec: https://llmstxt.org
+    Public, no auth required. AI crawlers fetch this first.
+    """
+    content = (
+        "# Galuli\n\n"
+        "> Galuli is a Generative Engine Optimization (GEO) platform that measures and improves "
+        "how websites appear in AI search results from ChatGPT, Claude, Perplexity, Gemini, Grok, and Llama.\n\n"
+        "Galuli was founded in 2025. It provides an AI Readiness Score (0-100 across 5 dimensions), "
+        "individual GEO Scores for 6 major AI systems, automatic llms.txt generation, WebMCP tool "
+        "registration, and AI agent traffic analytics. Install takes one script tag.\n\n"
+        "Pricing: Free tier (3 sites, no credit card). Pro plan $49/year (50 sites, weekly auto-rescan). "
+        "Enterprise pricing available.\n\n"
+        "## Getting Started\n\n"
+        "- [Home / Free Scan](https://galuli.io/): Scan any URL and get an instant AI Readiness Score\n"
+        "- [Dashboard](https://galuli.io/dashboard/): Full analytics, GEO scores, snippet, registry management\n"
+        "- [About](https://galuli.io/about): Company story, beliefs, full product overview, pricing\n\n"
+        "## Product\n\n"
+        "- [AI Readiness Score](https://galuli.io/blog/ai-readiness-score): The 5 dimensions explained\n"
+        "- [Roadmap](https://galuli.io/roadmap): Public Q1-Q4 2025 roadmap with shipped and planned items\n\n"
+        "## Blog / Education\n\n"
+        "- [What is GEO?](https://galuli.io/blog/what-is-geo): Complete guide to Generative Engine Optimization\n"
+        "- [llms.txt Guide](https://galuli.io/blog/llms-txt-guide): Format, examples, common mistakes, full AI-readability stack\n"
+        "- [AI Agent Analytics](https://galuli.io/blog/ai-agent-analytics): Track the AI traffic you can't see in Google Analytics\n"
+        "- [Future of Search](https://galuli.io/blog/future-of-search): How AI is rewriting online discovery\n\n"
+        "## API\n\n"
+        "- [API Docs](https://galuli.io/docs): FastAPI interactive documentation\n"
+        "- [Registry endpoint](https://galuli.io/registry/{domain}): JSON capability registry for any indexed domain\n"
+        "- [llms.txt per domain](https://galuli.io/registry/{domain}/llms.txt): Auto-generated llms.txt for indexed sites\n"
+        "- [AI Plugin manifest](https://galuli.io/registry/{domain}/ai-plugin.json): OpenAI-compatible plugin manifest\n\n"
+        "## Contact\n\n"
+        "- Email: hello@galuli.io\n"
+        "- GitHub: https://github.com/yan-yanko/galuli\n"
+    )
+    return PlainTextResponse(content, headers={
+        "Cache-Control": "public, max-age=3600",
+        "Content-Type": "text/plain; charset=utf-8",
+    })
+
+
+# ── Snippet delivery ───────────────────────────────────────────────────────
 
 SNIPPET_VERSION = "3.1.0"
 SNIPPET_RELEASED = "2026-02-25"
@@ -186,8 +292,11 @@ if _dashboard_path.exists():
     @app.get("/{full_path:path}", include_in_schema=False)
     async def serve_spa_fallback(full_path: str):
         """SPA fallback — serve index.html for any non-API path so React Router handles it."""
-        # Don't catch API routes, registry, or static files — let them 404 normally
-        if full_path.startswith(("api/", "registry/", "docs", "redoc", "openapi")):
+        # Don't intercept API routes, registry, static files, or crawler files
+        skip_prefixes = ("api/", "registry/", "docs", "redoc", "openapi", ".well-known/")
+        skip_exact = {"robots.txt", "sitemap.xml", "llms.txt", "llms-full.txt",
+                      "galuli.js", "galui.js", "favicon.ico", "favicon.svg"}
+        if full_path.startswith(skip_prefixes) or full_path in skip_exact:
             from fastapi import HTTPException
             raise HTTPException(status_code=404, detail="Not found")
         index_path = _dashboard_path / "index.html"
