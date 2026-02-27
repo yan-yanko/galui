@@ -1,13 +1,19 @@
 """
 Analytics routes.
 
-POST /api/v1/analytics/event  ← AI agent hit events from snippet
-GET  /api/v1/analytics/{domain}        ← customer dashboard data
-GET  /api/v1/analytics/{domain}/agents ← agent breakdown
-GET  /api/v1/analytics/{domain}/pages  ← per-page breakdown
+POST /api/v1/analytics/event              ← AI agent hit events from snippet
+GET  /api/v1/analytics/{domain}           ← customer dashboard data
+GET  /api/v1/analytics/{domain}/agents    ← agent breakdown
+GET  /api/v1/analytics/{domain}/pages     ← per-page breakdown
+
+Sprint 1 — AI Analytics ROI Engine:
+GET  /api/v1/analytics/{domain}/topics        ← topic-level AI attention map
+GET  /api/v1/analytics/{domain}/attention     ← AI Attention Score (0-100)
+GET  /api/v1/analytics/{domain}/llm-depth     ← per-LLM crawl depth analysis
+GET  /api/v1/analytics/{domain}/agent-trend   ← daily trend for a specific agent
 """
 import logging
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request, HTTPException, Query
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
@@ -66,3 +72,57 @@ async def get_pages(domain: str, days: int = 30):
     """Which pages get the most AI agent traffic."""
     domain = domain.replace("www.", "").lower().strip()
     return analytics.get_page_breakdown(domain, days=days)
+
+
+# ── Sprint 1: AI Analytics ROI Engine ─────────────────────────────────────────
+
+@router.get("/{domain}/topics", summary="AI Attention by content topic")
+async def get_topics(domain: str, days: int = 30):
+    """
+    Topic-level AI attention map.
+
+    Maps page URLs to content categories (Blog, Product, Pricing, Docs, etc.)
+    and shows which topics get the most AI crawler attention — and from which AI systems.
+    """
+    domain = domain.replace("www.", "").lower().strip()
+    return analytics.get_topic_map(domain, days=days)
+
+
+@router.get("/{domain}/attention", summary="AI Attention Score (0-100)")
+async def get_attention_score(domain: str, days: int = 30):
+    """
+    AI Attention Score — composite 0-100 metric.
+
+    Components:
+      - Frequency (40%): how often AI agents visit
+      - Depth (35%):     how many unique pages they crawl
+      - Recency (25%):   how recently they last visited
+      - Diversity bonus: how many distinct AI systems
+
+    Benchmarks: 500 hits/30d, 20+ unique pages = score 100.
+    """
+    domain = domain.replace("www.", "").lower().strip()
+    return analytics.get_ai_attention_score(domain, days=days)
+
+
+@router.get("/{domain}/llm-depth", summary="Per-LLM crawl depth analysis")
+async def get_llm_depth(domain: str, days: int = 30):
+    """
+    Per-LLM crawl depth and trend.
+
+    For each AI agent: total hits, unique pages, depth ratio,
+    first/last seen, and whether attention is growing or declining.
+    """
+    domain = domain.replace("www.", "").lower().strip()
+    return analytics.get_per_llm_depth(domain, days=days)
+
+
+@router.get("/{domain}/agent-trend", summary="Daily trend for a specific AI agent")
+async def get_agent_trend(
+    domain: str,
+    agent: str = Query(..., description="Agent name, e.g. GPTBot"),
+    days: int = 30,
+):
+    """Daily hit trend for a specific AI agent — used for sparkline charts."""
+    domain = domain.replace("www.", "").lower().strip()
+    return analytics.get_agent_trend(domain, agent_name=agent, days=days)

@@ -93,15 +93,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from app.api.routes import ingest, registry, admin, tenants, push, analytics, billing
+from app.api.routes import ingest, registry, admin, tenants, push, analytics, billing, content_doctor
 
-app.include_router(ingest.router,    prefix="/api/v1",             tags=["Ingestion"])
-app.include_router(push.router,      prefix="/api/v1",             tags=["Snippet / Push"])
-app.include_router(registry.router,  prefix="/registry",           tags=["Registry"])
-app.include_router(admin.router,     prefix="/api/v1/admin",       tags=["Admin"])
-app.include_router(tenants.router,   prefix="/api/v1/tenants",     tags=["Tenants"])
-app.include_router(analytics.router, prefix="/api/v1/analytics",   tags=["Analytics"])
-app.include_router(billing.router,   prefix="/api/v1",             tags=["Auth & Billing"])
+app.include_router(ingest.router,         prefix="/api/v1",                  tags=["Ingestion"])
+app.include_router(push.router,           prefix="/api/v1",                  tags=["Snippet / Push"])
+app.include_router(registry.router,       prefix="/registry",                tags=["Registry"])
+app.include_router(admin.router,          prefix="/api/v1/admin",            tags=["Admin"])
+app.include_router(tenants.router,        prefix="/api/v1/tenants",          tags=["Tenants"])
+app.include_router(analytics.router,      prefix="/api/v1/analytics",        tags=["Analytics"])
+app.include_router(billing.router,        prefix="/api/v1",                  tags=["Auth & Billing"])
+app.include_router(content_doctor.router, prefix="/api/v1/content-doctor",   tags=["Content Doctor"])
 
 
 @app.get("/health", tags=["System"])

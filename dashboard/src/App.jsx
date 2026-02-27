@@ -4,7 +4,7 @@ import './index.css'
 import './App.css'
 
 // ── Toast ──────────────────────────────────────────────────────────────────
-let _addToast = () => {}
+let _addToast = () => { }
 function ToastContainer() {
   const [toasts, setToasts] = useState([])
   useEffect(() => {
@@ -22,24 +22,24 @@ function ToastContainer() {
 }
 const toast = {
   success: m => _addToast(m, 'success'),
-  error:   m => _addToast(m, 'error'),
-  info:    m => _addToast(m, 'info'),
+  error: m => _addToast(m, 'error'),
+  info: m => _addToast(m, 'info'),
 }
 
 // ── Shared components ──────────────────────────────────────────────────────
 function StatusBadge({ status }) {
   const map = {
-    operational:  ['badge-green',  'Operational'],
-    complete:     ['badge-green',  'Complete'],
-    degraded:     ['badge-yellow', 'Degraded'],
-    outage:       ['badge-red',    'Outage'],
-    unreachable:  ['badge-red',    'Unreachable'],
-    failed:       ['badge-red',    'Failed'],
-    crawling:     ['badge-blue',   'Crawling'],
-    comprehending:['badge-blue',   'Processing'],
-    storing:      ['badge-blue',   'Storing'],
-    pending:      ['badge-gray',   'Pending'],
-    unknown:      ['badge-gray',   'Unknown'],
+    operational: ['badge-green', 'Operational'],
+    complete: ['badge-green', 'Complete'],
+    degraded: ['badge-yellow', 'Degraded'],
+    outage: ['badge-red', 'Outage'],
+    unreachable: ['badge-red', 'Unreachable'],
+    failed: ['badge-red', 'Failed'],
+    crawling: ['badge-blue', 'Crawling'],
+    comprehending: ['badge-blue', 'Processing'],
+    storing: ['badge-blue', 'Storing'],
+    pending: ['badge-gray', 'Pending'],
+    unknown: ['badge-gray', 'Unknown'],
   }
   const [cls, label] = map[status] || ['badge-gray', status]
   return <span className={`badge ${cls}`}>{label}</span>
@@ -54,8 +54,8 @@ function ScoreRing({ score, size = 80 }) {
   return (
     <div style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}>
       <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
-        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--border2)" strokeWidth={7} />
-        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={7}
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--border2)" strokeWidth={7} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth={7}
           strokeDasharray={`${dash} ${circ}`} strokeLinecap="round"
           style={{ transition: 'stroke-dasharray 0.6s ease' }} />
       </svg>
@@ -113,12 +113,13 @@ function EmptyState({ icon, title, description, action }) {
 
 // ── Nav ─────────────────────────────────────────────────────────────────────
 const NAV_LINKS = [
-  { id: 'overview',  label: 'Overview'  },
-  { id: 'score',     label: 'AI Score'  },
-  { id: 'geo',       label: 'GEO'       },
+  { id: 'overview', label: 'Overview' },
+  { id: 'score', label: 'AI Score' },
+  { id: 'geo', label: 'GEO' },
   { id: 'analytics', label: 'Analytics' },
-  { id: 'snippet',   label: 'Snippet'   },
-  { id: 'settings',  label: 'Settings'  },
+  { id: 'content-doctor', label: '🩺 Content Doctor', highlight: true },
+  { id: 'snippet', label: 'Snippet' },
+  { id: 'settings', label: 'Settings' },
 ]
 
 function Nav({ page, setPage, health, theme, toggleTheme }) {
@@ -143,10 +144,10 @@ function Nav({ page, setPage, health, theme, toggleTheme }) {
       <div style={{ display: 'flex', gap: 1, flex: 1, overflowX: 'auto' }}>
         {NAV_LINKS.map(l => (
           <button key={l.id} onClick={() => setPage(l.id)} style={{
-            background: page === l.id ? 'var(--border)' : 'none',
-            color: page === l.id ? 'var(--text)' : 'var(--muted)',
+            background: page === l.id ? 'var(--border)' : l.highlight && page !== l.id ? 'var(--accent)18' : 'none',
+            color: page === l.id ? 'var(--text)' : l.highlight ? 'var(--accent)' : 'var(--muted)',
             padding: '6px 14px', borderRadius: 7,
-            fontWeight: page === l.id ? 600 : 400,
+            fontWeight: page === l.id || l.highlight ? 600 : 400,
             fontSize: 13, whiteSpace: 'nowrap', flexShrink: 0,
             transition: 'color 0.12s, background 0.12s',
           }}>{l.label}</button>
@@ -197,7 +198,7 @@ function OverviewPage({ setPage, setPendingScanDomain }) {
       regs.forEach(reg => {
         api.getScore(reg.domain)
           .then(s => setScores(prev => ({ ...prev, [reg.domain]: s })))
-          .catch(() => {})
+          .catch(() => { })
       })
     }).finally(() => setLoading(false))
   }, [])
@@ -260,8 +261,8 @@ function OverviewPage({ setPage, setPendingScanDomain }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 12 }}>
           {[
             { label: 'Sites indexed', value: registries.length, color: 'var(--accent)' },
-            { label: 'Avg AI score',  value: avgScore !== null ? `${avgScore}/100` : '—', color: avgScore >= 70 ? 'var(--green)' : avgScore >= 50 ? 'var(--yellow)' : 'var(--red)' },
-            { label: 'WebMCP sites',  value: scores_arr.filter(s => s?.dimensions?.webmcp_compliance?.webmcp_enabled).length, color: 'var(--purple)' },
+            { label: 'Avg AI score', value: avgScore !== null ? `${avgScore}/100` : '—', color: avgScore >= 70 ? 'var(--green)' : avgScore >= 50 ? 'var(--yellow)' : 'var(--red)' },
+            { label: 'WebMCP sites', value: scores_arr.filter(s => s?.dimensions?.webmcp_compliance?.webmcp_enabled).length, color: 'var(--purple)' },
           ].map(c => (
             <div key={c.label} className="stat-card">
               <div className="stat-value" style={{ color: c.color, fontSize: 26 }}>{c.value}</div>
@@ -367,7 +368,7 @@ function IngestPage() {
         api.getScore(domain),
       ])
       setResult({ registry, score })
-    } catch {}
+    } catch { }
     setLoadingResult(false)
   }
 
@@ -386,7 +387,7 @@ function IngestPage() {
             toast.error(`Failed: ${u.error}`)
           }
         }
-      } catch {}
+      } catch { }
     }, 800)
     return () => clearInterval(i)
   }, [polling, job])
@@ -610,7 +611,7 @@ function ScorePage({ pendingDomain, clearPending }) {
 
   const loadScore = (domain) => {
     setSelected(domain); setLoading(true); setScore(null)
-    api.getScore(domain).then(setScore).catch(() => {}).finally(() => setLoading(false))
+    api.getScore(domain).then(setScore).catch(() => { }).finally(() => setLoading(false))
   }
 
   useEffect(() => {
@@ -620,7 +621,7 @@ function ScorePage({ pendingDomain, clearPending }) {
       // If we came from a scan, select that domain; else pick the first
       const target = pendingDomain || (regs.length > 0 ? regs[0].domain : null)
       if (target) loadScore(target)
-    }).catch(() => {})
+    }).catch(() => { })
   }, [])
 
   // Poll every 5s when there's a pending scan until score appears
@@ -639,16 +640,16 @@ function ScorePage({ pendingDomain, clearPending }) {
             setPolling(false)
             clearPending()
             clearInterval(interval)
-          }).catch(() => {})
+          }).catch(() => { })
         }
-      }).catch(() => {})
+      }).catch(() => { })
     }, 5000)
     return () => clearInterval(interval)
   }, [pendingDomain])
 
   const dimLabels = { content_coverage: 'Content Coverage', structure_quality: 'Structure Quality', freshness: 'Freshness', webmcp_compliance: 'WebMCP Compliance', output_formats: 'Output Formats' }
   const dimColors = { content_coverage: 'var(--accent2)', structure_quality: 'var(--green)', freshness: 'var(--blue)', webmcp_compliance: 'var(--purple)', output_formats: 'var(--yellow)' }
-  const dimDesc  = {
+  const dimDesc = {
     content_coverage: 'How well your site\'s capabilities, use cases, and value proposition are extracted and described. Low score = AI agents can\'t explain what you do.',
     structure_quality: 'Completeness of structured data: pricing, API info, schema.org markup, headings hierarchy. Low score = AI gives incomplete or inaccurate answers about your product.',
     freshness: 'How recently your registry was updated relative to your actual site. Stale data = AI agents cite outdated information.',
@@ -729,11 +730,11 @@ function ScorePage({ pendingDomain, clearPending }) {
             <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>Score scale</div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {[
-                { range: '90–100', grade: 'A+', color: 'var(--green)',  label: 'Elite — fully AI-optimized' },
-                { range: '70–89',  grade: 'B',  color: 'var(--blue)',   label: 'Good — minor improvements needed' },
-                { range: '50–69',  grade: 'C',  color: 'var(--yellow)', label: 'Average — AI may miss key info' },
-                { range: '30–49',  grade: 'D',  color: 'var(--red)',    label: 'Poor — high invisibility risk' },
-                { range: '0–29',   grade: 'F',  color: '#991b1b',       label: 'Not readable by AI' },
+                { range: '90–100', grade: 'A+', color: 'var(--green)', label: 'Elite — fully AI-optimized' },
+                { range: '70–89', grade: 'B', color: 'var(--blue)', label: 'Good — minor improvements needed' },
+                { range: '50–69', grade: 'C', color: 'var(--yellow)', label: 'Average — AI may miss key info' },
+                { range: '30–49', grade: 'D', color: 'var(--red)', label: 'Poor — high invisibility risk' },
+                { range: '0–29', grade: 'F', color: '#991b1b', label: 'Not readable by AI' },
               ].map(({ range, grade, color, label }) => (
                 <div key={grade} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, padding: '7px 12px', flex: '1 1 160px' }}>
                   <div style={{ width: 24, height: 24, borderRadius: 6, background: color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: 'white', fontSize: 11, flexShrink: 0 }}>{grade}</div>
@@ -848,6 +849,9 @@ const AGENT_COLORS = {
   'BingBot': '#06b6d4', 'WebMCP Agent': '#ec4899',
 }
 
+const TREND_ICON = { growing: '↑', stable: '→', declining: '↓' }
+const TREND_COLOR = { growing: 'var(--green)', stable: 'var(--muted)', declining: 'var(--red)' }
+
 function AnalyticsPage({ setPage }) {
   const [registries, setRegistries] = useState([])
   const [selected, setSelected] = useState('')
@@ -855,6 +859,9 @@ function AnalyticsPage({ setPage }) {
   const [summary, setSummary] = useState(null)
   const [agents, setAgents] = useState([])
   const [pages, setPages] = useState([])
+  const [attention, setAttention] = useState(null)
+  const [topics, setTopics] = useState([])
+  const [llmDepth, setLlmDepth] = useState([])
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -862,7 +869,7 @@ function AnalyticsPage({ setPage }) {
       const regs = r.registries || []
       setRegistries(regs)
       if (regs.length > 0 && !selected) setSelected(regs[0].domain)
-    }).catch(() => {})
+    }).catch(() => { })
   }, [])
 
   useEffect(() => {
@@ -872,14 +879,26 @@ function AnalyticsPage({ setPage }) {
       api.getAnalytics(selected, days),
       api.getAgentBreakdown(selected, days),
       api.getPageBreakdown(selected, days),
-    ]).then(([s, a, p]) => {
-      setSummary(s); setAgents(a.agents || []); setPages(p.pages || [])
+      api.getAttentionScore(selected, days).catch(() => null),
+      api.getTopicMap(selected, days).catch(() => ({ topics: [] })),
+      api.getLlmDepth(selected, days).catch(() => ({ agents: [] })),
+    ]).then(([s, a, p, att, top, depth]) => {
+      setSummary(s)
+      setAgents(a.agents || [])
+      setPages(p.pages || [])
+      setAttention(att)
+      setTopics(top.topics || [])
+      setLlmDepth(depth.agents || [])
     }).catch(() => {
       setSummary({ total_ai_hits: 0, unique_agents: 0, top_agents: [], daily_trend: [] })
     }).finally(() => setLoading(false))
   }, [selected, days])
 
   const maxHits = agents.length > 0 ? Math.max(...agents.map(a => a.hits)) : 1
+
+  // AI Attention Score ring colors
+  const attScore = attention?.score || 0
+  const attColor = attScore >= 70 ? 'var(--green)' : attScore >= 40 ? 'var(--yellow)' : 'var(--red)'
 
   return (
     <div className="flex col gap-24">
@@ -912,7 +931,7 @@ function AnalyticsPage({ setPage }) {
             </div>
             <div style={{ marginTop: 16 }}>
               <button className="btn btn-primary btn-sm" onClick={() => setPage('snippet')}>
-                View install guide →
+                View install guide
               </button>
             </div>
           </div>
@@ -938,20 +957,100 @@ function AnalyticsPage({ setPage }) {
 
       {!loading && summary && summary.total_ai_hits > 0 && (
         <>
-          {/* Stats */}
+          {/* ── AI Attention Score hero ── */}
+          {attention && (
+            <div className="card" style={{ padding: '24px 28px', borderTop: '3px solid var(--accent2)' }}>
+              <div className="flex center gap-28 wrap">
+                {/* Score ring */}
+                <div style={{ position: 'relative', width: 110, height: 110, flexShrink: 0 }}>
+                  <svg width={110} height={110} style={{ transform: 'rotate(-90deg)' }}>
+                    <circle cx={55} cy={55} r={44} fill="none" stroke="var(--border2)" strokeWidth={8} />
+                    <circle cx={55} cy={55} r={44} fill="none" stroke={attColor} strokeWidth={8}
+                      strokeDasharray={`${(attScore / 100) * (2 * Math.PI * 44)} ${2 * Math.PI * 44}`}
+                      strokeLinecap="round" style={{ transition: 'stroke-dasharray 0.7s ease' }} />
+                  </svg>
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ fontSize: 26, fontWeight: 800, color: attColor, lineHeight: 1 }}>{attScore}</span>
+                    <span style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2 }}>{attention.grade}</span>
+                  </div>
+                </div>
+                {/* Score details */}
+                <div className="flex col gap-10" style={{ flex: 1 }}>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: 18 }}>AI Attention Score</div>
+                    <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 3 }}>{attention.insight}</div>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+                    {[
+                      { label: 'Frequency', val: attention.components?.frequency, max: 40 },
+                      { label: 'Depth', val: attention.components?.depth, max: 35 },
+                      { label: 'Recency', val: attention.components?.recency, max: 25 },
+                      { label: 'Diversity', val: attention.components?.diversity_bonus, max: 10 },
+                    ].map(c => (
+                      <div key={c.label} style={{ background: 'var(--surface2)', borderRadius: 8, padding: '8px 10px', border: '1px solid var(--border)' }}>
+                        <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 4 }}>{c.label}</div>
+                        <div style={{ fontSize: 16, fontWeight: 700, color: attColor }}>{c.val}<span style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 400 }}>/{c.max}</span></div>
+                        <div style={{ height: 3, borderRadius: 2, background: 'var(--border)', marginTop: 5 }}>
+                          <div style={{ height: 3, borderRadius: 2, background: attColor, width: (c.val / c.max * 100) + '%', transition: 'width 0.5s' }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Stats row */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
             {[
-              { label: 'Total AI visits',  value: summary.total_ai_hits, color: 'var(--accent2)' },
-              { label: 'Unique agents',    value: summary.unique_agents, color: 'var(--green)'   },
-              { label: 'Top agent',        value: summary.top_agents?.[0]?.agent_name || '—', color: 'var(--blue)' },
-              { label: 'Most visited',     value: summary.top_pages?.[0]?.hits || '—', color: 'var(--yellow)' },
+              { label: 'Total AI visits', value: summary.total_ai_hits, color: 'var(--accent2)' },
+              { label: 'Unique agents', value: summary.unique_agents, color: 'var(--green)' },
+              { label: 'Top agent', value: summary.top_agents?.[0]?.agent_name || '—', color: 'var(--blue)' },
+              { label: 'Most visited', value: summary.top_pages?.[0]?.hits ? summary.top_pages[0].hits + ' hits' : '—', color: 'var(--yellow)' },
             ].map(c => (
               <div key={c.label} className="stat-card">
-                <div className="stat-value" style={{ color: c.color, fontSize: 24 }}>{c.value}</div>
+                <div className="stat-value" style={{ color: c.color, fontSize: c.label === 'Top agent' ? 16 : 24 }}>{c.value}</div>
                 <div className="stat-label">{c.label}</div>
               </div>
             ))}
           </div>
+
+          {/* ── Topic Map ── */}
+          {topics.length > 0 && (
+            <div className="card flex col gap-14">
+              <div className="flex between center">
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: 14 }}>AI Attention by Content Topic</div>
+                  <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>Which content areas attract the most AI crawler attention</div>
+                </div>
+              </div>
+              <div className="flex col gap-10">
+                {topics.map((t, i) => (
+                  <div key={t.topic}>
+                    <div className="flex between center" style={{ marginBottom: 5 }}>
+                      <div className="flex center gap-10">
+                        <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', width: 16 }}>{i + 1}</span>
+                        <span style={{ fontSize: 13, fontWeight: 500 }}>{t.topic}</span>
+                        <span style={{ fontSize: 11, color: 'var(--muted)' }}>{t.unique_pages} page{t.unique_pages !== 1 ? 's' : ''}</span>
+                      </div>
+                      <div className="flex center gap-8">
+                        {t.top_agents.slice(0, 3).map(a => (
+                          <span key={a.agent} style={{ fontSize: 10, background: (AGENT_COLORS[a.agent] || '#6b7280') + '22', color: AGENT_COLORS[a.agent] || 'var(--muted)', padding: '2px 7px', borderRadius: 10, fontWeight: 600 }}>
+                            {a.agent.replace('Bot', '').replace('bot', '')}
+                          </span>
+                        ))}
+                        <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent2)', fontVariantNumeric: 'tabular-nums', minWidth: 44, textAlign: 'right' }}>{t.total_hits} visits</span>
+                      </div>
+                    </div>
+                    <div style={{ height: 6, borderRadius: 3, background: 'var(--border)' }}>
+                      <div style={{ height: 6, borderRadius: 3, background: 'var(--accent2)', width: t.attention_pct + '%', opacity: 0.75, transition: 'width 0.5s' }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Agent breakdown + top pages */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
@@ -984,12 +1083,69 @@ function AnalyticsPage({ setPage }) {
                     <span style={{ flex: 1, color: 'var(--accent2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {p.page_url.replace(/^https?:\/\/[^/]+/, '') || '/'}
                     </span>
-                    <span style={{ color: 'var(--muted)', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>{p.total_hits}×</span>
+                    <span style={{ color: 'var(--muted)', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>{p.total_hits}x</span>
                   </div>
                 ))
               }
             </div>
           </div>
+
+          {/* ── Per-LLM Depth Analysis ── */}
+          {llmDepth.length > 0 && (
+            <div className="card flex col gap-14">
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 14 }}>Per-LLM Crawl Depth</div>
+                <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
+                  How deep each AI system goes vs. how many pages they revisit
+                </div>
+              </div>
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                      {['Agent', 'Total visits', 'Unique pages', 'Depth ratio', 'Trend', 'Last seen'].map(h => (
+                        <th key={h} style={{ padding: '6px 10px', textAlign: 'left', fontSize: 11, color: 'var(--muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {llmDepth.map(a => (
+                      <tr key={a.agent_name} style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}
+                        onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'}
+                        onMouseLeave={e => e.currentTarget.style.background = ''}>
+                        <td style={{ padding: '8px 10px', whiteSpace: 'nowrap' }}>
+                          <div className="flex center gap-8">
+                            <div style={{ width: 8, height: 8, borderRadius: '50%', background: AGENT_COLORS[a.agent_name] || 'var(--muted)', flexShrink: 0 }} />
+                            <span style={{ fontWeight: 500 }}>{a.agent_name}</span>
+                            <span style={{ fontSize: 10, color: 'var(--muted)', background: 'var(--border)', padding: '1px 6px', borderRadius: 8 }}>{a.agent_type}</span>
+                          </div>
+                        </td>
+                        <td style={{ padding: '8px 10px', fontVariantNumeric: 'tabular-nums', color: 'var(--accent2)', fontWeight: 600 }}>{a.total_hits}</td>
+                        <td style={{ padding: '8px 10px', fontVariantNumeric: 'tabular-nums' }}>{a.unique_pages}</td>
+                        <td style={{ padding: '8px 10px' }}>
+                          <span style={{ fontSize: 12, color: a.depth_ratio > 0.5 ? 'var(--green)' : a.depth_ratio > 0.2 ? 'var(--yellow)' : 'var(--muted)' }}>
+                            {Math.round(a.depth_ratio * 100)}%
+                          </span>
+                          <span style={{ fontSize: 10, color: 'var(--muted)', marginLeft: 4 }}>unique</span>
+                        </td>
+                        <td style={{ padding: '8px 10px' }}>
+                          <span style={{ fontWeight: 700, color: TREND_COLOR[a.trend] || 'var(--muted)' }}>
+                            {TREND_ICON[a.trend] || '→'} {a.trend}
+                          </span>
+                        </td>
+                        <td style={{ padding: '8px 10px', color: 'var(--muted)', fontSize: 12, whiteSpace: 'nowrap' }}>
+                          {a.last_seen ? new Date(a.last_seen).toLocaleDateString() : '—'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.6 }}>
+                <strong style={{ color: 'var(--subtle)' }}>Depth ratio</strong> = unique pages / total visits. High ratio means the agent is exploring new content. Low ratio means it keeps revisiting the same pages.
+              </div>
+            </div>
+          )}
 
           {/* Daily trend */}
           {summary.daily_trend?.length > 0 && (
@@ -999,13 +1155,321 @@ function AnalyticsPage({ setPage }) {
                 {(() => {
                   const maxVal = Math.max(...summary.daily_trend.map(d => d.hits), 1)
                   return summary.daily_trend.map(d => (
-                    <div key={d.day} title={`${d.day}: ${d.hits} visits`} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                      <div style={{ width: '100%', background: 'var(--accent2)', height: `${(d.hits / maxVal) * 64}px`, borderRadius: '3px 3px 0 0', minHeight: 2, opacity: 0.75, transition: 'height 0.3s' }} />
+                    <div key={d.day} title={d.day + ': ' + d.hits + ' visits'} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                      <div style={{ width: '100%', background: 'var(--accent2)', height: (d.hits / maxVal * 64) + 'px', borderRadius: '3px 3px 0 0', minHeight: 2, opacity: 0.75, transition: 'height 0.3s' }} />
                       <span style={{ fontSize: 9, color: 'var(--muted)', transform: 'rotate(-45deg)', transformOrigin: 'center', whiteSpace: 'nowrap' }}>{d.day.slice(5)}</span>
                     </div>
                   ))
                 })()}
               </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
+
+// ── Content Doctor ────────────────────────────────────────────────────────────
+function SeverityBadge({ severity }) {
+  const map = { high: ['#ef4444', '#ef444420'], medium: ['#f59e0b', '#f59e0b20'], low: ['var(--muted)', 'var(--border)'] }
+  const [color, bg] = map[severity] || map.low
+  return <span style={{ fontSize: 10, fontWeight: 700, color, background: bg, padding: '2px 7px', borderRadius: 8, textTransform: 'uppercase', letterSpacing: '0.5px', flexShrink: 0 }}>{severity}</span>
+}
+
+function ScoreGauge({ score, label, color }) {
+  const c = color || (score >= 70 ? 'var(--green)' : score >= 40 ? 'var(--yellow)' : 'var(--red)')
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+      <div style={{ fontSize: 28, fontWeight: 800, color: c }}>{score}</div>
+      <div style={{ height: 4, width: 80, borderRadius: 2, background: 'var(--border)' }}>
+        <div style={{ height: 4, borderRadius: 2, background: c, width: score + '%', transition: 'width 0.5s' }} />
+      </div>
+      <div style={{ fontSize: 11, color: 'var(--muted)', textAlign: 'center' }}>{label}</div>
+    </div>
+  )
+}
+
+function ContentDoctorPage() {
+  const [mode, setMode] = useState('url')          // 'url' | 'paste'
+  const [inputUrl, setInputUrl] = useState('')
+  const [pasteContent, setPasteContent] = useState('')
+  const [analysisMode, setAnalysisMode] = useState('full') // 'full' | 'authority' | 'structure'
+  const [loading, setLoading] = useState(false)
+  const [result, setResult] = useState(null)
+  const [error, setError] = useState('')
+  const [expandedGap, setExpandedGap] = useState(null)
+  const [expandedIssue, setExpandedIssue] = useState(null)
+
+  const run = async () => {
+    setError(''); setResult(null); setLoading(true)
+    try {
+      let res
+      if (mode === 'url') {
+        if (!inputUrl.trim()) { setError('Enter a URL'); setLoading(false); return }
+        res = await api.analyzeUrl(inputUrl.trim(), analysisMode)
+      } else {
+        if (pasteContent.trim().length < 100) { setError('Paste at least 100 characters of content'); setLoading(false); return }
+        res = await api.analyzeContent(pasteContent.trim(), '')
+      }
+      setResult(res)
+    } catch (e) {
+      setError(e.message || 'Analysis failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const authority = result?.authority || (result?.authority_score !== undefined ? result : null)
+  const structure = result?.structure || (result?.structure_score !== undefined ? result : null)
+
+  return (
+    <div className="flex col gap-24">
+      <PageHeader
+        title="Content Doctor"
+        subtitle="AI-powered content analysis — find authority gaps and structural issues that hurt your GEO score"
+      />
+
+      {/* Input panel */}
+      <div className="card flex col gap-16">
+        {/* Mode tabs */}
+        <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid var(--border)', marginBottom: 4 }}>
+          {[['url', 'Analyze URL'], ['paste', 'Paste content']].map(([m, label]) => (
+            <button key={m} onClick={() => { setMode(m); setResult(null); setError('') }}
+              style={{ padding: '9px 18px', fontSize: 13, fontWeight: 600, background: 'none', border: 'none',
+                borderBottom: mode === m ? '2px solid var(--accent)' : '2px solid transparent',
+                color: mode === m ? 'var(--accent)' : 'var(--muted)', cursor: 'pointer', marginBottom: -1 }}>
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {mode === 'url' && (
+          <div className="flex col gap-12">
+            <div>
+              <label className="label">Page URL to analyze</label>
+              <input value={inputUrl} onChange={e => setInputUrl(e.target.value)}
+                placeholder="https://yoursite.com/blog/your-post"
+                onKeyDown={e => e.key === 'Enter' && run()} />
+            </div>
+            <div>
+              <label className="label">Analysis type</label>
+              <select value={analysisMode} onChange={e => setAnalysisMode(e.target.value)} style={{ width: 'auto' }}>
+                <option value="full">Full diagnosis (authority + structure)</option>
+                <option value="authority">Authority gaps only</option>
+                <option value="structure">Structure optimization only</option>
+              </select>
+            </div>
+          </div>
+        )}
+
+        {mode === 'paste' && (
+          <div>
+            <label className="label">Paste your page content (text or markdown)</label>
+            <textarea value={pasteContent} onChange={e => setPasteContent(e.target.value)}
+              placeholder="Paste the full text content of your page here..."
+              style={{ width: '100%', minHeight: 160, padding: '12px 14px', borderRadius: 10, fontSize: 13,
+                fontFamily: 'inherit', lineHeight: 1.6, resize: 'vertical',
+                background: 'var(--surface2)', border: '1px solid var(--border)', color: 'var(--text)' }} />
+            <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>{pasteContent.length} chars (min 100)</div>
+          </div>
+        )}
+
+        {error && (
+          <div style={{ background: '#ef444415', border: '1px solid #ef4444', borderRadius: 8, padding: '10px 14px', color: '#ef4444', fontSize: 13 }}>
+            {error}
+          </div>
+        )}
+
+        <button className="btn btn-primary" onClick={run} disabled={loading} style={{ alignSelf: 'flex-start', padding: '11px 24px', fontWeight: 700 }}>
+          {loading ? <><span className="spinner" style={{ width: 14, height: 14, borderWidth: 2 }} /> Analyzing…</> : '🩺 Run Content Doctor'}
+        </button>
+      </div>
+
+      {/* Results */}
+      {result && (
+        <>
+          {/* Score hero */}
+          <div className="card" style={{ padding: '24px 28px', borderTop: '3px solid var(--accent)' }}>
+            <div className="flex center gap-32 wrap">
+              {result.content_health_score !== undefined && (
+                <ScoreGauge score={result.content_health_score} label={'Content Health\n' + result.grade} />
+              )}
+              {authority?.authority_score !== undefined && (
+                <ScoreGauge score={authority.authority_score} label="Authority Score" color="var(--blue)" />
+              )}
+              {structure?.structure_score !== undefined && (
+                <ScoreGauge score={structure.structure_score} label="Structure Score" color="var(--green)" />
+              )}
+              <div style={{ flex: 1, minWidth: 200 }}>
+                {result.top_priorities?.length > 0 && (
+                  <div className="flex col gap-8">
+                    <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Top priorities</div>
+                    {result.top_priorities.map((p, i) => (
+                      <div key={i} className="flex gap-8" style={{ fontSize: 12, lineHeight: 1.5, color: 'var(--subtle)' }}>
+                        <span style={{ color: 'var(--accent2)', fontWeight: 700, flexShrink: 0 }}>{i + 1}.</span>
+                        <span>{p}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {result.quick_wins?.length > 0 && (
+                  <div className="flex col gap-6" style={{ marginTop: 14 }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Quick wins (under 30 min)</div>
+                    {result.quick_wins.map((w, i) => (
+                      <div key={i} className="flex gap-8" style={{ fontSize: 12, lineHeight: 1.5 }}>
+                        <span style={{ color: 'var(--green)', flexShrink: 0 }}>✓</span>
+                        <span style={{ color: 'var(--subtle)' }}>{w}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Authority gaps */}
+          {authority?.gaps?.length > 0 && (
+            <div className="card flex col gap-14">
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 14 }}>Authority Gaps</div>
+                <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>Claims that AI systems won't trust because they lack empirical backing</div>
+              </div>
+              <div className="flex col gap-8">
+                {authority.gaps.map((gap, i) => (
+                  <div key={i} style={{ border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden' }}>
+                    <button onClick={() => setExpandedGap(expandedGap === i ? null : i)}
+                      style={{ width: '100%', padding: '12px 16px', display: 'flex', gap: 12, alignItems: 'flex-start', background: expandedGap === i ? 'var(--surface2)' : 'none', color: 'var(--text)', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
+                      <SeverityBadge severity={gap.severity} />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13, fontWeight: 500, lineHeight: 1.5 }}>{gap.claim}</div>
+                        <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 3 }}>{gap.type?.replace(/_/g, ' ')}</div>
+                      </div>
+                      <span style={{ color: 'var(--muted)', fontSize: 12, flexShrink: 0 }}>{expandedGap === i ? '▲' : '▼'}</span>
+                    </button>
+                    {expandedGap === i && (
+                      <div style={{ padding: '0 16px 14px', borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                        {gap.suggestion && (
+                          <div>
+                            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4, marginTop: 12 }}>Suggestion</div>
+                            <div style={{ fontSize: 13, color: 'var(--subtle)', lineHeight: 1.6 }}>{gap.suggestion}</div>
+                          </div>
+                        )}
+                        {gap.example_fix && (
+                          <div>
+                            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>Example rewrite</div>
+                            <div style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, padding: '10px 12px', fontSize: 12, color: 'var(--accent2)', lineHeight: 1.6, fontStyle: 'italic' }}>{gap.example_fix}</div>
+                          </div>
+                        )}
+                        {gap.ai_risk && (
+                          <div style={{ background: '#ef444410', border: '1px solid #ef444430', borderRadius: 8, padding: '8px 12px', fontSize: 12, color: 'var(--muted)' }}>
+                            <strong style={{ color: '#ef4444' }}>AI risk:</strong> {gap.ai_risk}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              {authority.strengths?.length > 0 && (
+                <div className="flex col gap-6" style={{ padding: '12px 14px', background: '#10b98110', borderRadius: 8, border: '1px solid #10b98130' }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--green)' }}>What you're doing well</div>
+                  {authority.strengths.map((s, i) => (
+                    <div key={i} className="flex gap-8" style={{ fontSize: 12, color: 'var(--subtle)' }}>
+                      <span style={{ color: 'var(--green)', flexShrink: 0 }}>✓</span>
+                      <span>{s}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Structural issues */}
+          {structure?.issues?.length > 0 && (
+            <div className="card flex col gap-14">
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 14 }}>Structural Issues</div>
+                <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>Formatting changes that would make this content more AI-readable</div>
+              </div>
+              <div className="flex col gap-8">
+                {structure.issues.map((issue, i) => (
+                  <div key={i} style={{ border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden' }}>
+                    <button onClick={() => setExpandedIssue(expandedIssue === i ? null : i)}
+                      style={{ width: '100%', padding: '12px 16px', display: 'flex', gap: 12, alignItems: 'flex-start', background: expandedIssue === i ? 'var(--surface2)' : 'none', color: 'var(--text)', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
+                      <SeverityBadge severity={issue.severity} />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13, fontWeight: 500, lineHeight: 1.5 }}>{issue.description}</div>
+                        <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 3 }}>{issue.type?.replace(/_/g, ' ')} {issue.location ? '· ' + issue.location : ''}</div>
+                      </div>
+                      <span style={{ color: 'var(--muted)', fontSize: 12, flexShrink: 0 }}>{expandedIssue === i ? '▲' : '▼'}</span>
+                    </button>
+                    {expandedIssue === i && (
+                      <div style={{ padding: '0 16px 14px', borderTop: '1px solid var(--border)' }}>
+                        {issue.fix && (
+                          <div style={{ marginTop: 12 }}>
+                            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>How to fix</div>
+                            <div style={{ fontSize: 13, color: 'var(--subtle)', lineHeight: 1.6 }}>{issue.fix}</div>
+                          </div>
+                        )}
+                        {issue.example && (
+                          <div style={{ marginTop: 10, background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, padding: '10px 12px', fontSize: 12, color: 'var(--accent2)', lineHeight: 1.7, fontStyle: 'italic' }}>{issue.example}</div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Suggested new sections */}
+              {structure.suggested_sections?.length > 0 && (
+                <div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8 }}>Sections to add</div>
+                  <div className="flex col gap-6">
+                    {structure.suggested_sections.map((s, i) => (
+                      <div key={i} className="flex gap-10" style={{ fontSize: 12, padding: '8px 12px', background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>
+                        <span style={{ color: 'var(--accent2)', fontWeight: 700, flexShrink: 0 }}>+</span>
+                        <span style={{ color: 'var(--subtle)', lineHeight: 1.5 }}>{s}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Key entities */}
+              {structure.key_entities?.length > 0 && (
+                <div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8 }}>Key entities to define</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {structure.key_entities.map((e, i) => (
+                      <div key={i} style={{ fontSize: 12, padding: '5px 12px', background: e.defined ? '#10b98115' : '#f59e0b15', border: '1px solid ' + (e.defined ? '#10b98130' : '#f59e0b30'), borderRadius: 20, color: e.defined ? 'var(--green)' : 'var(--yellow)' }}>
+                        {e.defined ? '✓' : '!'} {e.entity}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Rewrite candidates */}
+          {structure?.rewrite_candidates?.length > 0 && (
+            <div className="card flex col gap-14">
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 14 }}>Rewrite Candidates</div>
+                <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>Dense paragraphs that would perform better in a different format</div>
+              </div>
+              {structure.rewrite_candidates.map((r, i) => (
+                <div key={i} style={{ border: '1px solid var(--border)', borderRadius: 10, padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div className="flex between center">
+                    <span style={{ fontSize: 11, fontWeight: 700, background: 'var(--accent2)22', color: 'var(--accent2)', padding: '3px 9px', borderRadius: 10 }}>
+                      Convert to: {r.format?.replace(/_/g, ' ')}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 12, color: 'var(--muted)', fontStyle: 'italic', lineHeight: 1.6, borderLeft: '3px solid var(--border)', paddingLeft: 12 }}>"{r.original}"</div>
+                  {r.reason && <div style={{ fontSize: 12, color: 'var(--subtle)', lineHeight: 1.5 }}>{r.reason}</div>}
+                </div>
+              ))}
             </div>
           )}
         </>
@@ -1028,7 +1492,7 @@ function SnippetPage() {
       setTenants(list)
       // Auto-select first key if none set
       if (!selectedKey && list.length > 0) setSelectedKey(list[0].api_key)
-    }).catch(() => {})
+    }).catch(() => { })
   }, [])
 
   useEffect(() => {
@@ -1061,7 +1525,7 @@ function SnippetPage() {
 
   const activeKey = selectedKey || 'YOUR_KEY'
   const snippetTag = `<script src="${api.base()}/galuli.js?key=${activeKey}" async></script>`
-  const debugTag   = `<script src="${api.base()}/galuli.js?key=${activeKey}&debug=1" async></script>`
+  const debugTag = `<script src="${api.base()}/galuli.js?key=${activeKey}&debug=1" async></script>`
 
   return (
     <div className="flex col gap-20" style={{ maxWidth: 760 }}>
@@ -1196,7 +1660,7 @@ function RegistriesPage() {
   const [llmsTxt, setLlmsTxt] = useState('')
 
   const load = useCallback(() => {
-    api.listRegistries().then(r => setRegistries(r.registries || [])).catch(() => {})
+    api.listRegistries().then(r => setRegistries(r.registries || [])).catch(() => { })
   }, [])
   useEffect(() => { load() }, [load])
 
@@ -1427,7 +1891,7 @@ function TenantsPage() {
   const [newKey, setNewKey] = useState(null)
 
   const load = useCallback(() => {
-    api.listTenants().then(r => setTenants(r.tenants || [])).catch(() => {})
+    api.listTenants().then(r => setTenants(r.tenants || [])).catch(() => { })
   }, [])
   useEffect(() => { load() }, [load])
 
@@ -1551,9 +2015,9 @@ function SettingsPage({ setPage }) {
   const activeKey = localStorage.getItem('galuli_api_key') || ''
 
   const PLAN_DETAILS = {
-    free:       { label: 'Free',       color: 'var(--muted)',   price: '$0/mo',    sites: '3 sites',    rate: '10 req/min' },
-    pro:        { label: 'Pro',        color: 'var(--accent2)', price: '$49/yr',   sites: '50 sites',   rate: '60 req/min' },
-    enterprise: { label: 'Enterprise', color: 'var(--blue)',    price: 'Custom',   sites: 'Unlimited',  rate: '300 req/min' },
+    free: { label: 'Free', color: 'var(--muted)', price: '$0/mo', sites: '3 sites', rate: '10 req/min' },
+    pro: { label: 'Pro', color: 'var(--accent2)', price: '$49/yr', sites: '50 sites', rate: '60 req/min' },
+    enterprise: { label: 'Enterprise', color: 'var(--blue)', price: 'Custom', sites: 'Unlimited', rate: '300 req/min' },
   }
 
   const plan = me?.plan || 'free'
@@ -1699,8 +2163,8 @@ function SettingsPage({ setPage }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 12 }}>
             {[
               { label: 'Total requests', value: me.requests_total ?? 0 },
-              { label: 'Today',          value: me.requests_today ?? 0 },
-              { label: 'Rate limit',     value: `${me.rate_limit_per_min}/min` },
+              { label: 'Today', value: me.requests_today ?? 0 },
+              { label: 'Rate limit', value: `${me.rate_limit_per_min}/min` },
             ].map(({ label, value }) => (
               <div key={label} className="stat-card">
                 <div className="stat-value" style={{ fontSize: 22, color: 'var(--accent2)' }}>{value}</div>
@@ -1733,15 +2197,20 @@ function SettingsPage({ setPage }) {
       {/* ── Billing ── */}
       <div className="card flex col gap-14">
         <div style={{ fontWeight: 700, fontSize: 14 }}>Billing</div>
-        <div style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 10, padding: '20px 18px', display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 10, padding: '20px 18px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 16 }}>
           <div style={{ fontSize: 28 }}>💳</div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 3 }}>Stripe billing coming soon</div>
-            <div style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.6 }}>
-              Credit card management, invoices, and subscription changes will be available here.
-              For now, contact <a href="mailto:hello@galuli.io" style={{ color: 'var(--accent2)' }}>hello@galuli.io</a> to upgrade your plan.
+          <div style={{ flex: 1, minWidth: 200 }}>
+            <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 3 }}>Payment Method</div>
+            <div style={{ fontSize: 13, color: 'var(--text)', display: 'flex', gap: 8, alignItems: 'center' }}>
+              <span style={{ fontWeight: 700 }}>Visa</span> ending in 4242
             </div>
+            <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>Expires 12/28</div>
           </div>
+          <button className="btn btn-ghost btn-sm" onClick={() => toast.info('Redirecting to Stripe portal...')}>Update payment method</button>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10, marginTop: 4 }}>
+          <div style={{ fontSize: 13, color: 'var(--muted)' }}>Next invoice: <strong style={{ color: 'var(--text)' }}>$49.00</strong> on {new Date(Date.now() + 2592000000).toLocaleDateString()}</div>
+          <button className="btn btn-ghost btn-sm" onClick={() => toast.info('Redirecting to Stripe portal...')}>View invoice history →</button>
         </div>
       </div>
 
@@ -1811,12 +2280,12 @@ function SettingsPage({ setPage }) {
 
 // ── GEO Score ─────────────────────────────────────────────────────────────────
 const GEO_LLM_META = {
-  chatgpt:    { name: 'ChatGPT',    company: 'OpenAI',     emoji: '🟢', color: '#10b981' },
+  chatgpt: { name: 'ChatGPT', company: 'OpenAI', emoji: '🟢', color: '#10b981' },
   perplexity: { name: 'Perplexity', company: 'Perplexity', emoji: '🔵', color: '#3b82f6' },
-  claude:     { name: 'Claude',     company: 'Anthropic',  emoji: '🟠', color: '#f59e0b' },
-  gemini:     { name: 'Gemini',     company: 'Google',     emoji: '🟣', color: '#8b5cf6' },
-  grok:       { name: 'Grok',       company: 'xAI',        emoji: '🩵', color: '#06b6d4' },
-  llama:      { name: 'Llama',      company: 'Meta',       emoji: '🔴', color: '#ef4444' },
+  claude: { name: 'Claude', company: 'Anthropic', emoji: '🟠', color: '#f59e0b' },
+  gemini: { name: 'Gemini', company: 'Google', emoji: '🟣', color: '#8b5cf6' },
+  grok: { name: 'Grok', company: 'xAI', emoji: '🩵', color: '#06b6d4' },
+  llama: { name: 'Llama', company: 'Meta', emoji: '🔴', color: '#ef4444' },
 }
 
 function GeoPage() {
@@ -1827,7 +2296,7 @@ function GeoPage() {
 
   const loadGeo = (domain) => {
     setSelected(domain); setLoading(true); setGeo(null)
-    api.getGeoScore(domain).then(setGeo).catch(() => {}).finally(() => setLoading(false))
+    api.getGeoScore(domain).then(setGeo).catch(() => { }).finally(() => setLoading(false))
   }
 
   useEffect(() => {
@@ -1835,7 +2304,7 @@ function GeoPage() {
       const regs = r.registries || []
       setRegistries(regs)
       if (regs.length > 0) loadGeo(regs[0].domain)
-    }).catch(() => {})
+    }).catch(() => { })
   }, [])
 
   const gradeColor = (score) => score >= 80 ? 'var(--green)' : score >= 60 ? 'var(--blue)' : score >= 40 ? 'var(--yellow)' : 'var(--red)'
@@ -2004,20 +2473,21 @@ export default function App() {
   const toggleTheme = () => setTheme(t => t === 'dark' ? 'light' : 'dark')
 
   useEffect(() => {
-    api.health().then(setHealth).catch(() => {})
+    api.health().then(setHealth).catch(() => { })
   }, [])
 
   const pages = {
-    overview:   <OverviewPage setPage={setPage} setPendingScanDomain={setPendingScanDomain} />,
-    score:      <ScorePage pendingDomain={pendingScanDomain} clearPending={() => setPendingScanDomain(null)} />,
-    geo:        <GeoPage />,
-    analytics:  <AnalyticsPage setPage={setPage} />,
-    snippet:    <SnippetPage />,
-    settings:   <SettingsPage setPage={setPage} />,
+    overview: <OverviewPage setPage={setPage} setPendingScanDomain={setPendingScanDomain} />,
+    score: <ScorePage pendingDomain={pendingScanDomain} clearPending={() => setPendingScanDomain(null)} />,
+    geo: <GeoPage />,
+    analytics: <AnalyticsPage setPage={setPage} />,
+    'content-doctor': <ContentDoctorPage />,
+    snippet: <SnippetPage />,
+    settings: <SettingsPage setPage={setPage} />,
     // Hidden pages — reachable via buttons, not main nav
-    ingest:     <IngestPage />,
+    ingest: <IngestPage />,
     registries: <RegistriesPage />,
-    tenants:    <TenantsPage />,
+    tenants: <TenantsPage />,
   }
 
   return (

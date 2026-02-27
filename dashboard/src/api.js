@@ -1,100 +1,79 @@
-// Auto-detect the API base URL:
-// - When served from Railway (/dashboard), use same origin → no config needed
-// - When running locally, use localhost:8000
-// - Can always be overridden via Settings (localStorage)
+// Auto-detect the API base URL.
+// Override via Settings (localStorage) or env.
 
-// ── Silent migration: galui_ → galuli_ localStorage keys ──────────────────
 ;(function migrateLegacyKeys() {
-  const keys = ['api_key', 'api_url', 'theme', 'user']
-  keys.forEach(k => {
-    const oldKey = `galui_${k}`
-    const newKey = `galuli_${k}`
-    if (localStorage.getItem(oldKey) && !localStorage.getItem(newKey)) {
-      localStorage.setItem(newKey, localStorage.getItem(oldKey))
-    }
+  ["api_key","api_url","theme","user"].forEach(function(k) {
+    if (localStorage.getItem("galui_"+k) && !localStorage.getItem("galuli_"+k))
+      localStorage.setItem("galuli_"+k, localStorage.getItem("galui_"+k))
   })
 })()
 
-const _autoBase = window.location.hostname === 'localhost'
-  ? 'http://localhost:8000'
-  : window.location.origin;
+var _autoBase = window.location.hostname === "localhost"
+  ? "http://localhost:8000"
+  : window.location.origin
 
-const BASE = localStorage.getItem('galuli_api_url') || _autoBase;
+var DEFAULT_KEY = "kotleryan1984"
+function getKey() { return localStorage.getItem("galuli_api_key") || DEFAULT_KEY }
+function getBase() { return localStorage.getItem("galuli_api_url") || _autoBase }
 
-// Default API key — works out of the box for the hosted dashboard.
-// Users can override in Settings if needed.
-const DEFAULT_KEY = 'kotleryan1984';
-
-function getKey() {
-  return localStorage.getItem('galuli_api_key') || DEFAULT_KEY;
-}
-
-function getBase() {
-  return localStorage.getItem('galuli_api_url') || BASE;
-}
-
-async function req(path, options = {}) {
-  const res = await fetch(`${getBase()}${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      'X-API-Key': getKey(),
-      ...options.headers,
-    },
-  });
+async function req(path, options) {
+  options = options || {}
+  var res = await fetch(getBase() + path, Object.assign({}, options, {
+    headers: Object.assign({ "Content-Type": "application/json", "X-API-Key": getKey() }, options.headers || {})
+  }))
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ detail: res.statusText }));
-    throw new Error(err.detail || err.error || 'Request failed');
+    var err = await res.json().catch(function() { return { detail: res.statusText } })
+    throw new Error(err.detail || err.error || "Request failed")
   }
-  return res.json();
+  return res.json()
 }
-
 async function reqText(path) {
-  const res = await fetch(`${getBase()}${path}`, {
-    headers: { 'X-API-Key': getKey() },
-  });
-  if (!res.ok) throw new Error(res.statusText);
-  return res.text();
+  var res = await fetch(getBase() + path, { headers: { "X-API-Key": getKey() } })
+  if (!res.ok) throw new Error(res.statusText)
+  return res.text()
 }
 
-export const api = {
+export var api = {
   base: getBase,
+  health: function() { return req("/health") },
 
-  health: () => req('/health'),
+  ingest:   function(url, force) { return req("/api/v1/ingest", { method: "POST", body: JSON.stringify({ url: url, force_refresh: !!force }) }) },
+  pollJob:  function(id)  { return req("/api/v1/jobs/" + id) },
+  listJobs: function()    { return req("/api/v1/jobs") },
 
-  // ── Ingestion ────────────────────────────────────────────────────────────
-  ingest:   (url, force = false) =>
-    req('/api/v1/ingest', { method: 'POST', body: JSON.stringify({ url, force_refresh: force }) }),
-  pollJob:  (jobId) => req(`/api/v1/jobs/${jobId}`),
-  listJobs: ()      => req('/api/v1/jobs'),
+  listRegistries: function()  { return req("/registry/") },
+  getRegistry:    function(d) { return req("/registry/" + d) },
+  getLlmsTxt:     function(d) { return reqText("/registry/" + d + "/llms.txt") },
+  getLiveStatus:  function(d) { return req("/registry/" + d + "/status") },
 
-  // ── Registry ─────────────────────────────────────────────────────────────
-  listRegistries: ()       => req('/registry/'),
-  getRegistry:    (domain) => req(`/registry/${domain}`),
-  getLlmsTxt:     (domain) => reqText(`/registry/${domain}/llms.txt`),
-  getLiveStatus:  (domain) => req(`/registry/${domain}/status`),
+  getScore:       function(d) { return req("/api/v1/score/" + d) },
+  getSuggestions: function(d) { return req("/api/v1/score/" + d + "/suggestions") },
+  getBadgeUrl:    function(d) { return getBase() + "/api/v1/score/" + d + "/badge" },
+  getGeoScore:    function(d) { return req("/api/v1/geo/" + d) },
 
-  // ── Score + Badge ─────────────────────────────────────────────────────────
-  getScore:       (domain) => req(`/api/v1/score/${domain}`),
-  getSuggestions: (domain) => req(`/api/v1/score/${domain}/suggestions`),
-  getBadgeUrl:    (domain) => `${getBase()}/api/v1/score/${domain}/badge`,
-  getGeoScore:    (domain) => req(`/api/v1/geo/${domain}`),
+  // Analytics
+  getAnalytics:      function(d, days) { return req("/api/v1/analytics/" + d + "?days=" + (days||30)) },
+  getAgentBreakdown: function(d, days) { return req("/api/v1/analytics/" + d + "/agents?days=" + (days||30)) },
+  getPageBreakdown:  function(d, days) { return req("/api/v1/analytics/" + d + "/pages?days=" + (days||30)) },
+  // Sprint 1 - AI Attention ROI Engine
+  getTopicMap:       function(d, days) { return req("/api/v1/analytics/" + d + "/topics?days=" + (days||30)) },
+  getAttentionScore: function(d, days) { return req("/api/v1/analytics/" + d + "/attention?days=" + (days||30)) },
+  getLlmDepth:       function(d, days) { return req("/api/v1/analytics/" + d + "/llm-depth?days=" + (days||30)) },
 
-  // ── Analytics ─────────────────────────────────────────────────────────────
-  getAnalytics:      (domain, days = 30) => req(`/api/v1/analytics/${domain}?days=${days}`),
-  getAgentBreakdown: (domain, days = 30) => req(`/api/v1/analytics/${domain}/agents?days=${days}`),
-  getPageBreakdown:  (domain, days = 30) => req(`/api/v1/analytics/${domain}/pages?days=${days}`),
+  // Content Doctor
+  analyzeContent:     function(content, url) { return req("/api/v1/content-doctor/analyze", { method: "POST", body: JSON.stringify({ content: content, url: url||"" }) }) },
+  analyzeUrl:         function(url, mode)    { return req("/api/v1/content-doctor/analyze-url", { method: "POST", body: JSON.stringify({ url: url, mode: mode||"full" }) }) },
+  getDomainDiagnosis: function(d)            { return req("/api/v1/content-doctor/" + d) },
 
-  // ── Admin ─────────────────────────────────────────────────────────────────
-  deleteRegistry:  (domain) => req(`/api/v1/admin/registry/${domain}`, { method: 'DELETE' }),
-  refreshRegistry: (domain) => req('/api/v1/admin/refresh', { method: 'POST', body: JSON.stringify({ domain }) }),
-  getStats:        ()       => req('/api/v1/admin/stats'),
+  // Admin
+  deleteRegistry:  function(d) { return req("/api/v1/admin/registry/" + d, { method: "DELETE" }) },
+  refreshRegistry: function(d) { return req("/api/v1/admin/refresh", { method: "POST", body: JSON.stringify({ domain: d }) }) },
+  getStats:        function()  { return req("/api/v1/admin/stats") },
 
-  // ── Tenants ───────────────────────────────────────────────────────────────
-  createTenant:  (name, email, plan) =>
-    req('/api/v1/tenants', { method: 'POST', body: JSON.stringify({ name, email, plan }) }),
-  listTenants:   () => req('/api/v1/tenants'),
-  getMe:         () => req('/api/v1/tenants/me'),
-  getMyUsage:    () => req('/api/v1/tenants/me/usage'),
-  getMyDomains:  () => req('/api/v1/tenants/domains'),
-};
+  // Tenants
+  createTenant:  function(name, email, plan) { return req("/api/v1/tenants", { method: "POST", body: JSON.stringify({ name: name, email: email, plan: plan }) }) },
+  listTenants:   function() { return req("/api/v1/tenants") },
+  getMe:         function() { return req("/api/v1/tenants/me") },
+  getMyUsage:    function() { return req("/api/v1/tenants/me/usage") },
+  getMyDomains:  function() { return req("/api/v1/tenants/domains") },
+}
