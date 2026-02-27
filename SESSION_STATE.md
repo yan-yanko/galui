@@ -176,7 +176,7 @@ Returns: `{domain, geo_total, geo_grade, geo_label, llms: {key: {score, max, sta
 | Logo text | `⬡ galuli` |
 | Primary color | `#6366f1` (indigo) |
 | Email | `hello@galuli.io` |
-| Domain (not yet purchased) | `galuli.io` |
+| Domain | `galuli.io` ✅ purchased + DNS configured |
 | Default theme | Light mode |
 
 ---
@@ -217,7 +217,7 @@ Returns: `{domain, geo_total, geo_grade, geo_label, llms: {key: {score, max, sta
 ## 12. What's NOT Done Yet (Next Up)
 
 ### High priority
-- [ ] **Domain** — buy `galuli.io`, configure custom domain in Railway, update `API_BASE` in `galuli.js` and Landing.jsx
+- [x] **Domain** — `galuli.io` purchased, DNS configured in Namecheap → Railway, `API_BASE` updated in `galuli.js`
 - [ ] **Stripe payments** — wire real checkout for Free→Pro upgrade (Settings page has placeholder)
 - [ ] **Real auth** — currently no login/logout/password. Users create key via Snippet tab but can't "log back in". Need: email+password or magic link, session persistence
 - [ ] **Landing page → dashboard handoff** — after scan on landing page, user fills form then gets pushed to `/dashboard/`. Make this automatic with `?domain=` param

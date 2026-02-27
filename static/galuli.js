@@ -13,7 +13,7 @@
  *   6. Logs AI agent traffic for analytics
  *
  * Usage:
- *   <script src="https://api.galuli.com/galuli.js?key=YOUR_KEY" async></script>
+ *   <script src="https://galuli.io/galuli.js?key=YOUR_KEY" async></script>
  *
  * Params (via query string on the script src):
  *   key=YOUR_KEY       API key (required)
@@ -42,7 +42,7 @@
   }
 
   var TENANT_KEY    = params.key  || '';
-  var API_BASE      = params.api  || 'https://api.galuli.com';
+  var API_BASE      = params.api  || 'https://galuli.io';
   var DEBUG         = params.debug  === '1';
   var AUTO_SCHEMA   = params.schema !== '0';   // default: on
   var AUTO_PUSH     = params.push   !== '0';   // default: on
