@@ -61,7 +61,7 @@ export function ScoreRingLanding({ score, size = 80 }) {
 }
 
 // ── Landing page ──────────────────────────────────────────────────────────────
-export function LandingPage({ onScanComplete }) {
+export function LandingPage({ onScanComplete, onAuthRequired }) {
   const [url, setUrl] = useState('')
   const [stage, setStage] = useState('idle') // idle | scanning | done | error
   const [progress, setProgress] = useState(0)
@@ -157,8 +157,9 @@ export function LandingPage({ onScanComplete }) {
         <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
           <a href="/blog" className="btn btn-ghost" style={{ fontWeight: 500, fontSize: 13 }}>Blog</a>
           <a href="/about" className="btn btn-ghost" style={{ fontWeight: 500, fontSize: 13 }}>About</a>
-          <a href="/roadmap" className="btn btn-ghost" style={{ fontWeight: 500, fontSize: 13 }}>Roadmap</a>
-          <a href="/dashboard/" className="btn btn-primary" style={{ fontWeight: 700, marginLeft: 8 }}>Get started free</a>
+          <a href="/pricing" className="btn btn-ghost" style={{ fontWeight: 500, fontSize: 13 }}>Pricing</a>
+          <button className="btn btn-ghost" style={{ fontWeight: 500, fontSize: 13 }} onClick={() => onAuthRequired && onAuthRequired()}>Sign in</button>
+          <a href="/pricing" className="btn btn-primary" style={{ fontWeight: 700, marginLeft: 4 }}>Get started free</a>
         </div>
       </nav>
 
@@ -453,6 +454,7 @@ export function LandingPage({ onScanComplete }) {
       <div style={{ borderTop: '1px solid var(--border)', padding: '24px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div style={{ fontWeight: 800, fontSize: 15, color: 'var(--accent)' }}>⬡ galuli</div>
         <div style={{ display: 'flex', gap: 20, alignItems: 'center', flexWrap: 'wrap' }}>
+          <a href="/pricing" style={{ fontSize: 12, color: 'var(--muted)', textDecoration: 'none' }}>Pricing</a>
           <a href="/blog" style={{ fontSize: 12, color: 'var(--muted)', textDecoration: 'none' }}>Blog</a>
           <a href="/about" style={{ fontSize: 12, color: 'var(--muted)', textDecoration: 'none' }}>About</a>
           <a href="/roadmap" style={{ fontSize: 12, color: 'var(--muted)', textDecoration: 'none' }}>Roadmap</a>

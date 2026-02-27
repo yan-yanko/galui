@@ -93,7 +93,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from app.api.routes import ingest, registry, admin, tenants, push, analytics
+from app.api.routes import ingest, registry, admin, tenants, push, analytics, billing
 
 app.include_router(ingest.router,    prefix="/api/v1",             tags=["Ingestion"])
 app.include_router(push.router,      prefix="/api/v1",             tags=["Snippet / Push"])
@@ -101,6 +101,7 @@ app.include_router(registry.router,  prefix="/registry",           tags=["Regist
 app.include_router(admin.router,     prefix="/api/v1/admin",       tags=["Admin"])
 app.include_router(tenants.router,   prefix="/api/v1/tenants",     tags=["Tenants"])
 app.include_router(analytics.router, prefix="/api/v1/analytics",   tags=["Analytics"])
+app.include_router(billing.router,   prefix="/api/v1",             tags=["Auth & Billing"])
 
 
 @app.get("/health", tags=["System"])
@@ -183,6 +184,7 @@ async def sitemap_xml():
         '  <url><loc>https://galuli.io/blog/ai-readiness-score</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>\n'
         '  <url><loc>https://galuli.io/blog/ai-agent-analytics</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>\n'
         '  <url><loc>https://galuli.io/blog/future-of-search</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>\n'
+        '  <url><loc>https://galuli.io/pricing</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>\n'
         '  <url><loc>https://galuli.io/about</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>\n'
         '  <url><loc>https://galuli.io/roadmap</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>\n'
         '</urlset>\n'

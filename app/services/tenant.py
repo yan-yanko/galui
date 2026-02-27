@@ -3,17 +3,19 @@ Multi-tenant API key management.
 
 Each tenant gets:
 - A unique API key (prefix: cr_live_ or cr_test_)
-- A name + email
+- A name + email + hashed password
+- Stripe customer + subscription tracking
 - Usage tracking (requests, domains indexed)
-- A plan tier (free | pro | enterprise)
+- A plan tier (free | starter | pro | enterprise)
 
 Storage: tenants table in the same SQLite DB.
 """
 import sqlite3
 import secrets
 import string
+import hashlib
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional, List
 from pydantic import BaseModel
 
@@ -31,7 +33,20 @@ CREATE TABLE IF NOT EXISTS tenants (
     domains_limit INTEGER NOT NULL DEFAULT 3,
     requests_today INTEGER NOT NULL DEFAULT 0,
     requests_total INTEGER NOT NULL DEFAULT 0,
-    rate_limit_per_min INTEGER NOT NULL DEFAULT 10
+    rate_limit_per_min INTEGER NOT NULL DEFAULT 10,
+    password_hash TEXT,
+    stripe_customer_id TEXT,
+    stripe_subscription_id TEXT,
+    js_enabled INTEGER NOT NULL DEFAULT 0
+)
+"""
+
+CREATE_MAGIC_TOKENS = """
+CREATE TABLE IF NOT EXISTS magic_tokens (
+    token       TEXT PRIMARY KEY,
+    email       TEXT NOT NULL,
+    expires_at  TEXT NOT NULL,
+    used        INTEGER NOT NULL DEFAULT 0
 )
 """
 
@@ -56,9 +71,11 @@ CREATE TABLE IF NOT EXISTS tenant_domains (
 """
 
 PLAN_LIMITS = {
-    "free":       {"domains": 3,   "rate_per_min": 10,  "requests_today": 50},
-    "pro":        {"domains": 50,  "rate_per_min": 60,  "requests_today": 2000},
-    "enterprise": {"domains": 999, "rate_per_min": 300, "requests_today": 50000},
+    "free":       {"domains": 3,   "rate_per_min": 10,  "requests_today": 50,    "js_enabled": 0},
+    "starter":    {"domains": 1,   "rate_per_min": 30,  "requests_today": 500,   "js_enabled": 1},
+    "pro":        {"domains": 10,  "rate_per_min": 60,  "requests_today": 2000,  "js_enabled": 1},
+    "agency":     {"domains": 999, "rate_per_min": 300, "requests_today": 50000, "js_enabled": 1},
+    "enterprise": {"domains": 999, "rate_per_min": 300, "requests_today": 50000, "js_enabled": 1},
 }
 
 KEY_ALPHABET = string.ascii_letters + string.digits
@@ -81,11 +98,16 @@ class Tenant(BaseModel):
     requests_today: int = 0
     requests_total: int = 0
     rate_limit_per_min: int = 10
+    password_hash: Optional[str] = None
+    stripe_customer_id: Optional[str] = None
+    stripe_subscription_id: Optional[str] = None
+    js_enabled: bool = False
 
 
 class TenantCreateRequest(BaseModel):
     name: str
     email: str
+    password: Optional[str] = None
     plan: str = "free"
 
 
@@ -108,24 +130,132 @@ class TenantService:
             conn.execute(CREATE_TENANTS)
             conn.execute(CREATE_USAGE_LOG)
             conn.execute(CREATE_TENANT_DOMAINS)
+            conn.execute(CREATE_MAGIC_TOKENS)
+            # Migrate: add new columns if they don't exist yet (safe ALTER TABLE)
+            for col, defn in [
+                ("password_hash", "TEXT"),
+                ("stripe_customer_id", "TEXT"),
+                ("stripe_subscription_id", "TEXT"),
+                ("js_enabled", "INTEGER NOT NULL DEFAULT 0"),
+            ]:
+                try:
+                    conn.execute(f"ALTER TABLE tenants ADD COLUMN {col} {defn}")
+                except Exception:
+                    pass  # Column already exists
             conn.commit()
 
-    def create_tenant(self, name: str, email: str, plan: str = "free") -> Tenant:
+    # ── Password helpers ────────────────────────────────────────────────────
+    @staticmethod
+    def _hash_password(password: str) -> str:
+        salt = secrets.token_hex(16)
+        h = hashlib.sha256(f"{salt}:{password}".encode()).hexdigest()
+        return f"{salt}:{h}"
+
+    @staticmethod
+    def _verify_password(password: str, stored_hash: str) -> bool:
+        try:
+            salt, h = stored_hash.split(":", 1)
+            return hashlib.sha256(f"{salt}:{password}".encode()).hexdigest() == h
+        except Exception:
+            return False
+
+    def create_tenant(self, name: str, email: str, plan: str = "free", password: str = None) -> Tenant:
         limits = PLAN_LIMITS.get(plan, PLAN_LIMITS["free"])
         api_key = _generate_key()
         now = datetime.utcnow().isoformat()
+        pw_hash = self._hash_password(password) if password else None
 
         with self._get_conn() as conn:
             conn.execute("""
                 INSERT INTO tenants
                     (api_key, name, email, plan, created_at, domains_limit,
-                     rate_limit_per_min, requests_today, requests_total)
-                VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0)
-            """, (api_key, name, email, plan, now, limits["domains"], limits["rate_per_min"]))
+                     rate_limit_per_min, requests_today, requests_total,
+                     password_hash, js_enabled)
+                VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0, ?, ?)
+            """, (api_key, name, email, plan, now,
+                  limits["domains"], limits["rate_per_min"],
+                  pw_hash, limits["js_enabled"]))
             conn.commit()
 
         logger.info(f"Created tenant: {email} ({plan}) → {api_key[:20]}...")
         return self.get_tenant(api_key)
+
+    def authenticate(self, email: str, password: str) -> Optional["Tenant"]:
+        """Verify email+password. Returns tenant or None."""
+        tenant = self.get_tenant_by_email(email)
+        if not tenant or not tenant.is_active:
+            return None
+        if not tenant.password_hash:
+            return None
+        if not self._verify_password(password, tenant.password_hash):
+            return None
+        return tenant
+
+    # ── Magic link tokens ───────────────────────────────────────────────────
+    def create_magic_token(self, email: str, ttl_minutes: int = 15) -> str:
+        token = secrets.token_urlsafe(32)
+        expires = (datetime.utcnow() + timedelta(minutes=ttl_minutes)).isoformat()
+        with self._get_conn() as conn:
+            # Invalidate any previous unused tokens for this email
+            conn.execute("UPDATE magic_tokens SET used=1 WHERE email=? AND used=0", (email,))
+            conn.execute(
+                "INSERT INTO magic_tokens (token, email, expires_at, used) VALUES (?,?,?,0)",
+                (token, email, expires)
+            )
+            conn.commit()
+        return token
+
+    def verify_magic_token(self, token: str) -> Optional[str]:
+        """Returns email if valid, marks as used. Returns None if expired/invalid."""
+        with self._get_conn() as conn:
+            row = conn.execute(
+                "SELECT email, expires_at, used FROM magic_tokens WHERE token=?", (token,)
+            ).fetchone()
+            if not row:
+                return None
+            if row["used"]:
+                return None
+            if datetime.fromisoformat(row["expires_at"]) < datetime.utcnow():
+                return None
+            conn.execute("UPDATE magic_tokens SET used=1 WHERE token=?", (token,))
+            conn.commit()
+            return row["email"]
+
+    # ── Stripe helpers ───────────────────────────────────────────────────────
+    def set_stripe_customer(self, api_key: str, stripe_customer_id: str):
+        with self._get_conn() as conn:
+            conn.execute(
+                "UPDATE tenants SET stripe_customer_id=? WHERE api_key=?",
+                (stripe_customer_id, api_key)
+            )
+            conn.commit()
+
+    def activate_subscription(self, stripe_customer_id: str, plan: str, subscription_id: str):
+        """Called from Stripe webhook on checkout.session.completed."""
+        limits = PLAN_LIMITS.get(plan, PLAN_LIMITS["free"])
+        with self._get_conn() as conn:
+            conn.execute("""
+                UPDATE tenants
+                SET plan=?, domains_limit=?, rate_limit_per_min=?,
+                    stripe_subscription_id=?, js_enabled=?
+                WHERE stripe_customer_id=?
+            """, (plan, limits["domains"], limits["rate_per_min"],
+                  subscription_id, limits["js_enabled"], stripe_customer_id))
+            conn.commit()
+        logger.info(f"Activated {plan} for Stripe customer {stripe_customer_id}")
+
+    def deactivate_subscription(self, stripe_customer_id: str):
+        """Called from Stripe webhook on subscription cancelled/unpaid."""
+        limits = PLAN_LIMITS["free"]
+        with self._get_conn() as conn:
+            conn.execute("""
+                UPDATE tenants
+                SET plan='free', domains_limit=?, rate_limit_per_min=?,
+                    stripe_subscription_id=NULL, js_enabled=0
+                WHERE stripe_customer_id=?
+            """, (limits["domains"], limits["rate_per_min"], stripe_customer_id))
+            conn.commit()
+        logger.info(f"Deactivated subscription for Stripe customer {stripe_customer_id}")
 
     def get_tenant(self, api_key: str) -> Optional[Tenant]:
         with self._get_conn() as conn:
@@ -248,8 +378,11 @@ class TenantService:
 
     def _row_to_tenant(self, row: dict) -> Tenant:
         row["is_active"] = bool(row.get("is_active", 1))
+        row["js_enabled"] = bool(row.get("js_enabled", 0))
         if row.get("created_at"):
             row["created_at"] = datetime.fromisoformat(row["created_at"])
         if row.get("last_seen"):
             row["last_seen"] = datetime.fromisoformat(row["last_seen"])
-        return Tenant(**row)
+        # Only pass known Tenant fields
+        known = {f for f in Tenant.model_fields}
+        return Tenant(**{k: v for k, v in row.items() if k in known})

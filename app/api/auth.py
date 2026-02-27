@@ -35,10 +35,22 @@ PUBLIC_PREFIXES = (
     "/blog",
     "/about",
     "/roadmap",
+    "/pricing",
+    "/auth",           # magic link verify page
     "/.well-known/",   # all well-known discovery files
 )
-# Self-service signup: POST /api/v1/tenants is public (creates free accounts)
-PUBLIC_POST_EXACT = {"/api/v1/tenants"}
+# Self-service signup + auth + Stripe webhook: always public
+PUBLIC_POST_EXACT = {
+    "/api/v1/tenants",
+    "/api/v1/auth/signup",
+    "/api/v1/auth/login",
+    "/api/v1/auth/magic-link",
+    "/api/v1/billing/webhook",   # Stripe sends no auth header
+}
+PUBLIC_GET_EXACT = {
+    "/api/v1/auth/magic-verify",
+    "/api/v1/billing/plans",
+}
 
 # Endpoints that accept tenant keys (ingest, jobs)
 TENANT_ENDPOINTS = ("/api/v1/ingest", "/api/v1/jobs")
@@ -60,8 +72,11 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
         if any(path.startswith(p) for p in PUBLIC_PREFIXES):
             return await call_next(request)
-        # Self-service POST endpoints (no key needed)
+        # Public POST endpoints (signup, login, webhook)
         if request.method == "POST" and path in PUBLIC_POST_EXACT:
+            return await call_next(request)
+        # Public GET endpoints (magic verify, plans)
+        if request.method == "GET" and path in PUBLIC_GET_EXACT:
             return await call_next(request)
 
         # No auth configured → open (dev mode)
