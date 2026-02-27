@@ -180,6 +180,19 @@ if _dashboard_path.exists():
         """Serve the React SPA at root — landing page."""
         index_path = _dashboard_path / "index.html"
         return FileResponse(str(index_path), media_type="text/html")
+
+    # Catch-all: serve index.html for all frontend routes (blog, about, roadmap, etc.)
+    # This must be LAST so it doesn't shadow API routes.
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def serve_spa_fallback(full_path: str):
+        """SPA fallback — serve index.html for any non-API path so React Router handles it."""
+        # Don't catch API routes, registry, or static files — let them 404 normally
+        if full_path.startswith(("api/", "registry/", "docs", "redoc", "openapi")):
+            from fastapi import HTTPException
+            raise HTTPException(status_code=404, detail="Not found")
+        index_path = _dashboard_path / "index.html"
+        return FileResponse(str(index_path), media_type="text/html")
+
 else:
     logger.info("  Dashboard:    not built (run Docker to build)")
 

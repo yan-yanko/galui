@@ -16,7 +16,8 @@ from starlette.middleware.base import BaseHTTPMiddleware
 logger = logging.getLogger(__name__)
 
 PUBLIC_EXACT = {"/health", "/docs", "/redoc", "/openapi.json", "/docs/oauth2-redirect", "/", "/galui.js", "/galuli.js", "/galuli.js/version"}
-PUBLIC_PREFIXES = ("/registry/", "/dashboard", "/assets/", "/dashboard/assets/")  # Registry + SPA files always public
+# Registry + SPA files always public. Frontend routes (/blog, /about, /roadmap) served as SPA.
+PUBLIC_PREFIXES = ("/registry/", "/dashboard", "/assets/", "/dashboard/assets/", "/blog", "/about", "/roadmap")
 # Self-service signup: POST /api/v1/tenants is public (creates free accounts)
 PUBLIC_POST_EXACT = {"/api/v1/tenants"}
 
