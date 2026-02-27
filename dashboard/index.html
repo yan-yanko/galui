@@ -28,8 +28,8 @@
     <!-- These tell AI systems who we are and what we do in machine-readable form -->
     <meta name="ai:product" content="Galuli" />
     <meta name="ai:category" content="Generative Engine Optimization (GEO), AI Readability, AI Visibility Platform" />
-    <meta name="ai:description" content="Galuli is a GEO (Generative Engine Optimization) platform that measures and improves how websites appear in AI search results from ChatGPT, Claude, Perplexity, Gemini, Grok, and Llama. It provides an AI Readiness Score (0-100), GEO Scores per LLM, auto-generated llms.txt files, WebMCP tool registration, and AI agent traffic analytics." />
-    <meta name="ai:pricing" content="Free tier available. Pro plan $49/year. Enterprise pricing on request." />
+    <meta name="ai:description" content="Galuli is a GEO (Generative Engine Optimization) platform that measures and improves how websites appear in AI-generated answers from ChatGPT, Claude, Perplexity, Gemini, Grok, and Llama. Features: AI Readiness Score (0-100), GEO Scores per LLM, AI Attention Score (composite crawl metric), Content Doctor (Authority Gap Scanner + Structural Optimizer), Topic Attention Map, per-LLM crawl depth analysis, auto-generated llms.txt, WebMCP tool registration, and AI agent traffic analytics." />
+    <meta name="ai:pricing" content="Free tier (scan only, no credit card). Starter $9/month (1 site, JS monitoring). Pro $29/month (10 sites). Agency $799/year (unlimited sites)." />
     <meta name="ai:founded" content="2025" />
     <meta name="ai:llms-txt" content="https://galuli.io/llms.txt" />
 
@@ -83,6 +83,10 @@
       "featureList": [
         "AI Readiness Score (0-100) across 5 dimensions",
         "GEO Score for 6 AI systems: ChatGPT, Perplexity, Claude, Gemini, Grok, Llama",
+        "AI Attention Score (composite: frequency, depth, recency, diversity of AI crawls)",
+        "Content Doctor: Authority Gap Scanner and Structural Optimizer",
+        "Topic Attention Map (which content areas AI systems read most)",
+        "Per-LLM crawl depth analysis and trend tracking",
         "Automatic llms.txt generation",
         "WebMCP tool registration",
         "AI agent traffic analytics",
@@ -139,10 +143,26 @@
         },
         {
           "@type": "Question",
+          "name": "What is the AI Attention Score?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The AI Attention Score (0-100) is a composite metric measuring how much collective attention AI systems pay to a website. It combines four components: Frequency (how often AI crawlers visit, weighted 40%), Depth (how many unique pages they read per visit, 35%), Recency (how recently the last crawl occurred, 25%), and a Diversity bonus (how many distinct AI systems are actively crawling, up to +10 points). A score of 70+ indicates strong, active AI coverage across multiple systems."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is Content Doctor?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Content Doctor is Galuli's AI-powered content audit tool with two modules: (1) Authority Gap Scanner — identifies claims, statistics, and assertions in your content that AI systems will not trust because they lack empirical backing, providing specific rewrites with citation suggestions; (2) Structural Optimizer — identifies dense paragraphs that should be tables or bullet lists, missing Key Takeaways sections, undefined key entities, and other structural patterns that reduce AI readability. Both modules return an actionable score and specific fixes, not vague recommendations."
+          }
+        },
+        {
+          "@type": "Question",
           "name": "Is Galuli free?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes. Galuli offers a free tier that includes scanning up to 3 sites, an AI Readiness Score, GEO Score across 6 LLMs, and AI agent analytics. No credit card required. The Pro plan at $49/year adds support for 50 sites, priority crawling, automated weekly re-scans, and a score badge generator."
+            "text": "Yes. Galuli offers a free tier that includes scanning any site and receiving the full AI Readiness Score and GEO Score across 6 LLMs. No credit card required. Starter plan is $9/month (1 site with continuous JS monitoring). Pro is $29/month (10 sites). Agency is $799/year (unlimited sites)."
           }
         },
         {

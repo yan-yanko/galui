@@ -706,6 +706,264 @@ That's the world Galuli is built for.`
     ],
     cta: 'Start building AI visibility now →'
   },
+  {
+    slug: 'ai-attention-score',
+    title: 'The AI Attention Score: A Better Way to Measure AI Visibility',
+    subtitle: "Page views from Google are easy to count. But how do you measure whether AI systems are actually reading your content — and trusting it enough to cite you?",
+    date: 'February 25, 2025',
+    readTime: '10 min read',
+    category: 'Analytics',
+    coverEmoji: '🧲',
+    intro: `There's a measurement problem at the heart of GEO.
+
+Traditional SEO has clean, observable metrics. Impressions. Clicks. Position. Organic traffic. You can open Google Search Console right now and see exactly how your content performs in search.
+
+AI visibility doesn't work that way. When ChatGPT cites you in an answer, there's no referral in your analytics. When PerplexityBot crawls your docs section at 3am, it doesn't show up in your Google Analytics. When ClaudeBot decides your pricing page isn't worth reading and skips it, you have no idea.
+
+This invisibility is the problem Galuli's AI Attention Score was built to solve.`,
+    sections: [
+      {
+        heading: 'What AI Attention Score measures',
+        body: `The AI Attention Score (0–100) is a composite metric that answers a single question: how much attention are AI systems collectively paying to this website right now?
+
+It's built from four components that together paint a picture of AI engagement that no single number could capture:
+
+**Frequency (40% of score)**
+How often do AI crawlers visit? A site visited 500+ times per month by AI agents in the last 30 days scores full marks here. A site that's been visited twice gets almost nothing. Frequency signals that AI systems have found your content worth returning to.
+
+**Depth (35% of score)**
+How many unique pages do AI agents actually read per visit? This is where most sites underperform. An AI crawler might hit your homepage 50 times but never touch your /docs or /pricing pages. Depth ratio — unique pages divided by total visits — tells you whether AI systems are exploring your content or just pinging the front door.
+
+A site with 200 visits across 4 unique pages has a depth ratio of 2%. A site with 200 visits across 40 unique pages has a depth ratio of 20%. The second site is telling AI systems a much richer story about what it offers.
+
+**Recency (25% of score)**
+When did an AI agent last visit? AI crawlers prioritize fresh content. A site that was last crawled 24 hours ago scores 25/25 here. A site last crawled 10 days ago scores about 6/25. At 14 days, the recency component decays to zero.
+
+This component captures an important dynamic: AI crawlers aren't random. They return to sites that change, publish new content, and signal activity. Recency is a proxy for whether you're still relevant in the eyes of AI systems.
+
+**Diversity bonus (+10 max)**
+Are multiple distinct AI systems crawling your site? Getting 1,000 visits from GPTBot alone is different from getting 500 visits split across GPTBot, ClaudeBot, PerplexityBot, and Google-Extended. Diversity signals that your content is broadly relevant — not just accidentally indexed by one system.
+
+Each unique AI agent adds 2 points to the diversity bonus, capped at 10. Five or more distinct systems gives you the full bonus.`
+      },
+      {
+        heading: 'Why four components instead of one number',
+        body: `You could imagine a simpler version: just count total AI visits and call it a score. But this would miss the most important dynamics.
+
+Consider two sites, both with 100 AI visits in 30 days:
+
+**Site A:** 100 visits, all from GPTBot, all to the homepage, last visit 12 days ago.
+**Site B:** 100 visits, from 4 different AI agents, across 30 unique pages, last visit yesterday.
+
+By raw visit count they're identical. By AI Attention Score, Site B is dramatically outperforming — because AI systems are actually reading its content, exploring its depth, and returning recently. Site A just got pinged by one crawler that has since moved on.
+
+The four-component structure was designed to surface exactly this difference. Frequency tells you volume. Depth tells you engagement. Recency tells you relevance. Diversity tells you breadth.
+
+Together they answer the question that raw visit counts can't: are AI systems paying attention, or just touching the front door?`
+      },
+      {
+        heading: 'What the grades actually mean',
+        body: `The AI Attention Score maps to grades the same way the AI Readiness Score does:
+
+- **A+ (90–100):** Multiple AI systems are actively and deeply crawling your content. You're likely being cited regularly. This is where you want to be.
+- **A (80–89):** Excellent coverage with minor gaps. Usually means great frequency and depth but slightly stale recency.
+- **B (70–79):** Good AI attention, but room to improve. Often means good frequency but shallow depth — AI crawlers keep coming back but aren't reading beyond the surface.
+- **C (60–69):** Moderate AI attention. You're on the radar, but not a priority. Content improvement usually moves the needle fastest here.
+- **D (40–59):** Low AI attention. Either crawlers aren't finding you, or they're not finding your content worth reading deeply.
+- **F (below 40):** Effectively invisible to AI systems. No snippet means no tracking; no tracking means you're flying blind.
+
+Most sites without active GEO optimization score in the D range — visited occasionally by one or two crawlers, at shallow depth, and infrequently.`
+      },
+      {
+        heading: 'What moves the score',
+        body: `Once you understand the four components, the levers become obvious.
+
+**To improve frequency:**
+AI crawlers return to sites that are active. Publishing new content, updating existing pages, and adding new product features all signal activity. The fastest way to increase crawl frequency is to give AI systems a reason to come back — and a consistent publishing cadence does this better than any technical optimization.
+
+**To improve depth:**
+If AI crawlers are hitting your homepage but not your /docs, /pricing, or /blog, there's usually an architectural reason. Either those pages aren't linked clearly from crawl-friendly paths, or they're blocked in your robots.txt, or they're JavaScript-rendered and invisible to crawlers.
+
+Check your llms.txt. If it doesn't explicitly list your most important pages with clean descriptions, crawlers have no map. A good llms.txt directly boosts depth by telling AI systems where to look.
+
+**To improve recency:**
+Recency rewards freshness. The most effective lever here is regular content publication — even minor updates to existing pages signal activity. Adding a "Last updated" date to your most important pages also helps: it tells AI systems explicitly that content is current.
+
+**To improve diversity:**
+This is the hardest component to directly optimize, but it follows naturally from doing everything else well. If your robots.txt correctly allows all major AI crawlers, your llms.txt is comprehensive, and your content is high quality, diversity comes on its own.
+
+The one thing that actively hurts diversity: blocking crawlers. Surprising number of sites accidentally block PerplexityBot or Google-Extended via overly aggressive robots.txt rules. Check yours.`
+      },
+      {
+        heading: 'AI Attention Score vs. AI Readiness Score',
+        body: `Galuli offers two distinct metrics, and it's worth being clear on the difference:
+
+**AI Readiness Score** measures potential — how well your site is structured to be understood by AI. It's a static measure of quality: content clarity, schema markup, llms.txt quality, structural legibility. A site with perfect AI Readiness can have low AI Attention if AI systems haven't discovered it yet.
+
+**AI Attention Score** measures actual behavior — what AI systems are actually doing. It's a dynamic measure of reality: are they visiting, how deeply, how recently, and how many of them?
+
+Both matter, and they're diagnostic in different ways:
+
+A high Readiness score with a low Attention score usually means: good content, poor distribution. AI systems haven't discovered you yet, or your robots.txt is blocking them.
+
+A high Attention score with a low Readiness score means: AI systems are visiting, but what they find isn't well-structured. They may cite you inconsistently or incompletely.
+
+The goal is to be high on both — which is why they're both in the Galuli dashboard.`
+      },
+      {
+        heading: 'The topic-level breakdown',
+        body: `One dimension of AI attention that the top-line score doesn't capture: which content areas are AI systems actually reading?
+
+Galuli's Topic Attention Map maps your crawled pages to content categories — Blog, Product, Pricing, Docs, About, Case Studies, and so on — and shows which topics attract the most AI visits.
+
+This matters more than it might seem. Most sites assume AI crawlers are reading their product pages and pricing. The reality is often different: AI systems frequently over-index on blog content (easier to read, higher information density) and under-read product and pricing pages (more marketing language, less structured information).
+
+If your topic map shows 80% of AI attention going to blog posts and only 5% to pricing, you have a structural problem: AI systems won't be able to accurately answer questions about what your product costs because they've barely read that page.
+
+The fix is usually a combination of:
+1. Improving llms.txt to explicitly highlight pricing and product pages
+2. Making those pages more structured and factual (less marketing copy, more specific information)
+3. Internal linking from blog content to product/pricing pages
+
+AI attention follows quality. Redirect it by improving the pages you want AI to read.`
+      },
+    ],
+    cta: 'Check your AI Attention Score now →'
+  },
+  {
+    slug: 'content-doctor',
+    title: 'Content Doctor: How to Fix What AI Systems Won\'t Trust',
+    subtitle: "You can have a technically perfect site — correct schema, clean llms.txt, good crawl access — and still get ignored by AI. The reason is almost always content quality.",
+    date: 'February 27, 2025',
+    readTime: '12 min read',
+    category: 'Product',
+    coverEmoji: '🩺',
+    intro: `A common mistake in GEO strategy: treating it as purely a technical problem.
+
+Add llms.txt. Check. Register WebMCP. Check. Fix robots.txt. Check. Now AI systems will cite you.
+
+Not necessarily.
+
+Technical accessibility is table stakes — it gets AI systems to your door. What happens once they read your content is a different problem entirely. And the single biggest reason AI systems don't cite content they've crawled is trust: they found the content, but they didn't trust it enough to surface it in an answer.
+
+Content Doctor is Galuli's answer to this. It's an AI-powered audit tool with two modules that analyze what you've written — not how it's structured technically, but whether the words on the page are the kind of words AI systems will trust and repeat.`,
+    sections: [
+      {
+        heading: 'Why AI systems don\'t trust your content',
+        body: `Language models have absorbed an enormous amount of text during training — research papers, Wikipedia, books, journalism, academic databases. In that corpus, certain patterns are associated with reliable, factual content:
+
+- Claims backed by named sources ("According to a 2023 Gartner report...")
+- Statistics with methodology context ("In a survey of 500 B2B buyers...")
+- Comparisons with specific criteria ("Compared to the industry average of 4.2 days, our average is 1.8")
+- Named, defined entities with clear descriptions
+
+And certain patterns are associated with unreliable, marketing-inflated content:
+- Bare superlatives ("the best," "the fastest," "the most powerful")
+- Vague quantities ("many companies," "significant savings," "substantial ROI")
+- Unattributed statistics ("studies show that...," "research suggests...")
+- Claims without context ("X% of customers see results")
+
+When an AI system reads your content and encounters the second set of patterns, it doesn't necessarily reject the content — but it weights it less heavily when deciding what to cite. AI systems are probabilistic; they cite the sources that most clearly resemble the reliable content in their training data.
+
+The Authority Gap Scanner finds exactly this mismatch.`
+      },
+      {
+        heading: 'The Authority Gap Scanner',
+        body: `The first module in Content Doctor analyzes your content for claims that AI systems will downweight or ignore because they lack empirical backing.
+
+For each gap it finds, it returns:
+
+**The claim** — the exact sentence or phrase that's problematic, quoted verbatim so you know exactly what to fix.
+
+**Type** — one of five categories:
+- *Statistic* — a number without a source
+- *Comparison* — a "better than" or "faster than" claim without referenced benchmark
+- *Benefit claim* — a promised outcome without evidence
+- *Historical fact* — an assertion about the past without attribution
+- *Technical claim* — a capability assertion that isn't verifiable from the content
+
+**Severity** — high, medium, or low. High-severity gaps are claims so bare that AI systems are unlikely to trust anything around them. Low-severity gaps are worth fixing but won't dramatically change your score.
+
+**Suggestion** — specific guidance on what data or citation would fix this gap. Not "add a source" but "reference the Forrester Wave report on B2B automation platforms" or "cite your own internal data with methodology — e.g., 'based on analysis of 10,000 customer sessions in Q4 2024.'"
+
+**Example rewrite** — a concrete version of the sentence with the fix applied. You don't have to guess what the improved version looks like.
+
+**AI risk** — why this specific claim is likely to be downweighted: "unverifiable statistic," "contradicts known benchmarks," "too vague to be factual," "circular citation risk."`
+      },
+      {
+        heading: 'The Structural Optimizer',
+        body: `The second module analyzes not what you say, but how you say it.
+
+AI systems have strong preferences for certain content structures — preferences that are baked into their training data. Well-cited technical documentation is almost always in bullet lists, numbered steps, and tables. Academic writing has clear section headers, abstracts, and methodology sections. Wikipedia articles have structured definitions and fact-rich introductions.
+
+When your content doesn't match these structural patterns, AI systems can read it and still miss the key points — because those points are buried in marketing paragraphs instead of surfaced in scannable structure.
+
+The Structural Optimizer finds:
+
+**Dense paragraphs that should be tables or bullets.** If you have a paragraph comparing three pricing tiers across five dimensions, that's a table. Writing it as prose means AI systems have to reconstruct the comparison mentally — and they often don't.
+
+**Missing Key Takeaways sections.** This is the single highest-ROI structural fix for most content. AI systems frequently pull from summary sections because they're already synthesized. A 3–5 bullet "Key Takeaways" box at the top of any long-form piece dramatically increases citation probability.
+
+**Undefined key entities.** If your content references product names, proprietary methodologies, company names, or technical terms without defining them, AI systems may struggle to accurately represent what those things are. The Structural Optimizer identifies every named entity in your content and flags the ones that aren't explicitly defined.
+
+**Headers that don't match natural language questions.** "Our Approach" is an opaque header. "How does X work?" is a question people ask, and AI systems know how to match it. The optimizer suggests conversational rewrites for headers that don't map to real user queries.
+
+**Missing FAQ sections.** FAQ structures are highly citable. AI systems that read a FAQ section have immediate access to synthesized answers in the exact format they'll reproduce. The optimizer identifies content where a FAQ section would naturally fit.`
+      },
+      {
+        heading: 'How to use Content Doctor in practice',
+        body: `Content Doctor works in three modes:
+
+**URL analysis** — paste any live URL. Galuli fetches the page, strips navigation and boilerplate, and analyzes the core content. Best for auditing specific pages before publishing or after noticing a visibility gap.
+
+**Paste analysis** — paste raw text or markdown directly. Useful for content still in draft, or for analyzing copy that isn't yet live. This is the fastest way to run Content Doctor during the writing process rather than after.
+
+**Domain analysis** — runs across all pages indexed in your Galuli registry. Surfaces the highest-impact issues across your entire site, ranked by severity. Best for understanding where to focus improvement effort first.
+
+The workflow we recommend: run a domain analysis first to find the worst-performing pages (by combined authority + structure score), then run URL analysis on those specific pages to get actionable rewrites.
+
+For new content, paste analysis during the writing process — before you publish — is the highest-leverage moment. It costs zero rework to fix a claim before it's live. It costs real effort to rewrite a published post.`
+      },
+      {
+        heading: 'The content health score',
+        body: `Content Doctor returns a Content Health Score (0–100) for every analysis. It's the average of two sub-scores:
+
+- **Authority Score (0–100):** How well-cited and empirically backed is your content?
+- **Structure Score (0–100):** How well-formatted for AI readability is your content?
+
+Both are graded A through F. A piece with a 90 Authority Score but a 40 Structure Score is well-cited but poorly organized — the information is trustworthy but hard to surface. A piece with a 90 Structure Score but 40 Authority Score has excellent formatting around weak content — it looks right to AI systems but the claims won't hold up.
+
+The goal is to be high on both. Most content lands between 40–65 on each metric without specific optimization — there's a meaningful gap between average web content and what AI systems most readily cite.`
+      },
+      {
+        heading: 'What Content Doctor is not',
+        body: `A few things worth being direct about:
+
+**It is not a plagiarism checker.** It doesn't compare your content to other sources. It analyzes your content in isolation for patterns associated with trustworthiness.
+
+**It is not an SEO tool.** It doesn't evaluate keywords, meta descriptions, or search ranking signals. It's focused exclusively on whether AI systems will trust and cite your content.
+
+**It is not prescriptive about topics.** Content Doctor doesn't tell you what to write about. It analyzes what you've written and tells you how to make it more trustworthy to AI systems.
+
+**It is not infallible.** It's an AI analyzing content for patterns — it will occasionally flag things that are fine and miss things that are problematic. Treat its output as a high-quality first pass, not a definitive audit.
+
+The goal is to surface the most impactful fixes — the high-severity authority gaps and structural issues that are most likely to improve AI citation probability. Start with those. The quick wins section in every report is a good place to begin.`
+      },
+      {
+        heading: 'The deeper principle',
+        body: `Content Doctor is built on a simple observation: AI systems cite content that resembles what they were trained on as reliable.
+
+That's not a bug in AI systems. It's a reasonable heuristic. Peer-reviewed research has citations. Good journalism names sources. Technical documentation is structured and specific. These are the patterns AI systems learned to associate with trustworthiness during training.
+
+The implication for GEO is that the best content strategy isn't "write for AI" — it's "write like a trustworthy source writes." Specific, attributed, structured, defined. This is also, not coincidentally, what human readers find more credible.
+
+Content that's good for AI credibility is usually just... good content.
+
+The difference is that Content Doctor makes the standard explicit and measurable — so you know whether you're meeting it, and exactly what to fix when you're not.`
+      },
+    ],
+    cta: 'Run Content Doctor on your site →'
+  },
 ]
 
 // ── Blog List Page ──────────────────────────────────────────────────────────────

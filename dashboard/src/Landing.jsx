@@ -181,9 +181,9 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 40 }}>
             {[
-              { icon: '✓', label: 'Affordable.', detail: 'From $49/year, free scan, no credit card required' },
-              { icon: '✓', label: 'Effortless.', detail: 'One line of code for full AI readability — automated' },
-              { icon: '✓', label: 'Visible.', detail: 'All major LLMs will find, read, and recommend your site' },
+              { icon: '✓', label: 'Know your AI Attention Score.', detail: 'See exactly how often, how deep, and how recently each AI system reads your content.' },
+              { icon: '✓', label: 'Fix what holds you back.', detail: 'Content Doctor finds unsupported claims and structural issues AI won\'t trust — with specific rewrites.' },
+              { icon: '✓', label: 'From $9/month, free scan.', detail: 'Starter plan covers 1 site with full JS monitoring. Free tier gets you the score instantly.' },
             ].map(({ icon, label, detail }) => (
               <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 15 }}>
                 <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'rgba(99,102,241,0.15)', border: '1.5px solid rgba(99,102,241,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)', fontWeight: 900, fontSize: 12, flexShrink: 0 }}>
@@ -247,7 +247,7 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
           <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--subtle)', textTransform: 'uppercase', letterSpacing: '1px', flexShrink: 0 }}>
             Visible to
           </span>
-          {['ChatGPT', 'Claude', 'Perplexity', 'Gemini', 'Bing AI', 'WebMCP Agents'].map((name, i) => (
+          {['ChatGPT', 'Claude', 'Perplexity', 'Gemini', 'Grok', 'Llama', 'WebMCP Agents'].map((name, i) => (
             <span key={name} style={{ fontSize: 14, color: 'var(--muted)', fontWeight: 700, animation: `float ${4 + (i % 3)}s ease-in-out infinite alternate` }}>{name}</span>
           ))}
         </div>
@@ -303,12 +303,12 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 2 }}>
             {[
-              { icon: '🎯', title: 'AI Readiness Score', desc: '0–100 score across 5 dimensions: content coverage, structure, freshness, WebMCP compliance, and output formats. Includes specific fixes for each weak area.', color: 'var(--accent)' },
-              { icon: '📡', title: 'AI Agent Analytics', desc: 'See exactly which AI crawlers visit your site, which pages they read, and how often — updated in real time via the snippet.', color: 'var(--green)' },
-              { icon: '⬡', title: 'WebMCP Auto-Setup', desc: 'The snippet registers your site\'s forms and actions as WebMCP tools, making them callable by Chrome-based AI agents without any backend changes.', color: 'var(--blue)' },
-              { icon: '📄', title: 'llms.txt Generation', desc: 'Galuli auto-generates a /llms.txt file for your domain — the emerging standard for making sites machine-readable by LLMs at inference time.', color: 'var(--yellow)' },
-              { icon: '🔌', title: 'AI Plugin Manifest', desc: 'A /.well-known/ai-plugin.json is generated automatically so ChatGPT and compatible AI agents can discover and call your site\'s capabilities.', color: 'var(--red)' },
-              { icon: '🔄', title: 'Smart Auto-refresh', desc: 'The snippet hashes page content on every load. When content changes, Galuli re-indexes automatically — your score is always current.', color: 'var(--purple)' },
+              { icon: '📊', title: 'GEO Score — per AI system', desc: 'Individual visibility scores for ChatGPT, Claude, Perplexity, Gemini, Grok, and Llama. Know exactly which AI is undervaluing your site and why.', color: 'var(--accent)' },
+              { icon: '🧲', title: 'AI Attention Score', desc: 'A 0–100 composite metric: how often AI agents visit (frequency), how many pages they read (depth), how recently they crawled (recency), and how many distinct systems (diversity).', color: 'var(--green)' },
+              { icon: '🩺', title: 'Content Doctor', desc: 'AI-powered audit that finds authority gaps (claims AI won\'t trust) and structural issues (dense paragraphs, missing Key Takeaways). Returns specific rewrites, not vague advice.', color: 'var(--blue)' },
+              { icon: '🗺️', title: 'Topic Attention Map', desc: 'See which content areas — Blog, Product, Pricing, Docs — get the most AI crawler attention, and which specific AI bots are driving it. Know where to invest.', color: 'var(--yellow)' },
+              { icon: '📄', title: 'llms.txt + AI Plugin Manifest', desc: 'Galuli auto-generates /llms.txt and /.well-known/ai-plugin.json — the standards that let AI systems read your site in their native format, not scraped HTML.', color: 'var(--red)' },
+              { icon: '⬡', title: 'WebMCP + Smart Auto-refresh', desc: 'Your site\'s actions register as callable AI tools automatically. Content change detection re-indexes you when pages update — no manual rescans needed.', color: 'var(--purple)' },
             ].map(({ icon, title, desc, color }, i) => (
               <div key={title} className="feat-card" style={{
                 background: 'var(--surface2)',
@@ -350,10 +350,10 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {[
-                { term: 'llms.txt', color: '#818cf8', desc: 'A plain-text file at /llms.txt that tells LLMs what your site does, what pages matter, and how to interpret content.' },
-                { term: 'WebMCP', color: '#10b981', desc: 'A new W3C browser standard that lets AI agents directly interact with your site\'s forms, search, and checkout.' },
-                { term: 'AI Plugin Manifest', color: '#f59e0b', desc: 'A /.well-known/ai-plugin.json file that tells agents what tools your site exposes and how to call them.' },
-                { term: 'AI Readiness Score', color: '#3b82f6', desc: 'A 0–100 score across 5 dimensions. Think PageSpeed, but for AI visibility.' },
+                { term: 'AI Attention Score', color: '#818cf8', desc: 'A 0–100 composite: frequency (how often AI visits), depth (how many pages it reads), recency, and diversity of AI systems. The ROI metric for GEO.' },
+                { term: 'Content Doctor', color: '#10b981', desc: 'Authority Gap Scanner + Structural Optimizer. Finds claims AI won\'t trust and paragraphs that should be tables — with specific rewrites, not vague advice.' },
+                { term: 'llms.txt + ai-plugin.json', color: '#f59e0b', desc: 'The machine-readable standards AI systems check before your homepage. Galuli generates both automatically from your crawl data.' },
+                { term: 'GEO Score per LLM', color: '#3b82f6', desc: 'Separate visibility scores for ChatGPT, Claude, Perplexity, Gemini, Grok, and Llama. Each weights signals differently — now you can see the gap.' },
               ].map(({ term, color, desc }) => (
                 <div key={term} style={{ background: '#0f0f1a', border: '1px solid #1c1c2e', borderLeft: `3px solid ${color}`, borderRadius: 10, padding: '14px 18px' }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color, marginBottom: 6 }}>{term}</div>
@@ -506,8 +506,16 @@ const FAQ_ITEMS = [
     a: "A typical scan completes in 60–90 seconds. The pipeline crawls your pages, runs a 4-pass AI comprehension analysis using Claude, extracts your site's capabilities, calculates your AI Readiness Score, and generates a draft llms.txt — all automatically."
   },
   {
+    q: "What is the AI Attention Score?",
+    a: "AI Attention Score (0–100) measures how much attention AI systems collectively pay to your site. It's a composite of four components: Frequency (how often AI crawlers visit, 40%), Depth (how many unique pages they read per visit, 35%), Recency (how recently they last crawled, 25%), and Diversity (how many distinct AI systems, up to +10 bonus points). A score of 70+ means your content is actively being read across multiple AI systems."
+  },
+  {
+    q: "What is Content Doctor?",
+    a: "Content Doctor is Galuli's AI-powered content audit tool. It runs two analyses: the Authority Gap Scanner identifies claims in your content that AI systems won't trust because they lack empirical backing (statistics without sources, comparisons without data, benefits without evidence) — and gives you specific rewrites. The Structural Optimizer finds dense paragraphs that should be tables, missing Key Takeaways sections, undefined key entities, and other formatting issues that hurt AI readability. You can paste content, analyze any URL, or run it across your whole indexed domain."
+  },
+  {
     q: "Is Galuli free?",
-    a: "Yes — the free tier lets you scan up to 3 sites with no credit card required. You get the full AI Readiness Score, GEO Score across all 6 LLMs, and AI agent analytics. The Pro plan ($49/year) adds 50 sites, priority crawling, automated weekly re-scans, and a badge you can embed anywhere."
+    a: "Yes — the free tier lets you scan any site instantly with no credit card required. You get the full AI Readiness Score, GEO Score across all 6 LLMs, and AI agent analytics. Starter plan ($9/month) adds continuous JS monitoring for 1 site. Pro ($29/month) covers 10 sites. Agency ($799/year) is unlimited sites."
   },
   {
     q: "How is Galuli different from SEMrush or Ahrefs?",
