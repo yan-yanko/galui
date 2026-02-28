@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback } from 'react'
 import { api } from './api'
 import './index.css'
 import './App.css'
@@ -129,8 +129,8 @@ function TabExplainer({ icon, title, description, features, cta, onCta, ctaLabel
           display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24,
         }}>{icon}</div>
         <div style={{ flex: 1, minWidth: 220 }}>
-          <div style={{ fontWeight: 800, fontSize: 17, marginBottom: 6, letterSpacing: '-0.2px' }}>{title}</div>
-          <div style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.7, maxWidth: 560, marginBottom: features ? 20 : 0 }}>{description}</div>
+          <div style={{ fontWeight: 800, fontSize: 20, marginBottom: 6, letterSpacing: '-0.2px' }}>{title}</div>
+          <div style={{ fontSize: 15, color: 'var(--muted)', lineHeight: 1.7, maxWidth: 560, marginBottom: features ? 20 : 0 }}>{description}</div>
           {features && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 10 }}>
               {features.map(({ icon: fi, label, sub }) => (
@@ -139,10 +139,10 @@ function TabExplainer({ icon, title, description, features, cta, onCta, ctaLabel
                   background: 'var(--surface)', border: '1px solid var(--border)',
                   borderRadius: 10, padding: '10px 12px',
                 }}>
-                  <span style={{ fontSize: 18, flexShrink: 0, lineHeight: 1.3 }}>{fi}</span>
+                  <span style={{ fontSize: 20, flexShrink: 0, lineHeight: 1.3 }}>{fi}</span>
                   <div>
-                    <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 2 }}>{label}</div>
-                    <div style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.5 }}>{sub}</div>
+                    <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 2 }}>{label}</div>
+                    <div style={{ fontSize: 15, color: 'var(--muted)', lineHeight: 1.5 }}>{sub}</div>
                   </div>
                 </div>
               ))}
@@ -194,9 +194,9 @@ function Nav({ page, setPage, health, theme, toggleTheme }) {
           <button key={l.id} onClick={() => setPage(l.id)} style={{
             background: page === l.id ? 'var(--border)' : l.highlight && page !== l.id ? 'var(--accent)18' : 'none',
             color: page === l.id ? 'var(--text)' : l.highlight ? 'var(--accent)' : 'var(--muted)',
-            padding: '7px 16px', borderRadius: 8,
+            padding: '8px 18px', borderRadius: 8,
             fontWeight: page === l.id || l.highlight ? 600 : 400,
-            fontSize: 14, whiteSpace: 'nowrap', flexShrink: 0,
+            fontSize: 15, whiteSpace: 'nowrap', flexShrink: 0,
             transition: 'color 0.12s, background 0.12s',
           }}>{l.label}</button>
         ))}
@@ -205,7 +205,7 @@ function Nav({ page, setPage, health, theme, toggleTheme }) {
       {/* Right: status + theme toggle */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0, marginLeft: 8 }}>
         {health && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--muted)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 15, color: 'var(--muted)' }}>
             <span className={`dot dot-${health.anthropic_configured ? 'green' : 'red'}`} />
             <span>{health.registries_indexed} site{health.registries_indexed !== 1 ? 's' : ''}</span>
           </div>
@@ -298,7 +298,7 @@ function OverviewPage({ setPage, setPendingScanDomain }) {
 
       {/* Quick scan */}
       <div className="card" style={{ padding: '20px 24px' }}>
-        <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 12 }}>Scan a site</div>
+        <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 12 }}>Scan a site</div>
         <form onSubmit={handleScan} style={{ display: 'flex', gap: 8 }}>
           <input
             value={scanUrl}
@@ -311,7 +311,7 @@ function OverviewPage({ setPage, setPendingScanDomain }) {
             {scanning ? <><span className="spinner" style={{ width: 14, height: 14 }} /> Scanning…</> : 'Scan →'}
           </button>
         </form>
-        <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 8 }}>
+        <p style={{ fontSize: 15, color: 'var(--muted)', marginTop: 8 }}>
           Free · Results appear in AI Score tab in ~60 seconds
         </p>
       </div>
@@ -336,7 +336,7 @@ function OverviewPage({ setPage, setPendingScanDomain }) {
       {hasData && (
         <div className="flex col gap-2">
           <div className="flex between center" style={{ marginBottom: 8 }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--subtle)' }}>Indexed sites</span>
+            <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--subtle)' }}>Indexed sites</span>
             <button className="btn btn-ghost btn-sm" onClick={() => setPage('registries')}>View all →</button>
           </div>
           {registries.map(r => {
@@ -347,9 +347,9 @@ function OverviewPage({ setPage, setPendingScanDomain }) {
                 <div className="flex center gap-16 wrap">
                   {s ? <ScoreRing score={s.total} size={56} /> : <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span className="spinner" style={{ width: 16, height: 16 }} /></div>}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 2 }}>{r.domain}</div>
-                    {s && <div style={{ fontSize: 12, color: scoreColor }}>{s.label} · {s.total}/100 · Grade {s.grade}</div>}
-                    {s?.suggestions?.[0] && <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 3 }}>💡 {s.suggestions[0].issue}</div>}
+                    <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 2 }}>{r.domain}</div>
+                    {s && <div style={{ fontSize: 15, color: scoreColor }}>{s.label} · {s.total}/100 · Grade {s.grade}</div>}
+                    {s?.suggestions?.[0] && <div style={{ fontSize: 15, color: 'var(--muted)', marginTop: 3 }}>💡 {s.suggestions[0].issue}</div>}
                   </div>
                   <div className="flex gap-6 wrap" style={{ flexShrink: 0, alignItems: 'center' }}>
                     <button className="btn btn-ghost btn-sm" onClick={() => setPage('score')}>Score</button>
@@ -360,7 +360,7 @@ function OverviewPage({ setPage, setPendingScanDomain }) {
                       title={`Remove ${r.domain}`}
                       style={{
                         width: 26, height: 26, borderRadius: 6, border: '1px solid var(--border)',
-                        background: 'none', color: 'var(--muted)', fontSize: 14, cursor: 'pointer',
+                        background: 'none', color: 'var(--muted)', fontSize: 15, cursor: 'pointer',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         transition: 'color 0.15s, border-color 0.15s, background 0.15s',
                         flexShrink: 0,
@@ -400,8 +400,8 @@ function OverviewPage({ setPage, setPendingScanDomain }) {
       {hasData && scores_arr.every(s => !s?.dimensions?.webmcp_compliance?.webmcp_enabled) && (
         <div className="card flex between center wrap gap-16" style={{ background: 'var(--surface2)', border: '1px solid var(--border2)', padding: '16px 20px' }}>
           <div>
-            <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 3 }}>Snippet not installed</div>
-            <div style={{ color: 'var(--muted)', fontSize: 12 }}>Add one script tag to unlock live AI agent tracking + WebMCP.</div>
+            <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 3 }}>Snippet not installed</div>
+            <div style={{ color: 'var(--muted)', fontSize: 15 }}>Add one script tag to unlock live AI agent tracking + WebMCP.</div>
           </div>
           <button className="btn btn-primary btn-sm" onClick={() => setPage('snippet')}>Get install code →</button>
         </div>
@@ -500,7 +500,7 @@ function IngestPage() {
           />
         </div>
         <div className="flex center gap-12">
-          <label className="flex center gap-8" style={{ cursor: 'pointer', userSelect: 'none', color: 'var(--muted)', fontSize: 13 }}>
+          <label className="flex center gap-8" style={{ cursor: 'pointer', userSelect: 'none', color: 'var(--muted)', fontSize: 15 }}>
             <input type="checkbox" checked={force} onChange={e => setForce(e.target.checked)} style={{ width: 'auto', cursor: 'pointer' }} />
             Force re-crawl
           </label>
@@ -519,7 +519,7 @@ function IngestPage() {
           <div className="flex center between">
             <div>
               <div style={{ fontWeight: 600, fontSize: 15 }}>{job.domain}</div>
-              <div style={{ color: 'var(--muted)', fontSize: 12, marginTop: 2 }}>{job.job_id}</div>
+              <div style={{ color: 'var(--muted)', fontSize: 15, marginTop: 2 }}>{job.job_id}</div>
             </div>
             <StatusBadge status={job.status} />
           </div>
@@ -533,14 +533,14 @@ function IngestPage() {
                 <div key={label} className="flex gap-14 center" style={{ opacity: active || done ? 1 : 0.35 }}>
                   <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: done ? '#10b98120' : active ? '#6366f120' : 'var(--border)', border: `1px solid ${done ? 'var(--green)' : active ? 'var(--accent)' : 'var(--border2)'}` }}>
                     {done
-                      ? <span style={{ color: 'var(--green)', fontSize: 13 }}>✓</span>
+                      ? <span style={{ color: 'var(--green)', fontSize: 15 }}>✓</span>
                       : active
                         ? <span className="spinner" style={{ width: 12, height: 12 }} />
-                        : <span style={{ color: 'var(--muted)', fontSize: 11 }}>{stageNum}</span>}
+                        : <span style={{ color: 'var(--muted)', fontSize: 15 }}>{stageNum}</span>}
                   </div>
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: active ? 600 : 400, color: active ? 'var(--text)' : done ? 'var(--subtle)' : 'var(--muted)' }}>{label}</div>
-                    {active && <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>{desc}</div>}
+                    <div style={{ fontSize: 15, fontWeight: active ? 600 : 400, color: active ? 'var(--text)' : done ? 'var(--subtle)' : 'var(--muted)' }}>{label}</div>
+                    {active && <div style={{ fontSize: 15, color: 'var(--muted)', marginTop: 2 }}>{desc}</div>}
                   </div>
                 </div>
               )
@@ -553,7 +553,7 @@ function IngestPage() {
       {job?.status === 'failed' && (
         <div className="card" style={{ borderColor: 'var(--red)', background: '#ef444408' }}>
           <div style={{ color: 'var(--red)', fontWeight: 600, marginBottom: 6 }}>Indexing failed</div>
-          <div style={{ fontSize: 13, color: 'var(--muted)' }}>{job.error || 'Unknown error. Check the URL and try again.'}</div>
+          <div style={{ fontSize: 15, color: 'var(--muted)' }}>{job.error || 'Unknown error. Check the URL and try again.'}</div>
         </div>
       )}
 
@@ -585,8 +585,8 @@ function IndexResult({ result }) {
           <ScoreRing score={score.total} size={110} />
           <div className="flex col gap-8" style={{ flex: 1 }}>
             <div style={{ fontSize: 22, fontWeight: 800 }}>{score.label}</div>
-            <div style={{ color: 'var(--muted)', fontSize: 13 }}>{registry.domain}</div>
-            <div style={{ fontSize: 13, color: 'var(--subtle)', marginTop: 2, lineHeight: 1.5 }}>
+            <div style={{ color: 'var(--muted)', fontSize: 15 }}>{registry.domain}</div>
+            <div style={{ fontSize: 15, color: 'var(--subtle)', marginTop: 2, lineHeight: 1.5 }}>
               {registry.metadata?.description}
             </div>
             <div className="flex gap-8 wrap" style={{ marginTop: 6 }}>
@@ -600,10 +600,10 @@ function IndexResult({ result }) {
 
       {/* Score breakdown */}
       <div className="card flex col gap-14">
-        <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 2 }}>Score breakdown</div>
+        <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 2 }}>Score breakdown</div>
         {Object.entries(score.dimensions || {}).map(([key, dim]) => (
           <div key={key}>
-            <div className="flex between" style={{ fontSize: 13, marginBottom: 6 }}>
+            <div className="flex between" style={{ fontSize: 15, marginBottom: 6 }}>
               <span style={{ fontWeight: 500 }}>{dimLabels[key] || key}</span>
               <span style={{ color: 'var(--muted)', fontVariantNumeric: 'tabular-nums' }}>{dim.score}<span style={{ color: 'var(--border2)' }}>/{dim.max}</span></span>
             </div>
@@ -623,19 +623,19 @@ function IndexResult({ result }) {
       {registry.capabilities?.length > 0 && (
         <div className="card flex col gap-12">
           <div style={{ marginBottom: 4 }}>
-            <div style={{ fontWeight: 700, fontSize: 14 }}>What AI agents now know about {registry.domain}</div>
-            <div style={{ color: 'var(--muted)', fontSize: 12, marginTop: 3 }}>
+            <div style={{ fontWeight: 700, fontSize: 15 }}>What AI agents now know about {registry.domain}</div>
+            <div style={{ color: 'var(--muted)', fontSize: 15, marginTop: 3 }}>
               {registry.capabilities.length} capabilities extracted by the AI pipeline
             </div>
           </div>
           {registry.capabilities.map(cap => (
             <div key={cap.id} className="capability">
-              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 4 }}>{cap.name}</div>
-              <div style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.5 }}>{cap.description}</div>
+              <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 4 }}>{cap.name}</div>
+              <div style={{ fontSize: 15, color: 'var(--muted)', lineHeight: 1.5 }}>{cap.description}</div>
               {cap.use_cases?.length > 0 && (
                 <div className="flex wrap gap-6" style={{ marginTop: 8 }}>
                   {cap.use_cases.slice(0, 4).map(u => (
-                    <span key={u} style={{ fontSize: 11, background: 'var(--border)', color: 'var(--subtle)', padding: '2px 8px', borderRadius: 4 }}>{u}</span>
+                    <span key={u} style={{ fontSize: 15, background: 'var(--border)', color: 'var(--subtle)', padding: '2px 8px', borderRadius: 4 }}>{u}</span>
                   ))}
                 </div>
               )}
@@ -647,16 +647,16 @@ function IndexResult({ result }) {
       {/* Suggestions */}
       {score.suggestions?.length > 0 && (
         <div className="card flex col gap-10">
-          <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>How to improve your score</div>
+          <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 4 }}>How to improve your score</div>
           {score.suggestions.map((s, i) => (
             <div key={i} className={`suggestion suggestion-${s.priority}`}>
               <div className="flex center gap-8" style={{ marginBottom: 5 }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: priorityColor[s.priority], textTransform: 'uppercase', letterSpacing: '0.5px' }}>{s.priority}</span>
+                <span style={{ fontSize: 15, fontWeight: 700, color: priorityColor[s.priority], textTransform: 'uppercase', letterSpacing: '0.5px' }}>{s.priority}</span>
                 <span style={{ color: 'var(--border2)' }}>·</span>
-                <span style={{ fontSize: 12, color: 'var(--subtle)', fontWeight: 600 }}>{s.dimension}</span>
+                <span style={{ fontSize: 15, color: 'var(--subtle)', fontWeight: 600 }}>{s.dimension}</span>
               </div>
-              <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 4 }}>{s.issue}</div>
-              <div style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.5 }}>{s.fix}</div>
+              <div style={{ fontSize: 15, fontWeight: 500, marginBottom: 4 }}>{s.issue}</div>
+              <div style={{ fontSize: 15, color: 'var(--muted)', lineHeight: 1.5 }}>{s.fix}</div>
             </div>
           ))}
         </div>
@@ -665,8 +665,8 @@ function IndexResult({ result }) {
       {/* Next step */}
       <div className="card flex col gap-14" style={{ background: 'linear-gradient(135deg, #0f1020 0%, #0a0a18 100%)', borderColor: 'var(--accent)' }}>
         <div>
-          <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 5 }}>Next step: install the snippet</div>
-          <div style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.6 }}>
+          <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 5 }}>Next step: install the snippet</div>
+          <div style={{ fontSize: 15, color: 'var(--muted)', lineHeight: 1.6 }}>
             Add one script tag to your site's <code>&lt;head&gt;</code> to unlock AI agent tracking, WebMCP auto-registration, and live score updates.
           </div>
         </div>
@@ -757,7 +757,7 @@ function ScorePage({ pendingDomain, clearPending }) {
             <span className="spinner" style={{ width: 36, height: 36, borderWidth: 3 }} />
           </div>
           <div style={{ fontWeight: 700, fontSize: 16 }}>Scanning {pendingDomain}…</div>
-          <div style={{ color: 'var(--muted)', fontSize: 13, lineHeight: 1.7, maxWidth: 400, margin: '0 auto' }}>
+          <div style={{ color: 'var(--muted)', fontSize: 15, lineHeight: 1.7, maxWidth: 400, margin: '0 auto' }}>
             We're crawling every page, running the 4-pass AI pipeline, and calculating your AI Readiness Score.
             This usually takes <strong>30–90 seconds</strong>.
           </div>
@@ -767,7 +767,7 @@ function ScorePage({ pendingDomain, clearPending }) {
               { icon: '🤖', label: 'Running AI comprehension pipeline' },
               { icon: '📊', label: 'Calculating AI Readiness Score' },
             ].map(({ icon, label }) => (
-              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'var(--subtle)' }}>
+              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 15, color: 'var(--subtle)' }}>
                 <span>{icon}</span><span>{label}</span>
               </div>
             ))}
@@ -801,12 +801,12 @@ function ScorePage({ pendingDomain, clearPending }) {
               <ScoreRing score={score.total} size={130} />
               <div className="flex col gap-10" style={{ flex: 1 }}>
                 <div style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.3px' }}>{score.label}</div>
-                <div style={{ color: 'var(--muted)', fontSize: 14 }}>{selected}</div>
+                <div style={{ color: 'var(--muted)', fontSize: 15 }}>{selected}</div>
                 <div className="flex gap-8 wrap" style={{ marginTop: 4 }}>
                   <span className="badge badge-blue">Score: {score.total}/100</span>
                   <span className={`badge ${score.total >= 70 ? 'badge-green' : score.total >= 50 ? 'badge-yellow' : 'badge-red'}`}>Grade: {score.grade}</span>
                 </div>
-                <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
+                <div style={{ fontSize: 15, color: 'var(--muted)', marginTop: 2 }}>
                   Calculated {new Date(score.calculated_at).toLocaleString()}
                 </div>
               </div>
@@ -815,7 +815,7 @@ function ScorePage({ pendingDomain, clearPending }) {
 
           {/* Score scale */}
           <div className="card flex col gap-10">
-            <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>Score scale</div>
+            <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 4 }}>Score scale</div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {[
                 { range: '90–100', grade: 'A+', color: 'var(--green)', label: 'Elite — fully AI-optimized' },
@@ -825,9 +825,9 @@ function ScorePage({ pendingDomain, clearPending }) {
                 { range: '0–29', grade: 'F', color: '#991b1b', label: 'Not readable by AI' },
               ].map(({ range, grade, color, label }) => (
                 <div key={grade} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, padding: '7px 12px', flex: '1 1 160px' }}>
-                  <div style={{ width: 24, height: 24, borderRadius: 6, background: color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: 'white', fontSize: 11, flexShrink: 0 }}>{grade}</div>
+                  <div style={{ width: 24, height: 24, borderRadius: 6, background: color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: 'white', fontSize: 15, flexShrink: 0 }}>{grade}</div>
                   <div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text)' }}>{range}</div>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)' }}>{range}</div>
                     <div style={{ fontSize: 10, color: 'var(--muted)' }}>{label}</div>
                   </div>
                 </div>
@@ -837,13 +837,13 @@ function ScorePage({ pendingDomain, clearPending }) {
 
           {/* Breakdown */}
           <div className="card flex col gap-16">
-            <div style={{ fontWeight: 700, fontSize: 14 }}>Score breakdown</div>
+            <div style={{ fontWeight: 700, fontSize: 15 }}>Score breakdown</div>
             {Object.entries(score.dimensions || {}).map(([key, dim]) => (
               <div key={key} className="flex col gap-6">
-                <div className="flex between center" style={{ fontSize: 13 }}>
+                <div className="flex between center" style={{ fontSize: 15 }}>
                   <div>
                     <span style={{ fontWeight: 600 }}>{dimLabels[key] || key}</span>
-                    <span style={{ color: 'var(--muted)', fontSize: 12, marginLeft: 8 }}>{dimDesc[key]}</span>
+                    <span style={{ color: 'var(--muted)', fontSize: 15, marginLeft: 8 }}>{dimDesc[key]}</span>
                   </div>
                   <span style={{ color: 'var(--subtle)', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>
                     {dim.score}<span style={{ color: 'var(--muted)', fontWeight: 400 }}>/{dim.max}</span>
@@ -853,13 +853,13 @@ function ScorePage({ pendingDomain, clearPending }) {
                   <div style={{ height: 7, borderRadius: 4, background: dimColors[key] || 'var(--accent2)', width: `${(dim.score / dim.max) * 100}%`, transition: 'width 0.6s' }} />
                 </div>
                 {key === 'webmcp_compliance' && (
-                  <div className="flex gap-16" style={{ fontSize: 12, color: 'var(--muted)' }}>
+                  <div className="flex gap-16" style={{ fontSize: 15, color: 'var(--muted)' }}>
                     <span>{dim.webmcp_enabled ? '✓ WebMCP active' : '○ WebMCP pending (install snippet)'}</span>
                     {dim.tools_registered > 0 && <span>{dim.tools_registered} tools</span>}
                   </div>
                 )}
                 {key === 'freshness' && dim.age_days !== null && (
-                  <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+                  <div style={{ fontSize: 15, color: 'var(--muted)' }}>
                     Last updated {dim.age_days === 0 ? 'today' : `${dim.age_days} day${dim.age_days !== 1 ? 's' : ''} ago`}
                   </div>
                 )}
@@ -870,16 +870,16 @@ function ScorePage({ pendingDomain, clearPending }) {
           {/* Suggestions */}
           {score.suggestions?.length > 0 && (
             <div className="card flex col gap-10">
-              <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>Improvement suggestions</div>
+              <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 4 }}>Improvement suggestions</div>
               {score.suggestions.map((s, i) => (
                 <div key={i} className={`suggestion suggestion-${s.priority}`}>
                   <div className="flex center gap-8" style={{ marginBottom: 4 }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: priorityColor[s.priority], textTransform: 'uppercase' }}>{s.priority}</span>
+                    <span style={{ fontSize: 15, fontWeight: 700, color: priorityColor[s.priority], textTransform: 'uppercase' }}>{s.priority}</span>
                     <span style={{ color: 'var(--border2)' }}>·</span>
-                    <span style={{ fontSize: 12, color: 'var(--subtle)' }}>{s.dimension}</span>
+                    <span style={{ fontSize: 15, color: 'var(--subtle)' }}>{s.dimension}</span>
                   </div>
-                  <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 3 }}>{s.issue}</div>
-                  <div style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.5 }}>{s.fix}</div>
+                  <div style={{ fontSize: 15, fontWeight: 500, marginBottom: 3 }}>{s.issue}</div>
+                  <div style={{ fontSize: 15, color: 'var(--muted)', lineHeight: 1.5 }}>{s.fix}</div>
                 </div>
               ))}
             </div>
@@ -887,8 +887,8 @@ function ScorePage({ pendingDomain, clearPending }) {
 
           {/* Badge */}
           <div className="card flex col gap-16">
-            <div style={{ fontWeight: 700, fontSize: 14 }}>Embeddable badge</div>
-            <div style={{ fontSize: 13, color: 'var(--muted)' }}>
+            <div style={{ fontWeight: 700, fontSize: 15 }}>Embeddable badge</div>
+            <div style={{ fontSize: 15, color: 'var(--muted)' }}>
               Show visitors your AI Readiness score. Updates automatically when your score changes.
             </div>
             <div className="tabs">
@@ -1042,7 +1042,7 @@ function AnalyticsPage({ setPage }) {
             onCta={() => setPage('snippet')}
             ctaLabel="Install snippet to start tracking →"
           />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', borderRadius: 10, background: 'var(--surface2)', border: '1px solid var(--border)', fontSize: 13, color: 'var(--muted)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', borderRadius: 10, background: 'var(--surface2)', border: '1px solid var(--border)', fontSize: 15, color: 'var(--muted)' }}>
             <span style={{ fontSize: 16 }}>💡</span>
             <span>No AI traffic recorded yet for <strong style={{ color: 'var(--text)' }}>{selected}</strong>. This is normal for new installs — AI crawlers visit on their own schedule, typically within 24–72 hours.</span>
           </div>
@@ -1065,14 +1065,14 @@ function AnalyticsPage({ setPage }) {
                   </svg>
                   <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                     <span style={{ fontSize: 26, fontWeight: 800, color: attColor, lineHeight: 1 }}>{attScore}</span>
-                    <span style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2 }}>{attention.grade}</span>
+                    <span style={{ fontSize: 15, color: 'var(--muted)', marginTop: 2 }}>{attention.grade}</span>
                   </div>
                 </div>
                 {/* Score details */}
                 <div className="flex col gap-10" style={{ flex: 1 }}>
                   <div>
                     <div style={{ fontWeight: 800, fontSize: 18 }}>AI Attention Score</div>
-                    <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 3 }}>{attention.insight}</div>
+                    <div style={{ fontSize: 15, color: 'var(--muted)', marginTop: 3 }}>{attention.insight}</div>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
                     {[
@@ -1082,7 +1082,7 @@ function AnalyticsPage({ setPage }) {
                       { label: 'Diversity', val: attention.components?.diversity_bonus, max: 10 },
                     ].map(c => (
                       <div key={c.label} style={{ background: 'var(--surface2)', borderRadius: 8, padding: '8px 10px', border: '1px solid var(--border)' }}>
-                        <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 4 }}>{c.label}</div>
+                        <div style={{ fontSize: 15, color: 'var(--muted)', marginBottom: 4 }}>{c.label}</div>
                         <div style={{ fontSize: 16, fontWeight: 700, color: attColor }}>{c.val}<span style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 400 }}>/{c.max}</span></div>
                         <div style={{ height: 3, borderRadius: 2, background: 'var(--border)', marginTop: 5 }}>
                           <div style={{ height: 3, borderRadius: 2, background: attColor, width: (c.val / c.max * 100) + '%', transition: 'width 0.5s' }} />
@@ -1115,8 +1115,8 @@ function AnalyticsPage({ setPage }) {
             <div className="card flex col gap-14">
               <div className="flex between center">
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: 14 }}>AI Attention by Content Topic</div>
-                  <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>Which content areas attract the most AI crawler attention</div>
+                  <div style={{ fontWeight: 700, fontSize: 15 }}>AI Attention by Content Topic</div>
+                  <div style={{ fontSize: 15, color: 'var(--muted)', marginTop: 2 }}>Which content areas attract the most AI crawler attention</div>
                 </div>
               </div>
               <div className="flex col gap-10">
@@ -1124,9 +1124,9 @@ function AnalyticsPage({ setPage }) {
                   <div key={t.topic}>
                     <div className="flex between center" style={{ marginBottom: 5 }}>
                       <div className="flex center gap-10">
-                        <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', width: 16 }}>{i + 1}</span>
-                        <span style={{ fontSize: 13, fontWeight: 500 }}>{t.topic}</span>
-                        <span style={{ fontSize: 11, color: 'var(--muted)' }}>{t.unique_pages} page{t.unique_pages !== 1 ? 's' : ''}</span>
+                        <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--muted)', width: 16 }}>{i + 1}</span>
+                        <span style={{ fontSize: 15, fontWeight: 500 }}>{t.topic}</span>
+                        <span style={{ fontSize: 15, color: 'var(--muted)' }}>{t.unique_pages} page{t.unique_pages !== 1 ? 's' : ''}</span>
                       </div>
                       <div className="flex center gap-8">
                         {t.top_agents.slice(0, 3).map(a => (
@@ -1134,7 +1134,7 @@ function AnalyticsPage({ setPage }) {
                             {a.agent.replace('Bot', '').replace('bot', '')}
                           </span>
                         ))}
-                        <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent2)', fontVariantNumeric: 'tabular-nums', minWidth: 44, textAlign: 'right' }}>{t.total_hits} visits</span>
+                        <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--accent2)', fontVariantNumeric: 'tabular-nums', minWidth: 44, textAlign: 'right' }}>{t.total_hits} visits</span>
                       </div>
                     </div>
                     <div style={{ height: 6, borderRadius: 3, background: 'var(--border)' }}>
@@ -1149,14 +1149,14 @@ function AnalyticsPage({ setPage }) {
           {/* Agent breakdown + top pages */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div className="card flex col gap-14">
-              <div style={{ fontWeight: 700, fontSize: 14 }}>AI agents visiting</div>
+              <div style={{ fontWeight: 700, fontSize: 15 }}>AI agents visiting</div>
               {agents.length === 0
-                ? <div style={{ color: 'var(--muted)', fontSize: 13 }}>No agent data</div>
+                ? <div style={{ color: 'var(--muted)', fontSize: 15 }}>No agent data</div>
                 : agents.map(a => (
                   <div key={a.agent_name} className="flex center gap-12">
                     <div style={{ width: 9, height: 9, borderRadius: '50%', flexShrink: 0, background: AGENT_COLORS[a.agent_name] || 'var(--muted)' }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div className="flex between" style={{ fontSize: 13, marginBottom: 5 }}>
+                      <div className="flex between" style={{ fontSize: 15, marginBottom: 5 }}>
                         <span style={{ fontWeight: 500 }}>{a.agent_name}</span>
                         <span style={{ color: 'var(--muted)', fontVariantNumeric: 'tabular-nums' }}>{a.hits} visits</span>
                       </div>
@@ -1168,11 +1168,11 @@ function AnalyticsPage({ setPage }) {
             </div>
 
             <div className="card flex col gap-12">
-              <div style={{ fontWeight: 700, fontSize: 14 }}>Most visited pages</div>
+              <div style={{ fontWeight: 700, fontSize: 15 }}>Most visited pages</div>
               {pages.length === 0
-                ? <div style={{ color: 'var(--muted)', fontSize: 13 }}>No page data</div>
+                ? <div style={{ color: 'var(--muted)', fontSize: 15 }}>No page data</div>
                 : pages.slice(0, 8).map((p, i) => (
-                  <div key={p.page_url} className="flex center gap-12" style={{ fontSize: 12 }}>
+                  <div key={p.page_url} className="flex center gap-12" style={{ fontSize: 15 }}>
                     <span style={{ color: 'var(--muted)', width: 18, flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>{i + 1}</span>
                     <span style={{ flex: 1, color: 'var(--accent2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {p.page_url.replace(/^https?:\/\/[^/]+/, '') || '/'}
@@ -1188,17 +1188,17 @@ function AnalyticsPage({ setPage }) {
           {llmDepth.length > 0 && (
             <div className="card flex col gap-14">
               <div>
-                <div style={{ fontWeight: 700, fontSize: 14 }}>Per-LLM Crawl Depth</div>
-                <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
+                <div style={{ fontWeight: 700, fontSize: 15 }}>Per-LLM Crawl Depth</div>
+                <div style={{ fontSize: 15, color: 'var(--muted)', marginTop: 2 }}>
                   How deep each AI system goes vs. how many pages they revisit
                 </div>
               </div>
               <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 15 }}>
                   <thead>
                     <tr style={{ borderBottom: '1px solid var(--border)' }}>
                       {['Agent', 'Total visits', 'Unique pages', 'Depth ratio', 'Trend', 'Last seen'].map(h => (
-                        <th key={h} style={{ padding: '6px 10px', textAlign: 'left', fontSize: 11, color: 'var(--muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>{h}</th>
+                        <th key={h} style={{ padding: '6px 10px', textAlign: 'left', fontSize: 15, color: 'var(--muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>{h}</th>
                       ))}
                     </tr>
                   </thead>
@@ -1217,7 +1217,7 @@ function AnalyticsPage({ setPage }) {
                         <td style={{ padding: '8px 10px', fontVariantNumeric: 'tabular-nums', color: 'var(--accent2)', fontWeight: 600 }}>{a.total_hits}</td>
                         <td style={{ padding: '8px 10px', fontVariantNumeric: 'tabular-nums' }}>{a.unique_pages}</td>
                         <td style={{ padding: '8px 10px' }}>
-                          <span style={{ fontSize: 12, color: a.depth_ratio > 0.5 ? 'var(--green)' : a.depth_ratio > 0.2 ? 'var(--yellow)' : 'var(--muted)' }}>
+                          <span style={{ fontSize: 15, color: a.depth_ratio > 0.5 ? 'var(--green)' : a.depth_ratio > 0.2 ? 'var(--yellow)' : 'var(--muted)' }}>
                             {Math.round(a.depth_ratio * 100)}%
                           </span>
                           <span style={{ fontSize: 10, color: 'var(--muted)', marginLeft: 4 }}>unique</span>
@@ -1227,7 +1227,7 @@ function AnalyticsPage({ setPage }) {
                             {TREND_ICON[a.trend] || '→'} {a.trend}
                           </span>
                         </td>
-                        <td style={{ padding: '8px 10px', color: 'var(--muted)', fontSize: 12, whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: '8px 10px', color: 'var(--muted)', fontSize: 15, whiteSpace: 'nowrap' }}>
                           {a.last_seen ? new Date(a.last_seen).toLocaleDateString() : '—'}
                         </td>
                       </tr>
@@ -1235,7 +1235,7 @@ function AnalyticsPage({ setPage }) {
                   </tbody>
                 </table>
               </div>
-              <div style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.6 }}>
+              <div style={{ fontSize: 15, color: 'var(--muted)', lineHeight: 1.6 }}>
                 <strong style={{ color: 'var(--subtle)' }}>Depth ratio</strong> = unique pages / total visits. High ratio means the agent is exploring new content. Low ratio means it keeps revisiting the same pages.
               </div>
             </div>
@@ -1244,7 +1244,7 @@ function AnalyticsPage({ setPage }) {
           {/* Daily trend */}
           {summary.daily_trend?.length > 0 && (
             <div className="card flex col gap-14">
-              <div style={{ fontWeight: 700, fontSize: 14 }}>Daily trend</div>
+              <div style={{ fontWeight: 700, fontSize: 15 }}>Daily trend</div>
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: 3, height: 80 }}>
                 {(() => {
                   const maxVal = Math.max(...summary.daily_trend.map(d => d.hits), 1)
@@ -1279,7 +1279,7 @@ function ScoreGauge({ score, label, color }) {
       <div style={{ height: 4, width: 80, borderRadius: 2, background: 'var(--border)' }}>
         <div style={{ height: 4, borderRadius: 2, background: c, width: score + '%', transition: 'width 0.5s' }} />
       </div>
-      <div style={{ fontSize: 11, color: 'var(--muted)', textAlign: 'center' }}>{label}</div>
+      <div style={{ fontSize: 15, color: 'var(--muted)', textAlign: 'center' }}>{label}</div>
     </div>
   )
 }
@@ -1347,7 +1347,7 @@ function ContentDoctorPage() {
         <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid var(--border)', marginBottom: 4 }}>
           {[['url', 'Analyze URL'], ['paste', 'Paste content']].map(([m, label]) => (
             <button key={m} onClick={() => { setMode(m); setResult(null); setError('') }}
-              style={{ padding: '9px 18px', fontSize: 13, fontWeight: 600, background: 'none', border: 'none',
+              style={{ padding: '9px 18px', fontSize: 15, fontWeight: 600, background: 'none', border: 'none',
                 borderBottom: mode === m ? '2px solid var(--accent)' : '2px solid transparent',
                 color: mode === m ? 'var(--accent)' : 'var(--muted)', cursor: 'pointer', marginBottom: -1 }}>
               {label}
@@ -1379,15 +1379,15 @@ function ContentDoctorPage() {
             <label className="label">Paste your page content (text or markdown)</label>
             <textarea value={pasteContent} onChange={e => setPasteContent(e.target.value)}
               placeholder="Paste the full text content of your page here..."
-              style={{ width: '100%', minHeight: 160, padding: '12px 14px', borderRadius: 10, fontSize: 13,
+              style={{ width: '100%', minHeight: 160, padding: '12px 14px', borderRadius: 10, fontSize: 15,
                 fontFamily: 'inherit', lineHeight: 1.6, resize: 'vertical',
                 background: 'var(--surface2)', border: '1px solid var(--border)', color: 'var(--text)' }} />
-            <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>{pasteContent.length} chars (min 100)</div>
+            <div style={{ fontSize: 15, color: 'var(--muted)', marginTop: 4 }}>{pasteContent.length} chars (min 100)</div>
           </div>
         )}
 
         {error && (
-          <div style={{ background: '#ef444415', border: '1px solid #ef4444', borderRadius: 8, padding: '10px 14px', color: '#ef4444', fontSize: 13 }}>
+          <div style={{ background: '#ef444415', border: '1px solid #ef4444', borderRadius: 8, padding: '10px 14px', color: '#ef4444', fontSize: 15 }}>
             {error}
           </div>
         )}
@@ -1415,9 +1415,9 @@ function ContentDoctorPage() {
               <div style={{ flex: 1, minWidth: 200 }}>
                 {result.top_priorities?.length > 0 && (
                   <div className="flex col gap-8">
-                    <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Top priorities</div>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Top priorities</div>
                     {result.top_priorities.map((p, i) => (
-                      <div key={i} className="flex gap-8" style={{ fontSize: 12, lineHeight: 1.5, color: 'var(--subtle)' }}>
+                      <div key={i} className="flex gap-8" style={{ fontSize: 15, lineHeight: 1.5, color: 'var(--subtle)' }}>
                         <span style={{ color: 'var(--accent2)', fontWeight: 700, flexShrink: 0 }}>{i + 1}.</span>
                         <span>{p}</span>
                       </div>
@@ -1426,9 +1426,9 @@ function ContentDoctorPage() {
                 )}
                 {result.quick_wins?.length > 0 && (
                   <div className="flex col gap-6" style={{ marginTop: 14 }}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Quick wins (under 30 min)</div>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Quick wins (under 30 min)</div>
                     {result.quick_wins.map((w, i) => (
-                      <div key={i} className="flex gap-8" style={{ fontSize: 12, lineHeight: 1.5 }}>
+                      <div key={i} className="flex gap-8" style={{ fontSize: 15, lineHeight: 1.5 }}>
                         <span style={{ color: 'var(--green)', flexShrink: 0 }}>✓</span>
                         <span style={{ color: 'var(--subtle)' }}>{w}</span>
                       </div>
@@ -1443,8 +1443,8 @@ function ContentDoctorPage() {
           {authority?.gaps?.length > 0 && (
             <div className="card flex col gap-14">
               <div>
-                <div style={{ fontWeight: 700, fontSize: 14 }}>Authority Gaps</div>
-                <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>Claims that AI systems won't trust because they lack empirical backing</div>
+                <div style={{ fontWeight: 700, fontSize: 15 }}>Authority Gaps</div>
+                <div style={{ fontSize: 15, color: 'var(--muted)', marginTop: 2 }}>Claims that AI systems won't trust because they lack empirical backing</div>
               </div>
               <div className="flex col gap-8">
                 {authority.gaps.map((gap, i) => (
@@ -1453,27 +1453,27 @@ function ContentDoctorPage() {
                       style={{ width: '100%', padding: '12px 16px', display: 'flex', gap: 12, alignItems: 'flex-start', background: expandedGap === i ? 'var(--surface2)' : 'none', color: 'var(--text)', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
                       <SeverityBadge severity={gap.severity} />
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 13, fontWeight: 500, lineHeight: 1.5 }}>{gap.claim}</div>
-                        <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 3 }}>{gap.type?.replace(/_/g, ' ')}</div>
+                        <div style={{ fontSize: 15, fontWeight: 500, lineHeight: 1.5 }}>{gap.claim}</div>
+                        <div style={{ fontSize: 15, color: 'var(--muted)', marginTop: 3 }}>{gap.type?.replace(/_/g, ' ')}</div>
                       </div>
-                      <span style={{ color: 'var(--muted)', fontSize: 12, flexShrink: 0 }}>{expandedGap === i ? '▲' : '▼'}</span>
+                      <span style={{ color: 'var(--muted)', fontSize: 15, flexShrink: 0 }}>{expandedGap === i ? '▲' : '▼'}</span>
                     </button>
                     {expandedGap === i && (
                       <div style={{ padding: '0 16px 14px', borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 10 }}>
                         {gap.suggestion && (
                           <div>
-                            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4, marginTop: 12 }}>Suggestion</div>
-                            <div style={{ fontSize: 13, color: 'var(--subtle)', lineHeight: 1.6 }}>{gap.suggestion}</div>
+                            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4, marginTop: 12 }}>Suggestion</div>
+                            <div style={{ fontSize: 15, color: 'var(--subtle)', lineHeight: 1.6 }}>{gap.suggestion}</div>
                           </div>
                         )}
                         {gap.example_fix && (
                           <div>
-                            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>Example rewrite</div>
-                            <div style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, padding: '10px 12px', fontSize: 12, color: 'var(--accent2)', lineHeight: 1.6, fontStyle: 'italic' }}>{gap.example_fix}</div>
+                            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>Example rewrite</div>
+                            <div style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, padding: '10px 12px', fontSize: 15, color: 'var(--accent2)', lineHeight: 1.6, fontStyle: 'italic' }}>{gap.example_fix}</div>
                           </div>
                         )}
                         {gap.ai_risk && (
-                          <div style={{ background: '#ef444410', border: '1px solid #ef444430', borderRadius: 8, padding: '8px 12px', fontSize: 12, color: 'var(--muted)' }}>
+                          <div style={{ background: '#ef444410', border: '1px solid #ef444430', borderRadius: 8, padding: '8px 12px', fontSize: 15, color: 'var(--muted)' }}>
                             <strong style={{ color: '#ef4444' }}>AI risk:</strong> {gap.ai_risk}
                           </div>
                         )}
@@ -1484,9 +1484,9 @@ function ContentDoctorPage() {
               </div>
               {authority.strengths?.length > 0 && (
                 <div className="flex col gap-6" style={{ padding: '12px 14px', background: '#10b98110', borderRadius: 8, border: '1px solid #10b98130' }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--green)' }}>What you're doing well</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--green)' }}>What you're doing well</div>
                   {authority.strengths.map((s, i) => (
-                    <div key={i} className="flex gap-8" style={{ fontSize: 12, color: 'var(--subtle)' }}>
+                    <div key={i} className="flex gap-8" style={{ fontSize: 15, color: 'var(--subtle)' }}>
                       <span style={{ color: 'var(--green)', flexShrink: 0 }}>✓</span>
                       <span>{s}</span>
                     </div>
@@ -1500,8 +1500,8 @@ function ContentDoctorPage() {
           {structure?.issues?.length > 0 && (
             <div className="card flex col gap-14">
               <div>
-                <div style={{ fontWeight: 700, fontSize: 14 }}>Structural Issues</div>
-                <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>Formatting changes that would make this content more AI-readable</div>
+                <div style={{ fontWeight: 700, fontSize: 15 }}>Structural Issues</div>
+                <div style={{ fontSize: 15, color: 'var(--muted)', marginTop: 2 }}>Formatting changes that would make this content more AI-readable</div>
               </div>
               <div className="flex col gap-8">
                 {structure.issues.map((issue, i) => (
@@ -1510,21 +1510,21 @@ function ContentDoctorPage() {
                       style={{ width: '100%', padding: '12px 16px', display: 'flex', gap: 12, alignItems: 'flex-start', background: expandedIssue === i ? 'var(--surface2)' : 'none', color: 'var(--text)', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
                       <SeverityBadge severity={issue.severity} />
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 13, fontWeight: 500, lineHeight: 1.5 }}>{issue.description}</div>
-                        <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 3 }}>{issue.type?.replace(/_/g, ' ')} {issue.location ? '· ' + issue.location : ''}</div>
+                        <div style={{ fontSize: 15, fontWeight: 500, lineHeight: 1.5 }}>{issue.description}</div>
+                        <div style={{ fontSize: 15, color: 'var(--muted)', marginTop: 3 }}>{issue.type?.replace(/_/g, ' ')} {issue.location ? '· ' + issue.location : ''}</div>
                       </div>
-                      <span style={{ color: 'var(--muted)', fontSize: 12, flexShrink: 0 }}>{expandedIssue === i ? '▲' : '▼'}</span>
+                      <span style={{ color: 'var(--muted)', fontSize: 15, flexShrink: 0 }}>{expandedIssue === i ? '▲' : '▼'}</span>
                     </button>
                     {expandedIssue === i && (
                       <div style={{ padding: '0 16px 14px', borderTop: '1px solid var(--border)' }}>
                         {issue.fix && (
                           <div style={{ marginTop: 12 }}>
-                            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>How to fix</div>
-                            <div style={{ fontSize: 13, color: 'var(--subtle)', lineHeight: 1.6 }}>{issue.fix}</div>
+                            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>How to fix</div>
+                            <div style={{ fontSize: 15, color: 'var(--subtle)', lineHeight: 1.6 }}>{issue.fix}</div>
                           </div>
                         )}
                         {issue.example && (
-                          <div style={{ marginTop: 10, background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, padding: '10px 12px', fontSize: 12, color: 'var(--accent2)', lineHeight: 1.7, fontStyle: 'italic' }}>{issue.example}</div>
+                          <div style={{ marginTop: 10, background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, padding: '10px 12px', fontSize: 15, color: 'var(--accent2)', lineHeight: 1.7, fontStyle: 'italic' }}>{issue.example}</div>
                         )}
                       </div>
                     )}
@@ -1535,10 +1535,10 @@ function ContentDoctorPage() {
               {/* Suggested new sections */}
               {structure.suggested_sections?.length > 0 && (
                 <div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8 }}>Sections to add</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8 }}>Sections to add</div>
                   <div className="flex col gap-6">
                     {structure.suggested_sections.map((s, i) => (
-                      <div key={i} className="flex gap-10" style={{ fontSize: 12, padding: '8px 12px', background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>
+                      <div key={i} className="flex gap-10" style={{ fontSize: 15, padding: '8px 12px', background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>
                         <span style={{ color: 'var(--accent2)', fontWeight: 700, flexShrink: 0 }}>+</span>
                         <span style={{ color: 'var(--subtle)', lineHeight: 1.5 }}>{s}</span>
                       </div>
@@ -1550,10 +1550,10 @@ function ContentDoctorPage() {
               {/* Key entities */}
               {structure.key_entities?.length > 0 && (
                 <div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8 }}>Key entities to define</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8 }}>Key entities to define</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                     {structure.key_entities.map((e, i) => (
-                      <div key={i} style={{ fontSize: 12, padding: '5px 12px', background: e.defined ? '#10b98115' : '#f59e0b15', border: '1px solid ' + (e.defined ? '#10b98130' : '#f59e0b30'), borderRadius: 20, color: e.defined ? 'var(--green)' : 'var(--yellow)' }}>
+                      <div key={i} style={{ fontSize: 15, padding: '5px 12px', background: e.defined ? '#10b98115' : '#f59e0b15', border: '1px solid ' + (e.defined ? '#10b98130' : '#f59e0b30'), borderRadius: 20, color: e.defined ? 'var(--green)' : 'var(--yellow)' }}>
                         {e.defined ? '✓' : '!'} {e.entity}
                       </div>
                     ))}
@@ -1567,18 +1567,18 @@ function ContentDoctorPage() {
           {structure?.rewrite_candidates?.length > 0 && (
             <div className="card flex col gap-14">
               <div>
-                <div style={{ fontWeight: 700, fontSize: 14 }}>Rewrite Candidates</div>
-                <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>Dense paragraphs that would perform better in a different format</div>
+                <div style={{ fontWeight: 700, fontSize: 15 }}>Rewrite Candidates</div>
+                <div style={{ fontSize: 15, color: 'var(--muted)', marginTop: 2 }}>Dense paragraphs that would perform better in a different format</div>
               </div>
               {structure.rewrite_candidates.map((r, i) => (
                 <div key={i} style={{ border: '1px solid var(--border)', borderRadius: 10, padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
                   <div className="flex between center">
-                    <span style={{ fontSize: 11, fontWeight: 700, background: 'var(--accent2)22', color: 'var(--accent2)', padding: '3px 9px', borderRadius: 10 }}>
+                    <span style={{ fontSize: 15, fontWeight: 700, background: 'var(--accent2)22', color: 'var(--accent2)', padding: '3px 9px', borderRadius: 10 }}>
                       Convert to: {r.format?.replace(/_/g, ' ')}
                     </span>
                   </div>
-                  <div style={{ fontSize: 12, color: 'var(--muted)', fontStyle: 'italic', lineHeight: 1.6, borderLeft: '3px solid var(--border)', paddingLeft: 12 }}>"{r.original}"</div>
-                  {r.reason && <div style={{ fontSize: 12, color: 'var(--subtle)', lineHeight: 1.5 }}>{r.reason}</div>}
+                  <div style={{ fontSize: 15, color: 'var(--muted)', fontStyle: 'italic', lineHeight: 1.6, borderLeft: '3px solid var(--border)', paddingLeft: 12 }}>"{r.original}"</div>
+                  {r.reason && <div style={{ fontSize: 15, color: 'var(--subtle)', lineHeight: 1.5 }}>{r.reason}</div>}
                 </div>
               ))}
             </div>
@@ -1661,7 +1661,7 @@ function SnippetPage() {
 
       {/* ── Step 1: Get your key ── */}
       <div className="card flex col gap-16">
-        <div style={{ fontWeight: 700, fontSize: 14 }}>Step 1 — Your API key</div>
+        <div style={{ fontWeight: 700, fontSize: 15 }}>Step 1 — Your API key</div>
 
         {tenants.length > 0 ? (
           <>
@@ -1673,26 +1673,26 @@ function SnippetPage() {
                 ))}
               </select>
             </div>
-            <div style={{ background: 'var(--surface2)', border: '1px solid var(--border2)', borderRadius: 8, padding: '10px 14px', fontFamily: 'monospace', fontSize: 12, color: 'var(--accent2)', wordBreak: 'break-all', position: 'relative' }}>
+            <div style={{ background: 'var(--surface2)', border: '1px solid var(--border2)', borderRadius: 8, padding: '10px 14px', fontFamily: 'monospace', fontSize: 15, color: 'var(--accent2)', wordBreak: 'break-all', position: 'relative' }}>
               {selectedKey}
               <div style={{ position: 'absolute', top: 6, right: 8 }}><CopyBtn text={selectedKey} label="Copy key" /></div>
             </div>
             {/* Registered domains */}
             <div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted)', marginBottom: 8 }}>
+              <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--muted)', marginBottom: 8 }}>
                 Domains using this key {domains.length > 0 ? `(${domains.length})` : '— none yet'}
               </div>
               {domains.length > 0 ? (
                 <div className="flex col gap-4">
                   {domains.map(d => (
-                    <div key={d} className="flex center gap-8" style={{ fontSize: 12, padding: '5px 10px', background: 'var(--surface2)', borderRadius: 6, border: '1px solid var(--border)' }}>
+                    <div key={d} className="flex center gap-8" style={{ fontSize: 15, padding: '5px 10px', background: 'var(--surface2)', borderRadius: 6, border: '1px solid var(--border)' }}>
                       <span className="dot dot-green" style={{ width: 6, height: 6 }} />
                       <span style={{ color: 'var(--text)', fontFamily: 'monospace' }}>{d}</span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+                <div style={{ fontSize: 15, color: 'var(--muted)' }}>
                   Domains register automatically the first time the snippet runs on that site.
                 </div>
               )}
@@ -1700,7 +1700,7 @@ function SnippetPage() {
           </>
         ) : (
           <>
-            <div style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.6 }}>
+            <div style={{ fontSize: 15, color: 'var(--muted)', lineHeight: 1.6 }}>
               You need an API key to activate the snippet. Create one below — it's free.
             </div>
             <form onSubmit={handleCreateTenant} className="flex col gap-12">
@@ -1724,8 +1724,8 @@ function SnippetPage() {
 
       {/* ── Step 2: Add snippet ── */}
       <div className="card flex col gap-14">
-        <div style={{ fontWeight: 700, fontSize: 14 }}>Step 2 — Add to your site's <code>&lt;head&gt;</code></div>
-        <div style={{ fontSize: 13, color: 'var(--muted)' }}>Works on WordPress, Webflow, Shopify, custom HTML, React — anything.</div>
+        <div style={{ fontWeight: 700, fontSize: 15 }}>Step 2 — Add to your site's <code>&lt;head&gt;</code></div>
+        <div style={{ fontSize: 15, color: 'var(--muted)' }}>Works on WordPress, Webflow, Shopify, custom HTML, React — anything.</div>
         <div className="code-block">
           {snippetTag}
           <div className="copy-btn-abs"><CopyBtn text={snippetTag} /></div>
@@ -1735,14 +1735,14 @@ function SnippetPage() {
             'Webflow: Project Settings → Custom Code → Head Code',
             'Shopify: theme.liquid before </head>',
           ].map(s => (
-            <span key={s} style={{ fontSize: 11, background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 6, padding: '4px 10px', color: 'var(--muted)' }}>{s}</span>
+            <span key={s} style={{ fontSize: 15, background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 6, padding: '4px 10px', color: 'var(--muted)' }}>{s}</span>
           ))}
         </div>
       </div>
 
       {/* ── Step 3: Done ── */}
       <div className="card flex col gap-12" style={{ background: 'var(--surface2)', border: '1px solid var(--border2)' }}>
-        <div style={{ fontWeight: 700, fontSize: 14 }}>Step 3 — Done. Here's what activates automatically:</div>
+        <div style={{ fontWeight: 700, fontSize: 15 }}>Step 3 — Done. Here's what activates automatically:</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: 10 }}>
           {[
             { icon: '📡', title: 'AI agent tracking', desc: '30+ crawlers detected in real time' },
@@ -1755,8 +1755,8 @@ function SnippetPage() {
             <div key={title} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
               <span style={{ fontSize: 18, flexShrink: 0 }}>{icon}</span>
               <div>
-                <div style={{ fontWeight: 600, fontSize: 12, marginBottom: 2 }}>{title}</div>
-                <div style={{ fontSize: 11, color: 'var(--muted)' }}>{desc}</div>
+                <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 2 }}>{title}</div>
+                <div style={{ fontSize: 15, color: 'var(--muted)' }}>{desc}</div>
               </div>
             </div>
           ))}
@@ -1765,12 +1765,12 @@ function SnippetPage() {
 
       {/* ── Debug + verify (collapsed) ── */}
       <div className="card flex col gap-12">
-        <div style={{ fontWeight: 600, fontSize: 13 }}>Debug mode</div>
+        <div style={{ fontWeight: 600, fontSize: 15 }}>Debug mode</div>
         <div className="code-block">
           {debugTag}
           <div className="copy-btn-abs"><CopyBtn text={debugTag} /></div>
         </div>
-        <div style={{ fontSize: 12, color: 'var(--muted)' }}>Add <code>debug=1</code> to see detailed logs in your browser console.</div>
+        <div style={{ fontSize: 15, color: 'var(--muted)' }}>Add <code>debug=1</code> to see detailed logs in your browser console.</div>
       </div>
     </div>
   )
@@ -1798,18 +1798,18 @@ function RegistriesPage() {
     <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 16, height: 'calc(100vh - 54px - 48px)' }}>
       {/* Sidebar */}
       <div className="card flex col gap-4" style={{ overflow: 'auto', padding: 12 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', padding: '4px 8px 4px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+        <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--muted)', padding: '4px 8px 4px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
           {registries.length} site{registries.length !== 1 ? 's' : ''}
         </div>
         {registries.length === 0 && (
-          <div style={{ color: 'var(--muted)', fontSize: 12, padding: '8px 8px 4px', lineHeight: 1.6 }}>No registries yet.<br />Index a site first.</div>
+          <div style={{ color: 'var(--muted)', fontSize: 15, padding: '8px 8px 4px', lineHeight: 1.6 }}>No registries yet.<br />Index a site first.</div>
         )}
         {registries.map(r => (
           <button key={r.domain} onClick={() => select(r.domain)} style={{
             background: selected === r.domain ? 'var(--border)' : 'none',
             color: selected === r.domain ? 'var(--text)' : 'var(--muted)',
             padding: '8px 10px', borderRadius: 8, textAlign: 'left', width: '100%',
-            fontSize: 12, fontFamily: 'monospace', transition: 'all 0.12s',
+            fontSize: 15, fontFamily: 'monospace', transition: 'all 0.12s',
           }}>{r.domain}</button>
         ))}
       </div>
@@ -1819,8 +1819,8 @@ function RegistriesPage() {
         {!selected && (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--muted)', flexDirection: 'column', gap: 14, padding: 40 }}>
             <div style={{ fontSize: 32, opacity: 0.3 }}>▦</div>
-            <div style={{ fontSize: 14, textAlign: 'center' }}>Select a domain from the list</div>
-            <div style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'center', maxWidth: 340, lineHeight: 1.7 }}>
+            <div style={{ fontSize: 15, textAlign: 'center' }}>Select a domain from the list</div>
+            <div style={{ fontSize: 15, color: 'var(--muted)', textAlign: 'center', maxWidth: 340, lineHeight: 1.7 }}>
               A <strong style={{ color: 'var(--subtle)' }}>registry</strong> is Galuli's structured representation of your site — capabilities, pricing, integrations, and WebMCP tools — served as JSON, llms.txt, and an AI plugin manifest that AI systems can read directly.
             </div>
           </div>
@@ -1836,7 +1836,7 @@ function RegistriesPage() {
             <div className="card flex center between gap-16 wrap" style={{ padding: '16px 20px' }}>
               <div>
                 <div style={{ fontSize: 17, fontWeight: 700 }}>{detail.metadata.name}</div>
-                <div style={{ color: 'var(--muted)', fontSize: 13, marginTop: 3, maxWidth: 500 }}>{detail.metadata.description}</div>
+                <div style={{ color: 'var(--muted)', fontSize: 15, marginTop: 3, maxWidth: 500 }}>{detail.metadata.description}</div>
               </div>
               <div className="flex gap-8 center wrap">
                 <ConfBar score={detail.ai_metadata.confidence_score} />
@@ -1870,32 +1870,32 @@ function RegistriesPage() {
                   {[['Domain', detail.domain], ['Category', detail.metadata.category], ['Industry', detail.metadata.sub_categories?.join(', ')], ['Founded', detail.metadata.founded_year], ['HQ', detail.metadata.headquarters], ['Size', detail.metadata.company_size]].filter(([, v]) => v).map(([k, v]) => (
                     <div key={k} className="info-row">
                       <span className="info-row-label">{k}</span>
-                      <span className="info-row-value" style={{ fontSize: 13 }}>{v}</span>
+                      <span className="info-row-value" style={{ fontSize: 15 }}>{v}</span>
                     </div>
                   ))}
                 </div>
                 <div className="card flex col gap-10">
                   <div className="label">WebMCP status</div>
-                  <div style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.6, marginBottom: 4 }}>
+                  <div style={{ fontSize: 15, color: 'var(--muted)', lineHeight: 1.6, marginBottom: 4 }}>
                     WebMCP (W3C, Chrome 2026) lets AI agents call your site's forms and actions directly. Requires the Galuli snippet.
                   </div>
                   <div className="flex between center">
-                    <span style={{ fontSize: 13, color: 'var(--muted)' }}>Status</span>
+                    <span style={{ fontSize: 15, color: 'var(--muted)' }}>Status</span>
                     <span className={`badge ${detail.ai_metadata.webmcp_enabled ? 'badge-green' : 'badge-gray'}`}>
                       {detail.ai_metadata.webmcp_enabled ? '✓ Active' : '○ Snippet not installed'}
                     </span>
                   </div>
                   <div className="info-row">
                     <span className="info-row-label">Tools registered</span>
-                    <span className="info-row-value" style={{ fontSize: 13 }}>{detail.ai_metadata.webmcp_tools_count || 0}</span>
+                    <span className="info-row-value" style={{ fontSize: 15 }}>{detail.ai_metadata.webmcp_tools_count || 0}</span>
                   </div>
                   <div className="info-row">
                     <span className="info-row-label">Forms exposed</span>
-                    <span className="info-row-value" style={{ fontSize: 13 }}>{detail.ai_metadata.forms_exposed || 0}</span>
+                    <span className="info-row-value" style={{ fontSize: 15 }}>{detail.ai_metadata.forms_exposed || 0}</span>
                   </div>
                   <div className="info-row">
                     <span className="info-row-label">Last updated</span>
-                    <span className="info-row-value" style={{ fontSize: 13 }}>{new Date(detail.last_updated).toLocaleDateString()}</span>
+                    <span className="info-row-value" style={{ fontSize: 15 }}>{new Date(detail.last_updated).toLocaleDateString()}</span>
                   </div>
                 </div>
                 <div className="card flex col gap-10" style={{ gridColumn: '1/-1' }}>
@@ -1904,9 +1904,9 @@ function RegistriesPage() {
                     <div key={label} className="info-row">
                       <span className="info-row-label">{label}</span>
                       <div className="flex center gap-8">
-                        <code style={{ fontSize: 11 }}>{url}</code>
+                        <code style={{ fontSize: 15 }}>{url}</code>
                         <CopyBtn text={url} />
-                        <a href={url} target="_blank" style={{ fontSize: 12 }}>↗</a>
+                        <a href={url} target="_blank" style={{ fontSize: 15 }}>↗</a>
                       </div>
                     </div>
                   ))}
@@ -1917,17 +1917,17 @@ function RegistriesPage() {
             {tab === 'capabilities' && (
               <div className="flex col gap-10">
                 {detail.capabilities.length === 0
-                  ? <div className="card" style={{ color: 'var(--muted)', fontSize: 13, padding: 24 }}>No capabilities extracted.</div>
+                  ? <div className="card" style={{ color: 'var(--muted)', fontSize: 15, padding: 24 }}>No capabilities extracted.</div>
                   : detail.capabilities.map(cap => (
                     <div key={cap.id} className="card capability">
                       <div className="flex between center wrap gap-8" style={{ marginBottom: cap.description ? 8 : 0 }}>
-                        <div style={{ fontWeight: 600, fontSize: 14 }}>{cap.name}</div>
+                        <div style={{ fontWeight: 600, fontSize: 15 }}>{cap.name}</div>
                         <span className="badge badge-blue">{cap.category}</span>
                       </div>
-                      {cap.description && <div style={{ color: 'var(--muted)', fontSize: 13, lineHeight: 1.5, marginBottom: 8 }}>{cap.description}</div>}
+                      {cap.description && <div style={{ color: 'var(--muted)', fontSize: 15, lineHeight: 1.5, marginBottom: 8 }}>{cap.description}</div>}
                       {cap.use_cases?.length > 0 && (
                         <div className="flex wrap gap-6">
-                          {cap.use_cases.map(u => <span key={u} style={{ fontSize: 11, color: 'var(--subtle)', background: 'var(--border)', padding: '2px 8px', borderRadius: 4 }}>{u}</span>)}
+                          {cap.use_cases.map(u => <span key={u} style={{ fontSize: 15, color: 'var(--subtle)', background: 'var(--border)', padding: '2px 8px', borderRadius: 4 }}>{u}</span>)}
                         </div>
                       )}
                     </div>
@@ -1951,7 +1951,7 @@ function RegistriesPage() {
                         <td style={{ fontWeight: 600 }}>{t.name}</td>
                         <td>{t.contact_sales ? 'Contact sales' : t.price_per_unit != null ? `${t.currency} ${t.price_per_unit}` : '—'}</td>
                         <td style={{ color: 'var(--muted)' }}>{t.unit || '—'}</td>
-                        <td style={{ color: 'var(--muted)', fontSize: 12 }}>{t.description || ''}</td>
+                        <td style={{ color: 'var(--muted)', fontSize: 15 }}>{t.description || ''}</td>
                       </tr>
                     ))}</tbody>
                   </table>
@@ -1964,7 +1964,7 @@ function RegistriesPage() {
                 {[['Base URL', detail.integration.api_base_url], ['Version', detail.integration.api_version], ['Auth methods', detail.integration.auth_methods?.join(', ')], ['Webhooks', detail.integration.webhooks_supported ? 'Supported' : 'Not documented']].filter(([, v]) => v).map(([k, v]) => (
                   <div key={k} className="info-row">
                     <span className="info-row-label">{k}</span>
-                    <code style={{ fontSize: 12 }}>{v}</code>
+                    <code style={{ fontSize: 15 }}>{v}</code>
                   </div>
                 ))}
               </div>
@@ -1973,7 +1973,7 @@ function RegistriesPage() {
             {tab === 'llms.txt' && (
               <div className="card flex col gap-12">
                 <div className="flex between center">
-                  <div style={{ fontWeight: 600, fontSize: 13 }}>llms.txt</div>
+                  <div style={{ fontWeight: 600, fontSize: 15 }}>llms.txt</div>
                   <CopyBtn text={llmsTxt} />
                 </div>
                 {!llmsTxt && <div className="flex center gap-8"><span className="spinner" /><span style={{ color: 'var(--muted)' }}>Loading…</span></div>}
@@ -1984,7 +1984,7 @@ function RegistriesPage() {
             {tab === 'raw json' && (
               <div className="card flex col gap-12">
                 <div className="flex between center">
-                  <div style={{ fontWeight: 600, fontSize: 13 }}>Raw JSON</div>
+                  <div style={{ fontWeight: 600, fontSize: 15 }}>Raw JSON</div>
                   <CopyBtn text={JSON.stringify(detail, null, 2)} />
                 </div>
                 <pre>{JSON.stringify(detail, null, 2)}</pre>
@@ -2001,7 +2001,7 @@ function ConfBar({ score }) {
   const pct = Math.round((score || 0) * 100)
   const color = pct >= 80 ? 'var(--green)' : pct >= 50 ? 'var(--yellow)' : 'var(--red)'
   return (
-    <div className="flex center gap-8" style={{ fontSize: 12, color: 'var(--muted)' }}>
+    <div className="flex center gap-8" style={{ fontSize: 15, color: 'var(--muted)' }}>
       <div className="conf-bar"><div className="conf-fill" style={{ width: `${pct}%`, background: color }} /></div>
       <span style={{ color }}>{pct}% confidence</span>
     </div>
@@ -2044,7 +2044,7 @@ function TenantsPage() {
       <div style={{ display: 'grid', gridTemplateColumns: '360px 1fr', gap: 20, alignItems: 'start' }}>
         {/* Create form */}
         <div className="card flex col gap-16">
-          <div style={{ fontWeight: 700, fontSize: 14 }}>Create new tenant</div>
+          <div style={{ fontWeight: 700, fontSize: 15 }}>Create new tenant</div>
           <form onSubmit={create} className="flex col gap-14">
             <div>
               <label className="label">Name</label>
@@ -2069,10 +2069,10 @@ function TenantsPage() {
 
           {newKey && (
             <div style={{ background: '#10b98110', border: '1px solid #10b98130', borderRadius: 8, padding: 14 }}>
-              <div style={{ fontSize: 12, color: 'var(--green)', fontWeight: 700, marginBottom: 8 }}>
+              <div style={{ fontSize: 15, color: 'var(--green)', fontWeight: 700, marginBottom: 8 }}>
                 ✓ API key — save this now, it won't be shown again
               </div>
-              <code style={{ fontSize: 11, wordBreak: 'break-all', display: 'block', marginBottom: 8 }}>{newKey}</code>
+              <code style={{ fontSize: 15, wordBreak: 'break-all', display: 'block', marginBottom: 8 }}>{newKey}</code>
               <CopyBtn text={newKey} label="Copy key" />
             </div>
           )}
@@ -2102,7 +2102,7 @@ function TenantsPage() {
                   <td><span className={`badge ${planBadge[t.plan] || 'badge-gray'}`}>{t.plan}</span></td>
                   <td style={{ fontVariantNumeric: 'tabular-nums' }}>{t.domains_limit}</td>
                   <td style={{ fontVariantNumeric: 'tabular-nums' }}>{t.requests_total}</td>
-                  <td style={{ color: 'var(--muted)', fontSize: 12 }}>{t.last_seen ? new Date(t.last_seen).toLocaleDateString() : 'Never'}</td>
+                  <td style={{ color: 'var(--muted)', fontSize: 15 }}>{t.last_seen ? new Date(t.last_seen).toLocaleDateString() : 'Never'}</td>
                 </tr>
               ))}
             </tbody>
@@ -2187,23 +2187,23 @@ function SettingsPage({ setPage }) {
       {/* ── Profile card ── */}
       {me && (
         <div className="card flex col gap-14">
-          <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 2 }}>Account</div>
+          <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 2 }}>Account</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <div>
-              <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.6px', fontWeight: 600 }}>Name</div>
-              <div style={{ fontSize: 14, fontWeight: 600 }}>{me.name}</div>
+              <div style={{ fontSize: 15, color: 'var(--muted)', marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.6px', fontWeight: 600 }}>Name</div>
+              <div style={{ fontSize: 15, fontWeight: 600 }}>{me.name}</div>
             </div>
             <div>
-              <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.6px', fontWeight: 600 }}>Email</div>
-              <div style={{ fontSize: 14 }}>{me.email}</div>
+              <div style={{ fontSize: 15, color: 'var(--muted)', marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.6px', fontWeight: 600 }}>Email</div>
+              <div style={{ fontSize: 15 }}>{me.email}</div>
             </div>
             <div>
-              <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.6px', fontWeight: 600 }}>Member since</div>
-              <div style={{ fontSize: 13, color: 'var(--subtle)' }}>{new Date(me.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</div>
+              <div style={{ fontSize: 15, color: 'var(--muted)', marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.6px', fontWeight: 600 }}>Member since</div>
+              <div style={{ fontSize: 15, color: 'var(--subtle)' }}>{new Date(me.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</div>
             </div>
             <div>
-              <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.6px', fontWeight: 600 }}>Last active</div>
-              <div style={{ fontSize: 13, color: 'var(--subtle)' }}>{me.last_seen ? new Date(me.last_seen).toLocaleDateString() : 'Just now'}</div>
+              <div style={{ fontSize: 15, color: 'var(--muted)', marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.6px', fontWeight: 600 }}>Last active</div>
+              <div style={{ fontSize: 15, color: 'var(--subtle)' }}>{me.last_seen ? new Date(me.last_seen).toLocaleDateString() : 'Just now'}</div>
             </div>
           </div>
         </div>
@@ -2212,8 +2212,8 @@ function SettingsPage({ setPage }) {
       {/* ── Plan card ── */}
       <div className="card flex col gap-16">
         <div className="flex between center">
-          <div style={{ fontWeight: 700, fontSize: 14 }}>Current plan</div>
-          <span style={{ fontSize: 12, fontWeight: 700, color: pd.color, background: 'var(--surface2)', border: `1px solid ${pd.color}40`, padding: '3px 10px', borderRadius: 20, letterSpacing: '0.4px' }}>{pd.label}</span>
+          <div style={{ fontWeight: 700, fontSize: 15 }}>Current plan</div>
+          <span style={{ fontSize: 15, fontWeight: 700, color: pd.color, background: 'var(--surface2)', border: `1px solid ${pd.color}40`, padding: '3px 10px', borderRadius: 20, letterSpacing: '0.4px' }}>{pd.label}</span>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
@@ -2224,14 +2224,14 @@ function SettingsPage({ setPage }) {
           ].map(({ label, value }) => (
             <div key={label} style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 10, padding: '12px 14px', textAlign: 'center' }}>
               <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>{value}</div>
-              <div style={{ fontSize: 11, color: 'var(--muted)' }}>{label}</div>
+              <div style={{ fontSize: 15, color: 'var(--muted)' }}>{label}</div>
             </div>
           ))}
         </div>
 
         {/* Usage bar */}
         <div>
-          <div className="flex between" style={{ fontSize: 12, marginBottom: 6 }}>
+          <div className="flex between" style={{ fontSize: 15, marginBottom: 6 }}>
             <span style={{ color: 'var(--muted)' }}>Sites used</span>
             <span style={{ fontWeight: 600, color: domainPct >= 80 ? 'var(--yellow)' : 'var(--subtle)' }}>
               {domainsUsed} / {domainsLimit}
@@ -2247,7 +2247,7 @@ function SettingsPage({ setPage }) {
           {domainsUsed > 0 && (
             <div className="flex wrap gap-4" style={{ marginTop: 8 }}>
               {domains.map(d => (
-                <span key={d} style={{ fontSize: 11, background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 5, padding: '2px 8px', color: 'var(--subtle)', fontFamily: 'monospace' }}>{d}</span>
+                <span key={d} style={{ fontSize: 15, background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 5, padding: '2px 8px', color: 'var(--subtle)', fontFamily: 'monospace' }}>{d}</span>
               ))}
             </div>
           )}
@@ -2257,8 +2257,8 @@ function SettingsPage({ setPage }) {
         {plan === 'free' && (
           <div style={{ background: 'linear-gradient(135deg, var(--accent)12, var(--accent2)12)', border: '1px solid var(--accent)30', borderRadius: 10, padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
             <div>
-              <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 3 }}>Upgrade to Pro</div>
-              <div style={{ fontSize: 12, color: 'var(--muted)' }}>50 sites · 60 req/min · Priority support — $49/year</div>
+              <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 3 }}>Upgrade to Pro</div>
+              <div style={{ fontSize: 15, color: 'var(--muted)' }}>50 sites · 60 req/min · Priority support — $49/year</div>
             </div>
             <button
               className="btn btn-primary btn-sm"
@@ -2271,8 +2271,8 @@ function SettingsPage({ setPage }) {
         {plan === 'pro' && (
           <div style={{ background: 'var(--surface2)', border: '1px solid var(--border2)', borderRadius: 10, padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
             <div>
-              <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 3 }}>Need more? Go Enterprise</div>
-              <div style={{ fontSize: 12, color: 'var(--muted)' }}>Unlimited sites · 300 req/min · Dedicated support</div>
+              <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 3 }}>Need more? Go Enterprise</div>
+              <div style={{ fontSize: 15, color: 'var(--muted)' }}>Unlimited sites · 300 req/min · Dedicated support</div>
             </div>
             <button
               className="btn btn-ghost btn-sm"
@@ -2287,7 +2287,7 @@ function SettingsPage({ setPage }) {
       {/* ── Usage stats ── */}
       {me && (
         <div className="card flex col gap-12">
-          <div style={{ fontWeight: 700, fontSize: 14 }}>Usage</div>
+          <div style={{ fontWeight: 700, fontSize: 15 }}>Usage</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 12 }}>
             {[
               { label: 'Total requests', value: me.requests_total ?? 0 },
@@ -2304,10 +2304,10 @@ function SettingsPage({ setPage }) {
           {/* Recent activity */}
           {usage?.usage?.length > 0 && (
             <div style={{ marginTop: 4 }}>
-              <div style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8 }}>Recent activity</div>
+              <div style={{ fontSize: 15, color: 'var(--muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8 }}>Recent activity</div>
               <div className="flex col gap-4">
                 {usage.usage.slice(0, 6).map((u, i) => (
-                  <div key={i} className="flex between center" style={{ fontSize: 12, padding: '5px 10px', background: 'var(--surface2)', borderRadius: 6, border: '1px solid var(--border)' }}>
+                  <div key={i} className="flex between center" style={{ fontSize: 15, padding: '5px 10px', background: 'var(--surface2)', borderRadius: 6, border: '1px solid var(--border)' }}>
                     <span style={{ color: 'var(--subtle)', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '60%' }}>{u.endpoint}</span>
                     <div className="flex center gap-8">
                       {u.domain && <span style={{ color: 'var(--muted)' }}>{u.domain}</span>}
@@ -2324,20 +2324,20 @@ function SettingsPage({ setPage }) {
 
       {/* ── Billing ── */}
       <div className="card flex col gap-14">
-        <div style={{ fontWeight: 700, fontSize: 14 }}>Billing</div>
+        <div style={{ fontWeight: 700, fontSize: 15 }}>Billing</div>
         <div style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 10, padding: '20px 18px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 16 }}>
           <div style={{ fontSize: 28 }}>💳</div>
           <div style={{ flex: 1, minWidth: 200 }}>
-            <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 3 }}>Payment Method</div>
-            <div style={{ fontSize: 13, color: 'var(--text)', display: 'flex', gap: 8, alignItems: 'center' }}>
+            <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 3 }}>Payment Method</div>
+            <div style={{ fontSize: 15, color: 'var(--text)', display: 'flex', gap: 8, alignItems: 'center' }}>
               <span style={{ fontWeight: 700 }}>Visa</span> ending in 4242
             </div>
-            <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>Expires 12/28</div>
+            <div style={{ fontSize: 15, color: 'var(--muted)', marginTop: 4 }}>Expires 12/28</div>
           </div>
           <button className="btn btn-ghost btn-sm" onClick={() => toast.info('Redirecting to Stripe portal...')}>Update payment method</button>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10, marginTop: 4 }}>
-          <div style={{ fontSize: 13, color: 'var(--muted)' }}>Next invoice: <strong style={{ color: 'var(--text)' }}>$49.00</strong> on {new Date(Date.now() + 2592000000).toLocaleDateString()}</div>
+          <div style={{ fontSize: 15, color: 'var(--muted)' }}>Next invoice: <strong style={{ color: 'var(--text)' }}>$49.00</strong> on {new Date(Date.now() + 2592000000).toLocaleDateString()}</div>
           <button className="btn btn-ghost btn-sm" onClick={() => toast.info('Redirecting to Stripe portal...')}>View invoice history →</button>
         </div>
       </div>
@@ -2346,17 +2346,17 @@ function SettingsPage({ setPage }) {
       <div className="card flex col gap-10">
         <button
           onClick={() => setShowKey(v => !v)}
-          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', color: 'var(--text)', padding: 0, fontSize: 14, fontWeight: 700 }}
+          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', color: 'var(--text)', padding: 0, fontSize: 15, fontWeight: 700 }}
         >
           <span>API Key</span>
-          <span style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 400 }}>{showKey ? '▲ hide' : '▼ show'}</span>
+          <span style={{ fontSize: 15, color: 'var(--muted)', fontWeight: 400 }}>{showKey ? '▲ hide' : '▼ show'}</span>
         </button>
         {showKey && (
           <div className="flex col gap-8" style={{ marginTop: 4 }}>
-            <div style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.6 }}>
+            <div style={{ fontSize: 15, color: 'var(--muted)', lineHeight: 1.6 }}>
               Your API key is needed to activate the snippet and authenticate requests. Keep it secret.
             </div>
-            <div style={{ background: 'var(--surface2)', border: '1px solid var(--border2)', borderRadius: 8, padding: '10px 14px', fontFamily: 'monospace', fontSize: 12, color: 'var(--accent2)', wordBreak: 'break-all', position: 'relative' }}>
+            <div style={{ background: 'var(--surface2)', border: '1px solid var(--border2)', borderRadius: 8, padding: '10px 14px', fontFamily: 'monospace', fontSize: 15, color: 'var(--accent2)', wordBreak: 'break-all', position: 'relative' }}>
               {activeKey || <span style={{ color: 'var(--muted)', fontStyle: 'italic' }}>No key set — create one in the Snippet tab</span>}
               {activeKey && <div style={{ position: 'absolute', top: 6, right: 8 }}><CopyBtn text={activeKey} label="Copy" /></div>}
             </div>
@@ -2368,14 +2368,14 @@ function SettingsPage({ setPage }) {
       <div className="card flex col gap-10">
         <button
           onClick={() => setShowAdvanced(v => !v)}
-          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', color: 'var(--text)', padding: 0, fontSize: 14, fontWeight: 700 }}
+          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', color: 'var(--text)', padding: 0, fontSize: 15, fontWeight: 700 }}
         >
           <span>Advanced</span>
-          <span style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 400 }}>{showAdvanced ? '▲ hide' : '▼ show'}</span>
+          <span style={{ fontSize: 15, color: 'var(--muted)', fontWeight: 400 }}>{showAdvanced ? '▲ hide' : '▼ show'}</span>
         </button>
         {showAdvanced && (
           <div className="flex col gap-12" style={{ marginTop: 4 }}>
-            <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+            <div style={{ fontSize: 15, color: 'var(--muted)' }}>
               Override the API endpoint — only needed if you're self-hosting Galuli.
             </div>
             <div>
@@ -2401,6 +2401,31 @@ function SettingsPage({ setPage }) {
             </div>
           </div>
         )}
+      </div>
+
+      {/* ── Danger Zone ── */}
+      <div className="card flex col gap-14" style={{ border: '1px solid #ef444430' }}>
+        <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--red)' }}>⚠️ Danger Zone</div>
+        <div className="flex between center wrap gap-12" style={{ background: 'var(--surface2)', border: '1px solid #ef444420', borderRadius: 10, padding: '14px 16px' }}>
+          <div>
+            <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 3 }}>Wipe all data</div>
+            <div style={{ fontSize: 15, color: 'var(--muted)' }}>Delete every registry, scan, and job from the database. This cannot be undone.</div>
+          </div>
+          <button
+            className="btn btn-danger btn-sm"
+            onClick={async () => {
+              if (!confirm('Delete ALL registries, scans, and jobs?\n\nThis wipes the entire database and cannot be undone.')) return
+              try {
+                await api.wipeAll()
+                toast.success('All data wiped — refresh to see an empty dashboard')
+              } catch (err) {
+                toast.error(err.message)
+              }
+            }}
+          >
+            Wipe all data →
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -2486,12 +2511,12 @@ function GeoPage() {
               <ScoreRing score={geo.geo_total} size={130} />
               <div className="flex col gap-10" style={{ flex: 1 }}>
                 <div style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.3px' }}>{geo.geo_label}</div>
-                <div style={{ color: 'var(--muted)', fontSize: 14 }}>{selected}</div>
+                <div style={{ color: 'var(--muted)', fontSize: 15 }}>{selected}</div>
                 <div className="flex gap-8 wrap" style={{ marginTop: 4 }}>
                   <span className="badge badge-blue">GEO: {geo.geo_total}/100</span>
                   <span className={`badge ${geo.geo_total >= 70 ? 'badge-green' : geo.geo_total >= 50 ? 'badge-yellow' : 'badge-red'}`}>Grade: {geo.geo_grade}</span>
                 </div>
-                <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2, lineHeight: 1.6 }}>
+                <div style={{ fontSize: 15, color: 'var(--muted)', marginTop: 2, lineHeight: 1.6 }}>
                   GEO measures how well each AI system understands, trusts, and cites your site.
                   Higher score = more AI-generated referrals.
                 </div>
@@ -2512,13 +2537,13 @@ function GeoPage() {
                     <div className="flex center gap-10">
                       <span style={{ fontSize: 20 }}>{meta.emoji}</span>
                       <div>
-                        <div style={{ fontWeight: 700, fontSize: 14 }}>{meta.name}</div>
-                        <div style={{ fontSize: 11, color: 'var(--muted)' }}>{meta.company}</div>
+                        <div style={{ fontWeight: 700, fontSize: 15 }}>{meta.name}</div>
+                        <div style={{ fontSize: 15, color: 'var(--muted)' }}>{meta.company}</div>
                       </div>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
-                      <span style={{ fontWeight: 800, fontSize: 18, color: meta.color, fontVariantNumeric: 'tabular-nums' }}>{dim.score}<span style={{ fontSize: 12, fontWeight: 400, color: 'var(--muted)' }}>/{dim.max}</span></span>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: badge.color, background: badge.bg, padding: '2px 8px', borderRadius: 10 }}>{badge.label}</span>
+                      <span style={{ fontWeight: 800, fontSize: 18, color: meta.color, fontVariantNumeric: 'tabular-nums' }}>{dim.score}<span style={{ fontSize: 15, fontWeight: 400, color: 'var(--muted)' }}>/{dim.max}</span></span>
+                      <span style={{ fontSize: 15, fontWeight: 600, color: badge.color, background: badge.bg, padding: '2px 8px', borderRadius: 10 }}>{badge.label}</span>
                     </div>
                   </div>
 
@@ -2531,7 +2556,7 @@ function GeoPage() {
                   {dim.recommendations?.length > 0 && (
                     <div className="flex col gap-6">
                       {dim.recommendations.map((rec, i) => (
-                        <div key={i} className="flex gap-8" style={{ fontSize: 12, color: 'var(--subtle)' }}>
+                        <div key={i} className="flex gap-8" style={{ fontSize: 15, color: 'var(--subtle)' }}>
                           <span style={{ color: meta.color, flexShrink: 0, marginTop: 1 }}>•</span>
                           <span style={{ lineHeight: 1.5 }}>{rec}</span>
                         </div>
@@ -2546,7 +2571,7 @@ function GeoPage() {
           {/* Top recommendations */}
           {geo.top_recommendations?.length > 0 && (
             <div className="card flex col gap-12">
-              <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 2 }}>
+              <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 2 }}>
                 🎯 Top actions to improve your GEO score
               </div>
               <div className="flex col gap-8">
@@ -2555,7 +2580,7 @@ function GeoPage() {
                   const llmName = typeof rec === 'object' && rec !== null ? rec.llm : null
                   const actionText = typeof rec === 'object' && rec !== null ? rec.action : String(rec)
                   return (
-                    <div key={i} className="flex gap-12 center" style={{ padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 13 }}>
+                    <div key={i} className="flex gap-12 center" style={{ padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 15 }}>
                       <span style={{ fontSize: 16, flexShrink: 0, width: 24, textAlign: 'center', fontWeight: 700, color: i === 0 ? '#f59e0b' : i === 1 ? 'var(--muted)' : 'var(--border2)' }}>{i + 1}</span>
                       <span style={{ color: 'var(--subtle)', lineHeight: 1.5 }}>
                         {llmName && <span style={{ fontWeight: 600, color: 'var(--text)', marginRight: 6 }}>[{llmName}]</span>}
@@ -2570,8 +2595,8 @@ function GeoPage() {
 
           {/* What is GEO */}
           <div className="card flex col gap-10" style={{ background: 'var(--surface2)', border: '1px solid var(--border2)' }}>
-            <div style={{ fontWeight: 700, fontSize: 13 }}>What is GEO?</div>
-            <div style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.7 }}>
+            <div style={{ fontWeight: 700, fontSize: 15 }}>What is GEO?</div>
+            <div style={{ fontSize: 15, color: 'var(--muted)', lineHeight: 1.7 }}>
               <strong style={{ color: 'var(--subtle)' }}>Generative Engine Optimization (GEO)</strong> is the practice of making your site more likely to be cited, recommended, and used as a source by AI systems like ChatGPT, Perplexity, Claude, Gemini, Grok, and Llama.
               Unlike traditional SEO which targets search ranking algorithms, GEO targets the training data signals and real-time retrieval signals that LLMs use to determine which sources to cite.
             </div>
@@ -2585,8 +2610,8 @@ function GeoPage() {
                 <div key={title} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                   <span style={{ fontSize: 16, flexShrink: 0 }}>{icon}</span>
                   <div>
-                    <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 2 }}>{title}</div>
-                    <div style={{ fontSize: 11, color: 'var(--muted)' }}>{desc}</div>
+                    <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 2 }}>{title}</div>
+                    <div style={{ fontSize: 15, color: 'var(--muted)' }}>{desc}</div>
                   </div>
                 </div>
               ))}
@@ -2636,7 +2661,7 @@ export default function App() {
   return (
     <>
       <Nav page={page} setPage={setPage} health={health} theme={theme} toggleTheme={toggleTheme} />
-      <main style={{ padding: '36px 48px', maxWidth: 1200, margin: '0 auto' }}>
+      <main style={{ padding: '40px 52px', maxWidth: 1280, margin: '0 auto' }}>
         {pages[page] ?? <OverviewPage setPage={setPage} />}
       </main>
       <ToastContainer />

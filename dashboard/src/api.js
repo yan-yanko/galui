@@ -69,6 +69,7 @@ export var api = {
   deleteRegistry:  function(d) { return req("/api/v1/admin/registry/" + d, { method: "DELETE" }) },
   refreshRegistry: function(d) { return req("/api/v1/admin/refresh", { method: "POST", body: JSON.stringify({ domain: d }) }) },
   getStats:        function()  { return req("/api/v1/admin/stats") },
+  wipeAll:         function()  { return req("/api/v1/admin/wipe-all", { method: "DELETE" }) },
 
   // Tenants
   createTenant:  function(name, email, plan) { return req("/api/v1/tenants", { method: "POST", body: JSON.stringify({ name: name, email: email, plan: plan }) }) },

@@ -64,6 +64,20 @@ async def delete_registry(domain: str):
     return {"deleted": domain, "status": "ok"}
 
 
+@router.delete("/wipe-all", summary="Wipe all registries and jobs from the database")
+async def wipe_all():
+    """Delete every registry, ingest job, crawl schedule, and page hash from the DB."""
+    tables = ["registries", "ingest_jobs", "crawl_schedule", "page_hashes"]
+    with storage._get_conn() as conn:
+        for table in tables:
+            try:
+                conn.execute(f"DELETE FROM {table}")
+            except Exception:
+                pass  # table may not exist yet
+        conn.commit()
+    return {"status": "ok", "message": "All data wiped"}
+
+
 @router.get("/stats", summary="Registry index statistics")
 async def get_stats():
     """Index-level statistics."""
