@@ -268,6 +268,18 @@ function OverviewPage({ setPage, setPendingScanDomain }) {
     }
   }
 
+  const handleDelete = async (domain) => {
+    if (!confirm(`Remove ${domain} from your dashboard?\n\nThis deletes the registry and all scan data. It cannot be undone.`)) return
+    try {
+      await api.deleteRegistry(domain)
+      setRegistries(prev => prev.filter(r => r.domain !== domain))
+      setScores(prev => { const n = { ...prev }; delete n[domain]; return n })
+      toast.success(`${domain} removed`)
+    } catch (err) {
+      toast.error(err.message)
+    }
+  }
+
   if (loading) return (
     <div className="flex center gap-12" style={{ padding: 48, color: 'var(--muted)' }}>
       <span className="spinner" /> Loading…
@@ -339,10 +351,23 @@ function OverviewPage({ setPage, setPendingScanDomain }) {
                     {s && <div style={{ fontSize: 12, color: scoreColor }}>{s.label} · {s.total}/100 · Grade {s.grade}</div>}
                     {s?.suggestions?.[0] && <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 3 }}>💡 {s.suggestions[0].issue}</div>}
                   </div>
-                  <div className="flex gap-6 wrap" style={{ flexShrink: 0 }}>
+                  <div className="flex gap-6 wrap" style={{ flexShrink: 0, alignItems: 'center' }}>
                     <button className="btn btn-ghost btn-sm" onClick={() => setPage('score')}>Score</button>
                     <button className="btn btn-ghost btn-sm" onClick={() => setPage('analytics')}>Analytics</button>
                     <button className="btn btn-ghost btn-sm" onClick={() => setPage('snippet')}>Install</button>
+                    <button
+                      onClick={() => handleDelete(r.domain)}
+                      title={`Remove ${r.domain}`}
+                      style={{
+                        width: 26, height: 26, borderRadius: 6, border: '1px solid var(--border)',
+                        background: 'none', color: 'var(--muted)', fontSize: 14, cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        transition: 'color 0.15s, border-color 0.15s, background 0.15s',
+                        flexShrink: 0,
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.borderColor = '#ef444466'; e.currentTarget.style.background = '#ef444415' }}
+                      onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted)'; e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'none' }}
+                    >×</button>
                   </div>
                 </div>
               </div>
