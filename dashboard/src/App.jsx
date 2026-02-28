@@ -174,29 +174,29 @@ function Nav({ page, setPage, health, theme, toggleTheme }) {
   return (
     <nav style={{
       background: 'var(--surface)', borderBottom: '1px solid var(--border)',
-      padding: '0 20px', display: 'flex', alignItems: 'center', gap: 2,
-      height: 52, position: 'sticky', top: 0, zIndex: 100,
+      padding: '0 32px', display: 'flex', alignItems: 'center', gap: 2,
+      height: 58, position: 'sticky', top: 0, zIndex: 100,
       boxShadow: '0 1px 0 var(--border)',
     }}>
       {/* Logo */}
       <a href="/" style={{
-        fontWeight: 800, fontSize: 16, color: 'var(--accent)',
-        letterSpacing: '-0.5px', marginRight: 24, flexShrink: 0,
-        display: 'flex', alignItems: 'center', gap: 7,
+        fontWeight: 800, fontSize: 18, color: 'var(--accent)',
+        letterSpacing: '-0.5px', marginRight: 28, flexShrink: 0,
+        display: 'flex', alignItems: 'center', gap: 8,
         textDecoration: 'none',
       }}>
         <span>⬡</span> galuli
       </a>
 
       {/* Links */}
-      <div style={{ display: 'flex', gap: 1, flex: 1, overflowX: 'auto' }}>
+      <div style={{ display: 'flex', gap: 2, flex: 1, overflowX: 'auto' }}>
         {NAV_LINKS.map(l => (
           <button key={l.id} onClick={() => setPage(l.id)} style={{
             background: page === l.id ? 'var(--border)' : l.highlight && page !== l.id ? 'var(--accent)18' : 'none',
             color: page === l.id ? 'var(--text)' : l.highlight ? 'var(--accent)' : 'var(--muted)',
-            padding: '6px 14px', borderRadius: 7,
+            padding: '7px 16px', borderRadius: 8,
             fontWeight: page === l.id || l.highlight ? 600 : 400,
-            fontSize: 13, whiteSpace: 'nowrap', flexShrink: 0,
+            fontSize: 14, whiteSpace: 'nowrap', flexShrink: 0,
             transition: 'color 0.12s, background 0.12s',
           }}>{l.label}</button>
         ))}
@@ -1639,7 +1639,7 @@ function SnippetPage() {
   const debugTag = `<script src="${api.base()}/galuli.js?key=${activeKey}&debug=1" async></script>`
 
   return (
-    <div className="flex col gap-20" style={{ maxWidth: 760 }}>
+    <div className="flex col gap-20" style={{ maxWidth: 860 }}>
       <PageHeader
         title="Install the Snippet"
         subtitle="One script tag. Your site becomes AI-readable, WebMCP-compliant, and fully tracked."
@@ -2181,7 +2181,7 @@ function SettingsPage({ setPage }) {
   }
 
   return (
-    <div className="flex col gap-20" style={{ maxWidth: 620 }}>
+    <div className="flex col gap-20" style={{ maxWidth: 720 }}>
       <PageHeader title="Profile & Billing" subtitle="Your account, plan, and usage." />
 
       {/* ── Profile card ── */}
@@ -2636,7 +2636,7 @@ export default function App() {
   return (
     <>
       <Nav page={page} setPage={setPage} health={health} theme={theme} toggleTheme={toggleTheme} />
-      <main style={{ padding: '28px 32px', maxWidth: 1080, margin: '0 auto' }}>
+      <main style={{ padding: '36px 48px', maxWidth: 1200, margin: '0 auto' }}>
         {pages[page] ?? <OverviewPage setPage={setPage} />}
       </main>
       <ToastContainer />

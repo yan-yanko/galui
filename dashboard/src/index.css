@@ -64,8 +64,8 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font);
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 15px;
+  line-height: 1.65;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
@@ -295,7 +295,7 @@ input::placeholder {
   font-weight: 700;
   transition: all 0.15s ease;
   white-space: nowrap;
-  font-size: 14px;
+  font-size: 14px; /* keep buttons at 14px — intentionally smaller than body */
 }
 
 .btn-primary {
@@ -556,15 +556,15 @@ pre {
 }
 
 .section-header h1 {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.3px;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
 }
 
 .section-header p {
   color: var(--muted);
-  margin-top: 6px;
-  font-size: 14px;
+  margin-top: 8px;
+  font-size: 15px;
 }
 
 /* ── Stat cards ── */
@@ -579,7 +579,7 @@ pre {
 }
 
 .stat-value {
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 800;
   color: var(--text);
   line-height: 1.1;
@@ -587,7 +587,7 @@ pre {
 }
 
 .stat-label {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--muted);
   margin-top: 8px;
   font-weight: 600;
@@ -613,7 +613,7 @@ pre {
 .table td {
   padding: 14px 16px;
   border-bottom: 1px solid var(--border);
-  font-size: 13px;
+  font-size: 14px;
   vertical-align: middle;
 }
 
@@ -693,7 +693,7 @@ pre {
 
 .info-row-label {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
 }
 
