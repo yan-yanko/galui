@@ -428,6 +428,111 @@ async def stripe_webhook(request: Request):
     return JSONResponse({"received": True})
 
 
+# ── Lemon Squeezy variant → plan mapping ─────────────────────────────────────
+
+def _ls_variant_to_plan(variant_id: str) -> Optional[str]:
+    """Map a LS variant ID to a Galuli plan name."""
+    from app.config import settings
+    mapping = {
+        settings.ls_variant_starter: "starter",
+        settings.ls_variant_pro:     "pro",
+    }
+    return mapping.get(str(variant_id))
+
+
+@router.post("/billing/ls-webhook", summary="Lemon Squeezy webhook handler", include_in_schema=False)
+async def ls_webhook(request: Request):
+    """
+    Handles Lemon Squeezy events:
+    - order_created             → activate subscription (one-time purchase)
+    - subscription_created      → activate subscription
+    - subscription_updated      → re-apply plan limits (plan change / renewal)
+    - subscription_cancelled    → downgrade to free at period end
+    - subscription_expired      → downgrade to free immediately
+    - subscription_payment_failed → log warning
+    """
+    import hashlib
+    import hmac
+    from app.config import settings
+
+    payload = await request.body()
+
+    # Verify HMAC-SHA256 signature if secret is configured
+    if settings.ls_webhook_secret:
+        sig = request.headers.get("X-Signature", "")
+        expected = hmac.new(
+            settings.ls_webhook_secret.encode(),
+            payload,
+            hashlib.sha256
+        ).hexdigest()
+        if not hmac.compare_digest(sig, expected):
+            logger.warning("LS webhook: invalid signature")
+            raise HTTPException(status_code=400, detail="Invalid signature")
+
+    import json
+    try:
+        body = json.loads(payload)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid JSON")
+
+    event_name = body.get("meta", {}).get("event_name", "")
+    data       = body.get("data", {})
+    attrs      = data.get("attributes", {})
+
+    logger.info(f"LS webhook received: {event_name}")
+
+    # ── Helpers to extract email + variant ──────────────────────────────────
+    def get_email():
+        # order_created puts customer email at attributes.user_email
+        # subscription_* events have it at attributes.user_email too
+        return attrs.get("user_email") or attrs.get("customer", {}).get("email", "")
+
+    def get_variant_id():
+        # For subscriptions: first_subscription_item.price_id is variant
+        # Simpler: variant_id is at the top of attributes for orders
+        return str(attrs.get("variant_id") or attrs.get("first_subscription_item", {}).get("variant_id", ""))
+
+    def get_subscription_id():
+        return str(data.get("id", ""))
+
+    # ── Event handlers ───────────────────────────────────────────────────────
+    if event_name in ("order_created", "subscription_created", "subscription_updated"):
+        email      = get_email()
+        variant_id = get_variant_id()
+        sub_id     = get_subscription_id()
+        plan       = _ls_variant_to_plan(variant_id)
+
+        if not email:
+            logger.warning(f"LS webhook {event_name}: no email in payload")
+            return JSONResponse({"received": True})
+
+        if not plan:
+            logger.warning(f"LS webhook {event_name}: unknown variant {variant_id!r}")
+            return JSONResponse({"received": True})
+
+        # Auto-create tenant if they don't have an account yet
+        tenant = tenant_service.get_tenant_by_email(email)
+        if not tenant:
+            name = attrs.get("user_name") or email.split("@")[0]
+            tenant_service.create_tenant(name=name, email=email, plan="free")
+            logger.info(f"LS webhook: auto-created tenant for {email}")
+
+        tenant_service.activate_ls_subscription(email, plan, sub_id)
+        logger.info(f"✅ LS: {event_name} → {plan} for {email}")
+
+    elif event_name in ("subscription_cancelled", "subscription_expired"):
+        email = get_email()
+        if email:
+            tenant_service.deactivate_ls_subscription(email)
+            logger.info(f"⬇️ LS: {event_name} → downgraded {email} to free")
+
+    elif event_name == "subscription_payment_failed":
+        email = get_email()
+        logger.warning(f"💳 LS: payment failed for {email}")
+
+    return JSONResponse({"received": True})
+
+
 # ── Email helper ─────────────────────────────────────────────────────────────
 
 def _send_magic_email(to_email: str, name: str, magic_url: str, settings):

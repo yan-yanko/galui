@@ -31,13 +31,18 @@ class Settings(BaseSettings):
     fast_model: str = "claude-haiku-4-5-20251001"
     deep_model: str = "claude-sonnet-4-5-20250929"
 
-    # --- Stripe ---
+    # --- Stripe (legacy — not used for new signups) ---
     stripe_secret_key: str = ""            # sk_live_... or sk_test_...
     stripe_webhook_secret: str = ""        # whsec_...
     stripe_price_starter_monthly: str = "" # price_... Starter $9/mo
     stripe_price_starter_yearly: str = ""  # price_... Starter $79/yr
     stripe_price_pro_monthly: str = ""     # price_... Pro $29/mo
     stripe_price_pro_yearly: str = ""      # price_... Pro $249/yr
+
+    # --- Lemon Squeezy ---
+    ls_webhook_secret: str = ""            # from LS dashboard → Webhooks → secret
+    ls_variant_starter: str = ""           # variant ID for Starter $9/mo
+    ls_variant_pro: str = ""               # variant ID for Pro $29/mo
 
     # --- Email (Resend) ---
     resend_api_key: str = ""               # re_...

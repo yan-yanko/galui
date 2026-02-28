@@ -221,6 +221,44 @@ class TenantService:
             conn.commit()
             return row["email"]
 
+    # ── Lemon Squeezy helpers ────────────────────────────────────────────────
+
+    def activate_ls_subscription(self, email: str, plan: str, ls_subscription_id: str) -> bool:
+        """Called from LS webhook on order_created / subscription_created."""
+        tenant = self.get_tenant_by_email(email)
+        if not tenant:
+            logger.warning(f"LS webhook: no tenant for email {email}")
+            return False
+        limits = PLAN_LIMITS.get(plan, PLAN_LIMITS["free"])
+        with self._get_conn() as conn:
+            conn.execute("""
+                UPDATE tenants
+                SET plan=?, domains_limit=?, rate_limit_per_min=?,
+                    stripe_subscription_id=?, js_enabled=?
+                WHERE email=?
+            """, (plan, limits["domains"], limits["rate_per_min"],
+                  ls_subscription_id, limits["js_enabled"], email))
+            conn.commit()
+        logger.info(f"✅ LS: activated {plan} for {email} (sub {ls_subscription_id})")
+        return True
+
+    def deactivate_ls_subscription(self, email: str) -> bool:
+        """Called from LS webhook on subscription_expired / subscription_cancelled."""
+        tenant = self.get_tenant_by_email(email)
+        if not tenant:
+            return False
+        limits = PLAN_LIMITS["free"]
+        with self._get_conn() as conn:
+            conn.execute("""
+                UPDATE tenants
+                SET plan='free', domains_limit=?, rate_limit_per_min=?,
+                    stripe_subscription_id=NULL, js_enabled=0
+                WHERE email=?
+            """, (limits["domains"], limits["rate_per_min"], email))
+            conn.commit()
+        logger.info(f"⬇️ LS: deactivated subscription for {email}")
+        return True
+
     # ── Stripe helpers ───────────────────────────────────────────────────────
     def set_stripe_customer(self, api_key: str, stripe_customer_id: str):
         with self._get_conn() as conn:
