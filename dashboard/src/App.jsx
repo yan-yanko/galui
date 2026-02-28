@@ -2415,12 +2415,20 @@ function GeoPage() {
                 🎯 Top actions to improve your GEO score
               </div>
               <div className="flex col gap-8">
-                {geo.top_recommendations.map((rec, i) => (
-                  <div key={i} className="flex gap-12 center" style={{ padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 13 }}>
-                    <span style={{ fontSize: 16, flexShrink: 0, width: 24, textAlign: 'center', fontWeight: 700, color: i === 0 ? '#f59e0b' : i === 1 ? 'var(--muted)' : 'var(--border2)' }}>{i + 1}</span>
-                    <span style={{ color: 'var(--subtle)', lineHeight: 1.5 }}>{rec}</span>
-                  </div>
-                ))}
+                {geo.top_recommendations.map((rec, i) => {
+                  // rec may be a string OR {llm, action} object — handle both
+                  const llmName = typeof rec === 'object' && rec !== null ? rec.llm : null
+                  const actionText = typeof rec === 'object' && rec !== null ? rec.action : String(rec)
+                  return (
+                    <div key={i} className="flex gap-12 center" style={{ padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 13 }}>
+                      <span style={{ fontSize: 16, flexShrink: 0, width: 24, textAlign: 'center', fontWeight: 700, color: i === 0 ? '#f59e0b' : i === 1 ? 'var(--muted)' : 'var(--border2)' }}>{i + 1}</span>
+                      <span style={{ color: 'var(--subtle)', lineHeight: 1.5 }}>
+                        {llmName && <span style={{ fontWeight: 600, color: 'var(--text)', marginRight: 6 }}>[{llmName}]</span>}
+                        {actionText}
+                      </span>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           )}

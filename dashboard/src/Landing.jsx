@@ -778,137 +778,259 @@ function HeroAnimation() {
   )
 }
 
-// ── Results Page (Gate) ──────────────────────────────────────────────────────
+// ── Results Page ──────────────────────────────────────────────────────────────
 export function ResultsPage({ data, onRegistered }) {
-  const { domain, score: rawScore, registry: rawRegistry } = data
+  const { domain, score: rawScore } = data
 
-  const score = { total: 0, grade: 'F', label: 'Pending', dimensions: {}, suggestions: [], ...rawScore }
-  const registry = { capabilities: [], metadata: {}, ...rawRegistry }
+  const score = { total: 0, grade: 'F', label: 'Poor AI Visibility', dimensions: {}, suggestions: [], ...rawScore }
 
-  const [showModal, setShowModal] = useState(true)
-  const [registered, setRegistered] = useState(() => !!localStorage.getItem('galuli_user'))
-  const [form, setForm] = useState({ name: '', email: '' })
+  const [email, setEmail] = useState('')
   const [submitting, setSubmitting] = useState(false)
-  const [step, setStep] = useState('form')
+  const [emailDone, setEmailDone] = useState(() => !!localStorage.getItem('galuli_user'))
+  const [copied, setCopied] = useState(false)
 
-  const gradeColor = score.total >= 70 ? 'var(--green)' : score.total >= 50 ? 'var(--yellow)' : 'var(--red)'
+  const gradeColor = score.total >= 70 ? '#22c55e' : score.total >= 50 ? '#f59e0b' : '#ef4444'
+  const badgeUrl = `${API_BASE}/api/v1/score/${domain}/badge`
+  const badgeCode = `<a href="https://galuli.io" title="AI Readiness Score">\n  <img src="${badgeUrl}" alt="Galuli AI Readiness Score" />\n</a>`
 
-  const handleRegister = async (e) => {
+  const handleEmailSubmit = async (e) => {
     e.preventDefault()
     setSubmitting(true)
-    await new Promise(r => setTimeout(r, 900))
-    localStorage.setItem('galuli_user', JSON.stringify({ name: form.name, email: form.email, registered_at: new Date().toISOString() }))
-    setStep('confirm')
+    await new Promise(r => setTimeout(r, 700))
+    localStorage.setItem('galuli_user', JSON.stringify({ email, registered_at: new Date().toISOString() }))
+    setEmailDone(true)
     setSubmitting(false)
   }
 
-  const handleConfirm = () => {
-    setRegistered(true)
-    setShowModal(false)
-    if (onRegistered) onRegistered(); // Notify parent to go to dashboard
+  const handleCopy = () => {
+    navigator.clipboard.writeText(badgeCode).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
   }
+
+  const DIM_COLORS = {
+    'Content Coverage': '#818cf8',
+    'Structure Quality': '#60a5fa',
+    'Machine Signals': '#a78bfa',
+    'Authority': '#34d399',
+    'Freshness': '#f59e0b',
+  }
+
+  const fallbackDims = {
+    'Content Coverage': { score: 0, max: 25 },
+    'Structure Quality': { score: 0, max: 20 },
+    'Machine Signals': { score: 0, max: 20 },
+    'Authority': { score: 0, max: 20 },
+    'Freshness': { score: 0, max: 15 },
+  }
+  const dims = Object.keys(score.dimensions || {}).length > 0 ? score.dimensions : fallbackDims
 
   return (
     <div className="dark" style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
       {/* Nav */}
-      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 48px', height: 60, borderBottom: '1px solid var(--border)', background: 'var(--surface)', zIndex: 100 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 800, fontSize: 18, color: 'var(--accent)' }}>
+      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 32px', height: 58, borderBottom: '1px solid var(--border)', background: 'var(--surface)', position: 'sticky', top: 0, zIndex: 100 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 800, fontSize: 18, color: 'var(--accent)', cursor: 'pointer' }} onClick={() => window.location.href = '/'}>
           <span style={{ fontSize: 22 }}>⬡</span> galuli
         </div>
-        <div style={{ fontSize: 13, color: 'var(--muted)' }}>AI Readiness Report for <strong style={{ color: 'var(--accent)' }}>{domain}</strong></div>
+        <div style={{ fontSize: 13, color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 8 }}>
+          AI Readiness Report ·
+          <strong style={{ color: 'var(--accent)' }}>{domain}</strong>
+        </div>
+        <button onClick={() => { if (onRegistered) onRegistered() }} className="btn btn-primary btn-sm">
+          Open Dashboard →
+        </button>
       </nav>
 
-      {/* Blurred background content */}
-      <div style={{ position: 'relative' }}>
-        <div style={{ filter: registered ? 'none' : 'blur(6px)', pointerEvents: registered ? 'auto' : 'none', transition: 'filter 0.4s', userSelect: registered ? 'auto' : 'none' }}>
-          <div className="container" style={{ maxWidth: 820, padding: '48px 24px' }}>
-            <div className="card-lg" style={{ marginBottom: 24, border: `1px solid ${gradeColor}`, display: 'flex', gap: 32, alignItems: 'center', flexWrap: 'wrap' }}>
-              <ScoreRingLanding score={score.total} size={130} />
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 26, fontWeight: 800, marginBottom: 8, letterSpacing: '-0.3px' }}>{score.label}</div>
-                <div style={{ color: 'var(--muted)', marginBottom: 12 }}>{domain}</div>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  <span className="badge badge-blue">Score: {score.total}/100</span>
-                  <span className="badge" style={{ color: gradeColor, border: `1px solid ${gradeColor}`, background: 'var(--surface2)' }}>Grade: {score.grade}</span>
-                </div>
-              </div>
-            </div>
+      <div className="container" style={{ maxWidth: 860, padding: '40px 24px 80px' }}>
 
-            <div className="card" style={{ marginBottom: 24 }}>
-              <h3 style={{ fontWeight: 700, fontSize: 15, marginBottom: 20 }}>Score breakdown</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                {Object.entries(score.dimensions || { content_coverage: { score: 85, max: 100 }, structure_quality: { score: 70, max: 100 }, freshness: { score: 90, max: 100 } }).map(([key, dim]) => (
-                  <div key={key}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 6 }}>
-                      <span style={{ fontWeight: 500 }}>{key}</span>
-                      <span style={{ color: 'var(--muted)' }}>{dim.score}/{dim.max}</span>
-                    </div>
-                    <div style={{ background: 'var(--surface2)', borderRadius: 4, height: 7 }}>
-                      <div style={{ height: 7, borderRadius: 4, background: 'var(--accent)', width: `${(dim.score / dim.max) * 100}%` }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
+        {/* ── Hero score card ── */}
+        <div className="card-lg" style={{ marginBottom: 28, border: `1.5px solid ${gradeColor}33`, background: 'var(--surface)', display: 'flex', gap: 32, alignItems: 'center', flexWrap: 'wrap' }}>
+          <div style={{ position: 'relative', flexShrink: 0 }}>
+            <ScoreRingLanding score={score.total} size={120} />
+          </div>
+          <div style={{ flex: 1, minWidth: 200 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 6 }}>AI Readiness Score</div>
+            <div style={{ fontSize: 28, fontWeight: 800, marginBottom: 6, letterSpacing: '-0.4px' }}>{score.label}</div>
+            <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 14 }}>{domain}</div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <span className="badge badge-blue" style={{ fontSize: 12 }}>Score: {score.total}/100</span>
+              <span className="badge" style={{ color: gradeColor, border: `1px solid ${gradeColor}55`, background: `${gradeColor}15`, fontSize: 12 }}>Grade: {score.grade}</span>
+              {score.total >= 70 && <span className="badge" style={{ color: '#34d399', border: '1px solid #34d39944', background: '#34d39915', fontSize: 12 }}>✓ AI-Ready</span>}
+              {score.total < 40 && <span className="badge" style={{ color: '#f59e0b', border: '1px solid #f59e0b44', background: '#f59e0b15', fontSize: 12 }}>⚠ Needs Work</span>}
             </div>
-
-            {registered && (
-              <div className="card text-center" style={{ background: 'linear-gradient(135deg, var(--surface2), var(--surface))', borderColor: 'var(--accent)' }}>
-                <h3 style={{ fontWeight: 800, fontSize: 18, marginBottom: 10 }}>Make {domain} AI-readable in 30 seconds</h3>
-                <p className="body-text" style={{ marginBottom: 24 }}>Add one script tag to your site. Galuli handles everything else.</p>
-                <div className="code-block text-left" style={{ marginBottom: 20 }}>
-                  {`<script src="${API_BASE}/galuli.js?key=YOUR_KEY" async></script>`}
-                </div>
-                <a href="/dashboard/" className="btn btn-primary btn-lg" style={{ textDecoration: 'none' }}>Go to Dashboard →</a>
-              </div>
-            )}
+          </div>
+          <div style={{ textAlign: 'right', flexShrink: 0 }}>
+            <div style={{ fontSize: 11, color: 'var(--subtle)', marginBottom: 6 }}>Scanned by Galuli AI pipeline</div>
+            <div style={{ fontSize: 11, color: 'var(--subtle)' }}>{score.pages_crawled || '—'} pages analysed</div>
           </div>
         </div>
 
-        {/* Modal Overlay */}
-        {!registered && showModal && (
-          <div style={{ position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', zIndex: 50, padding: 24 }}>
-            <div className="card-lg" style={{ maxWidth: 440, width: '100%', boxShadow: '0 24px 80px rgba(0,0,0,0.7)' }}>
-              {step === 'form' && (
-                <>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28, padding: '14px 18px', background: 'var(--surface2)', borderRadius: 12, border: '1px solid var(--border)' }}>
-                    <ScoreRingLanding score={score.total} size={56} />
-                    <div>
-                      <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 2 }}>Your AI Readiness Score for</div>
-                      <div style={{ fontWeight: 700, color: 'var(--accent)', fontSize: 14 }}>{domain}</div>
-                    </div>
+        {/* ── Score Breakdown ── */}
+        <div className="card" style={{ marginBottom: 28 }}>
+          <h3 style={{ fontWeight: 700, fontSize: 15, marginBottom: 20 }}>Score breakdown</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {Object.entries(dims).map(([key, dim]) => {
+              const pct = dim.max > 0 ? (dim.score / dim.max) * 100 : 0
+              const color = DIM_COLORS[key] || 'var(--accent)'
+              return (
+                <div key={key}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 6 }}>
+                    <span style={{ fontWeight: 600 }}>{key}</span>
+                    <span style={{ color: 'var(--muted)' }}>{dim.score}/{dim.max}</span>
                   </div>
-
-                  <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 8, letterSpacing: '-0.3px', color: 'var(--text)' }}>Your report is ready</h2>
-                  <p style={{ color: 'var(--muted)', fontSize: 13, lineHeight: 1.6, marginBottom: 28 }}>
-                    Create your free account to see the full breakdown, capabilities, and improvement suggestions.
-                  </p>
-
-                  <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                    <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Your name" required />
-                    <input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="Work email" required />
-                    <button type="submit" className="btn btn-primary" disabled={submitting} style={{ padding: 14, fontSize: 14 }}>
-                      {submitting ? <><span className="spinner" style={{ borderColor: 'var(--border2)', borderTopColor: 'white' }} /> Creating account…</> : 'See my full report →'}
-                    </button>
-                  </form>
-                  <p style={{ fontSize: 11, color: 'var(--subtle)', marginTop: 14, textAlign: 'center' }}>Free forever for 1 site · No credit card required</p>
-                </>
-              )}
-              {step === 'confirm' && (
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 48, marginBottom: 20 }}>📬</div>
-                  <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 10 }}>Check your inbox</h2>
-                  <p style={{ color: 'var(--muted)', fontSize: 14, lineHeight: 1.7, marginBottom: 28 }}>
-                    We sent a confirmation to <strong style={{ color: 'var(--accent)' }}>{form.email}</strong>. Click the link to unlock your full report.
-                  </p>
-                  <button onClick={handleConfirm} className="btn btn-primary btn-lg" style={{ marginBottom: 12 }}>I confirmed my email →</button>
-                  <div style={{ fontSize: 12, color: 'var(--subtle)' }}>
-                    Didn't get it? <button onClick={handleConfirm} className="btn btn-ghost btn-sm" style={{ padding: 0, border: 'none', background: 'none', color: 'var(--accent)' }}>Skip for now</button>
+                  <div style={{ background: 'var(--surface2)', borderRadius: 5, height: 8 }}>
+                    <div style={{ height: 8, borderRadius: 5, background: color, width: `${pct}%`, transition: 'width 1s ease 0.3s' }} />
                   </div>
                 </div>
-              )}
+              )
+            })}
+          </div>
+        </div>
+
+        {/* ── Improvement Suggestions ── */}
+        {score.suggestions && score.suggestions.length > 0 && (
+          <div className="card" style={{ marginBottom: 28 }}>
+            <h3 style={{ fontWeight: 700, fontSize: 15, marginBottom: 16 }}>Top improvements</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {score.suggestions.map((tip, i) => (
+                <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                  <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--surface2)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 11, fontWeight: 700, color: 'var(--accent)' }}>{i + 1}</div>
+                  <div style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.6, paddingTop: 2 }}>{tip}</div>
+                </div>
+              ))}
             </div>
           </div>
         )}
+
+        {/* ── Locked features upsell panel ── */}
+        <div style={{ marginBottom: 28 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+            <h3 style={{ fontWeight: 700, fontSize: 15, margin: 0 }}>What Starter unlocks</h3>
+            <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 20, background: '#6366f115', color: '#818cf8', border: '1px solid #6366f133' }}>from $9/mo</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 14 }}>
+            {[
+              {
+                icon: '📡',
+                title: 'AI Attention Score',
+                desc: 'See how much attention ChatGPT, Claude, Perplexity, and 3 more AI systems actually pay to your site. Frequency, depth, recency — all in one composite score.',
+                locked: true,
+              },
+              {
+                icon: '🩺',
+                title: 'Content Doctor',
+                desc: 'Find every claim AI won\'t trust and every paragraph that\'s too dense to read. Authority Gap Scanner + Structural Optimizer with specific rewrites.',
+                locked: true,
+              },
+              {
+                icon: '⚡',
+                title: 'Continuous Monitoring',
+                desc: 'Every page change triggers an automatic rescan. Your AI Readiness Score stays current. Never go dark to AI crawlers again.',
+                locked: true,
+              },
+              {
+                icon: '🏷️',
+                title: 'Embeddable Badge',
+                desc: 'Show visitors you\'re AI-ready. One img tag — always live, always accurate. Updates automatically when your score changes.',
+                locked: !emailDone,
+              },
+            ].map(({ icon, title, desc, locked }) => (
+              <div key={title} style={{ position: 'relative', borderRadius: 14, border: '1px solid var(--border)', background: 'var(--surface)', padding: '18px 18px 16px', overflow: 'hidden' }}>
+                {locked && (
+                  <div style={{ position: 'absolute', inset: 0, background: 'rgba(15,23,42,0.72)', backdropFilter: 'blur(3px)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 14, zIndex: 2 }}>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: 20, marginBottom: 4 }}>🔒</div>
+                      <div style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600 }}>Starter plan</div>
+                    </div>
+                  </div>
+                )}
+                <div style={{ fontSize: 22, marginBottom: 10 }}>{icon}</div>
+                <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 6 }}>{title}</div>
+                <div style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.6 }}>{desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── CTA: sign up or upgrade ── */}
+        {!emailDone ? (
+          <div className="card-lg" style={{ marginBottom: 28, background: 'linear-gradient(135deg, #0f172a, #1e1b4b)', border: '1.5px solid #6366f133', textAlign: 'center' }}>
+            <div style={{ fontSize: 26, marginBottom: 12 }}>🚀</div>
+            <h3 style={{ fontSize: 20, fontWeight: 800, marginBottom: 8, letterSpacing: '-0.3px' }}>See {domain}'s full AI picture</h3>
+            <p style={{ color: 'var(--muted)', fontSize: 13, lineHeight: 1.7, marginBottom: 24, maxWidth: 460, margin: '0 auto 24px' }}>
+              Free account — no credit card. AI Attention Score, GEO scores for 6 AI systems, and one install snippet that keeps everything up to date.
+            </p>
+            <form onSubmit={handleEmailSubmit} style={{ display: 'flex', gap: 10, maxWidth: 400, margin: '0 auto', flexWrap: 'wrap', justifyContent: 'center' }}>
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="you@company.com"
+                required
+                style={{ flex: 1, minWidth: 200 }}
+              />
+              <button type="submit" className="btn btn-primary" disabled={submitting} style={{ padding: '10px 20px', whiteSpace: 'nowrap' }}>
+                {submitting ? <><span className="spinner" style={{ borderColor: 'rgba(255,255,255,0.3)', borderTopColor: 'white' }} /> Creating…</> : 'Get free account →'}
+              </button>
+            </form>
+            <p style={{ fontSize: 11, color: 'var(--subtle)', marginTop: 14 }}>Free forever for 3 sites · No credit card · Cancel anytime</p>
+          </div>
+        ) : (
+          <div className="card-lg" style={{ marginBottom: 28, background: 'linear-gradient(135deg, #0f172a, #052e16)', border: '1.5px solid #22c55e33', textAlign: 'center' }}>
+            <div style={{ fontSize: 28, marginBottom: 10 }}>✅</div>
+            <h3 style={{ fontSize: 20, fontWeight: 800, marginBottom: 8 }}>You're in — open your dashboard</h3>
+            <p style={{ color: 'var(--muted)', fontSize: 13, lineHeight: 1.7, marginBottom: 24 }}>
+              Your free account is ready. Add the snippet to {domain} and Galuli starts tracking AI traffic immediately.
+            </p>
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button onClick={() => { if (onRegistered) onRegistered() }} className="btn btn-primary btn-lg">Open Dashboard →</button>
+              <a href="/pricing" className="btn btn-outline btn-lg" style={{ textDecoration: 'none' }}>Upgrade to Starter — $9/mo</a>
+            </div>
+          </div>
+        )}
+
+        {/* ── Badge section (teased, unlocks after email) ── */}
+        <div className="card" style={{ marginBottom: 28, position: 'relative', overflow: 'hidden' }}>
+          {!emailDone && (
+            <div style={{ position: 'absolute', inset: 0, background: 'rgba(15,23,42,0.8)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2, borderRadius: 'inherit' }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: 22, marginBottom: 6 }}>🔒</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>Embeddable Score Badge</div>
+                <div style={{ fontSize: 12, color: 'var(--muted)' }}>Create a free account to unlock</div>
+              </div>
+            </div>
+          )}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 24, flexWrap: 'wrap' }}>
+            <div>
+              <h4 style={{ fontWeight: 700, fontSize: 14, marginBottom: 6 }}>Embed your score badge</h4>
+              <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 16, maxWidth: 380 }}>
+                Show visitors your site is AI-ready. The badge links back to galuli.io and updates automatically.
+              </p>
+              <img src={badgeUrl} alt="AI Readiness Score badge" style={{ display: 'block', marginBottom: 16, borderRadius: 8 }} />
+            </div>
+            <div style={{ flex: 1, minWidth: 260 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 8 }}>HTML snippet</div>
+              <pre style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 10, padding: '14px 16px', fontSize: 11, color: 'var(--text)', overflowX: 'auto', marginBottom: 10, lineHeight: 1.6 }}>{badgeCode}</pre>
+              <button onClick={handleCopy} className="btn btn-outline btn-sm" style={{ fontSize: 12 }}>
+                {copied ? '✓ Copied' : 'Copy snippet'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Install snippet ── */}
+        {emailDone && (
+          <div className="card" style={{ background: 'linear-gradient(135deg, var(--surface2), var(--surface))', borderColor: 'var(--accent)' }}>
+            <h3 style={{ fontWeight: 800, fontSize: 16, marginBottom: 8 }}>Start monitoring {domain}</h3>
+            <p style={{ color: 'var(--muted)', fontSize: 13, marginBottom: 18 }}>Paste this in your site's &lt;head&gt;. Galuli generates your llms.txt, registers WebMCP, and tracks AI agent visits — automatically.</p>
+            <div className="code-block text-left" style={{ marginBottom: 16, fontSize: 12 }}>
+              {`<script src="${API_BASE}/galuli.js" defer></script>`}
+            </div>
+            <button onClick={() => { if (onRegistered) onRegistered() }} className="btn btn-primary">Go to Dashboard →</button>
+          </div>
+        )}
+
       </div>
     </div>
   )

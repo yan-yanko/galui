@@ -93,10 +93,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from app.api.routes import ingest, registry, admin, tenants, push, analytics, billing, content_doctor
+from app.api.routes import ingest, registry, admin, tenants, push, analytics, billing, content_doctor, score
 
 app.include_router(ingest.router,         prefix="/api/v1",                  tags=["Ingestion"])
 app.include_router(push.router,           prefix="/api/v1",                  tags=["Snippet / Push"])
+app.include_router(score.router,          prefix="/api/v1/score",            tags=["Score & Badge"])
 app.include_router(registry.router,       prefix="/registry",                tags=["Registry"])
 app.include_router(admin.router,          prefix="/api/v1/admin",            tags=["Admin"])
 app.include_router(tenants.router,        prefix="/api/v1/tenants",          tags=["Tenants"])
