@@ -184,7 +184,7 @@ function Nav({ page, setPage, health, theme, toggleTheme }) {
         letterSpacing: '-0.5px', marginRight: 28, flexShrink: 0,
         display: 'flex', alignItems: 'center', gap: 8,
         textDecoration: 'none',
-      }}>
+      }} onClick={e => { e.preventDefault(); setPage('overview') }}>
         <span>⬡</span> galuli
       </a>
 
@@ -2157,10 +2157,37 @@ function SettingsPage({ setPage }) {
     </div>
   )
 
+  // ── Danger Zone card (always visible) ──
+  const DangerZone = () => (
+    <div className="card flex col gap-14" style={{ border: '1px solid #ef444430' }}>
+      <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--red)' }}>⚠️ Danger Zone</div>
+      <div className="flex between center wrap gap-12" style={{ background: 'var(--surface2)', border: '1px solid #ef444420', borderRadius: 10, padding: '14px 16px' }}>
+        <div>
+          <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 3 }}>Wipe all data</div>
+          <div style={{ fontSize: 15, color: 'var(--muted)' }}>Delete every registry, scan, and job from the database. Cannot be undone.</div>
+        </div>
+        <button
+          className="btn btn-danger btn-sm"
+          onClick={async () => {
+            if (!confirm('Delete ALL registries, scans, and jobs?\n\nThis wipes the entire database and cannot be undone.')) return
+            try {
+              await api.wipeAll()
+              toast.success('All data wiped — refresh to see an empty dashboard')
+            } catch (err) {
+              toast.error(err.message)
+            }
+          }}
+        >
+          Wipe all data →
+        </button>
+      </div>
+    </div>
+  )
+
   // No tenant key — show explainer + sign-up prompt
   if (!me && !activeKey) {
     return (
-      <div className="flex col gap-20" style={{ maxWidth: 680 }}>
+      <div className="flex col gap-20" style={{ maxWidth: 720 }}>
         <PageHeader title="Profile & Billing" subtitle="Manage your account, plan, and billing." />
         <TabExplainer
           icon="⚙️"
@@ -2176,6 +2203,7 @@ function SettingsPage({ setPage }) {
           onCta={() => setPage('snippet')}
           ctaLabel="Create free account in Snippet tab →"
         />
+        <DangerZone />
       </div>
     )
   }
@@ -2403,30 +2431,7 @@ function SettingsPage({ setPage }) {
         )}
       </div>
 
-      {/* ── Danger Zone ── */}
-      <div className="card flex col gap-14" style={{ border: '1px solid #ef444430' }}>
-        <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--red)' }}>⚠️ Danger Zone</div>
-        <div className="flex between center wrap gap-12" style={{ background: 'var(--surface2)', border: '1px solid #ef444420', borderRadius: 10, padding: '14px 16px' }}>
-          <div>
-            <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 3 }}>Wipe all data</div>
-            <div style={{ fontSize: 15, color: 'var(--muted)' }}>Delete every registry, scan, and job from the database. This cannot be undone.</div>
-          </div>
-          <button
-            className="btn btn-danger btn-sm"
-            onClick={async () => {
-              if (!confirm('Delete ALL registries, scans, and jobs?\n\nThis wipes the entire database and cannot be undone.')) return
-              try {
-                await api.wipeAll()
-                toast.success('All data wiped — refresh to see an empty dashboard')
-              } catch (err) {
-                toast.error(err.message)
-              }
-            }}
-          >
-            Wipe all data →
-          </button>
-        </div>
-      </div>
+      <DangerZone />
     </div>
   )
 }
@@ -2623,12 +2628,33 @@ function GeoPage() {
   )
 }
 
+// ── URL hash helpers ──────────────────────────────────────────────────────────
+const VALID_PAGES = ['overview', 'score', 'geo', 'analytics', 'content-doctor', 'snippet', 'settings', 'ingest', 'registries', 'tenants']
+
+function getPageFromHash() {
+  const hash = window.location.hash.replace(/^#\/?/, '').trim()
+  return VALID_PAGES.includes(hash) ? hash : 'overview'
+}
+
 // ── App root ──────────────────────────────────────────────────────────────────
 export default function App() {
-  const [page, setPage] = useState('overview')
+  const [page, setPage] = useState(getPageFromHash)
   const [health, setHealth] = useState(null)
   const [theme, setTheme] = useState(() => localStorage.getItem('galuli_theme') || 'light')
   const [pendingScanDomain, setPendingScanDomain] = useState(null)
+
+  // Sync hash → page on back/forward navigation
+  useEffect(() => {
+    const onHashChange = () => setPage(getPageFromHash())
+    window.addEventListener('hashchange', onHashChange)
+    return () => window.removeEventListener('hashchange', onHashChange)
+  }, [])
+
+  // Wrapped setPage that also updates the URL hash
+  const navigate = useCallback((p) => {
+    window.location.hash = p
+    setPage(p)
+  }, [])
 
   // Apply theme class to <html> on mount + change
   useEffect(() => {
@@ -2645,13 +2671,13 @@ export default function App() {
   }, [])
 
   const pages = {
-    overview: <OverviewPage setPage={setPage} setPendingScanDomain={setPendingScanDomain} />,
+    overview: <OverviewPage setPage={navigate} setPendingScanDomain={setPendingScanDomain} />,
     score: <ScorePage pendingDomain={pendingScanDomain} clearPending={() => setPendingScanDomain(null)} />,
     geo: <GeoPage />,
-    analytics: <AnalyticsPage setPage={setPage} />,
+    analytics: <AnalyticsPage setPage={navigate} />,
     'content-doctor': <ContentDoctorPage />,
     snippet: <SnippetPage />,
-    settings: <SettingsPage setPage={setPage} />,
+    settings: <SettingsPage setPage={navigate} />,
     // Hidden pages — reachable via buttons, not main nav
     ingest: <IngestPage />,
     registries: <RegistriesPage />,
@@ -2660,9 +2686,9 @@ export default function App() {
 
   return (
     <>
-      <Nav page={page} setPage={setPage} health={health} theme={theme} toggleTheme={toggleTheme} />
+      <Nav page={page} setPage={navigate} health={health} theme={theme} toggleTheme={toggleTheme} />
       <main style={{ padding: '40px 52px', maxWidth: 1280, margin: '0 auto' }}>
-        {pages[page] ?? <OverviewPage setPage={setPage} />}
+        {pages[page] ?? <OverviewPage setPage={navigate} />}
       </main>
       <ToastContainer />
     </>
