@@ -2113,6 +2113,18 @@ function TenantsPage() {
   )
 }
 
+// ── Lemon Squeezy checkout URLs ───────────────────────────────────────────────
+const LS_URLS = {
+  starter: 'https://galuli.io/checkout/buy/8bc3ebee-b31d-43ee-bbcc-5b47ba3b0022',
+  pro:     'https://galuli.io/checkout/buy/e280dc25-998e-4ca5-b224-5d6548d8f4e0',
+}
+function openCheckout(plan, email) {
+  const base = LS_URLS[plan]
+  if (!base) return
+  const url = email ? `${base}?checkout[email]=${encodeURIComponent(email)}` : base
+  window.open(url, '_blank', 'noopener')
+}
+
 // ── Settings (Profile & Billing) ──────────────────────────────────────────────
 function SettingsPage({ setPage }) {
   const [me, setMe] = useState(null)
@@ -2140,9 +2152,10 @@ function SettingsPage({ setPage }) {
   const activeKey = localStorage.getItem('galuli_api_key') || ''
 
   const PLAN_DETAILS = {
-    free: { label: 'Free', color: 'var(--muted)', price: '$0/mo', sites: '3 sites', rate: '10 req/min' },
-    pro: { label: 'Pro', color: 'var(--accent2)', price: '$49/yr', sites: '50 sites', rate: '60 req/min' },
-    enterprise: { label: 'Enterprise', color: 'var(--blue)', price: 'Custom', sites: 'Unlimited', rate: '300 req/min' },
+    free:       { label: 'Free',       color: 'var(--muted)',   price: '$0/mo',   sites: '3 sites',       rate: '10 req/min' },
+    starter:    { label: 'Starter',    color: 'var(--green)',   price: '$9/mo',   sites: '10 sites',      rate: '30 req/min' },
+    pro:        { label: 'Pro',        color: 'var(--accent2)', price: '$29/mo',  sites: 'Unlimited',     rate: '120 req/min' },
+    enterprise: { label: 'Enterprise', color: 'var(--blue)',    price: 'Custom',  sites: 'Unlimited',     rate: '300 req/min' },
   }
 
   const plan = me?.plan || 'free'
@@ -2197,7 +2210,7 @@ function SettingsPage({ setPage }) {
             { icon: '📋', label: 'Plan & usage', sub: 'Sites used vs. limit, requests this month, plan details' },
             { icon: '🔑', label: 'API key', sub: 'Copy your key for the snippet, direct API calls, or integrations' },
             { icon: '🌐', label: 'Registered domains', sub: 'All sites sending data — with status and last-seen info' },
-            { icon: '💳', label: 'Billing', sub: 'Upgrade to Starter ($9/mo) or Pro ($29/mo), manage subscription' },
+            { icon: '💳', label: 'Billing', sub: 'Starter $9/mo · Pro $29/mo — powered by Lemon Squeezy' },
           ]}
           cta={true}
           onCta={() => setPage('snippet')}
@@ -2281,33 +2294,47 @@ function SettingsPage({ setPage }) {
           )}
         </div>
 
-        {/* Upgrade CTA — only show for free/pro */}
+        {/* Upgrade CTAs */}
         {plan === 'free' && (
-          <div style={{ background: 'linear-gradient(135deg, var(--accent)12, var(--accent2)12)', border: '1px solid var(--accent)30', borderRadius: 10, padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 3 }}>Upgrade to Pro</div>
-              <div style={{ fontSize: 15, color: 'var(--muted)' }}>50 sites · 60 req/min · Priority support — $49/year</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{ background: 'linear-gradient(135deg, var(--accent)12, var(--accent2)12)', border: '1px solid var(--accent)30', borderRadius: 10, padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 3 }}>Starter — $9/mo</div>
+                <div style={{ fontSize: 15, color: 'var(--muted)' }}>10 sites · AI traffic tracking · GEO score · Content Doctor</div>
+              </div>
+              <button className="btn btn-primary btn-sm" onClick={() => openCheckout('starter', me?.email)}>
+                Upgrade to Starter →
+              </button>
             </div>
-            <button
-              className="btn btn-primary btn-sm"
-              onClick={() => toast.info('Billing coming soon — contact us at hello@galuli.io')}
-            >
-              Upgrade →
+            <div style={{ background: 'linear-gradient(135deg, var(--purple)10, var(--accent)10)', border: '1px solid var(--purple)30', borderRadius: 10, padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 3 }}>Pro — $29/mo</div>
+                <div style={{ fontSize: 15, color: 'var(--muted)' }}>Unlimited sites · priority crawls · full API access · advanced analytics</div>
+              </div>
+              <button className="btn btn-primary btn-sm" style={{ background: 'var(--purple)' }} onClick={() => openCheckout('pro', me?.email)}>
+                Upgrade to Pro →
+              </button>
+            </div>
+          </div>
+        )}
+        {plan === 'starter' && (
+          <div style={{ background: 'linear-gradient(135deg, var(--purple)10, var(--accent)10)', border: '1px solid var(--purple)30', borderRadius: 10, padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 3 }}>Upgrade to Pro — $29/mo</div>
+              <div style={{ fontSize: 15, color: 'var(--muted)' }}>Unlimited sites · priority crawls · full API access · advanced analytics</div>
+            </div>
+            <button className="btn btn-primary btn-sm" style={{ background: 'var(--purple)' }} onClick={() => openCheckout('pro', me?.email)}>
+              Upgrade to Pro →
             </button>
           </div>
         )}
         {plan === 'pro' && (
           <div style={{ background: 'var(--surface2)', border: '1px solid var(--border2)', borderRadius: 10, padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
             <div>
-              <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 3 }}>Need more? Go Enterprise</div>
-              <div style={{ fontSize: 15, color: 'var(--muted)' }}>Unlimited sites · 300 req/min · Dedicated support</div>
+              <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 3 }}>Need more? Enterprise</div>
+              <div style={{ fontSize: 15, color: 'var(--muted)' }}>Unlimited sites · 300 req/min · dedicated support · SLA</div>
             </div>
-            <button
-              className="btn btn-ghost btn-sm"
-              onClick={() => toast.info('Contact us at hello@galuli.io to discuss enterprise pricing')}
-            >
-              Contact us →
-            </button>
+            <a href="mailto:hello@galuli.io?subject=Enterprise plan" className="btn btn-ghost btn-sm">Contact us →</a>
           </div>
         )}
       </div>
@@ -2353,21 +2380,32 @@ function SettingsPage({ setPage }) {
       {/* ── Billing ── */}
       <div className="card flex col gap-14">
         <div style={{ fontWeight: 700, fontSize: 15 }}>Billing</div>
-        <div style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 10, padding: '20px 18px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 16 }}>
-          <div style={{ fontSize: 28 }}>💳</div>
-          <div style={{ flex: 1, minWidth: 200 }}>
-            <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 3 }}>Payment Method</div>
-            <div style={{ fontSize: 15, color: 'var(--text)', display: 'flex', gap: 8, alignItems: 'center' }}>
-              <span style={{ fontWeight: 700 }}>Visa</span> ending in 4242
+        {(plan === 'free') ? (
+          <div style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 10, padding: '20px 18px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 16 }}>
+            <div style={{ fontSize: 28 }}>🆓</div>
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 3 }}>Free plan</div>
+              <div style={{ fontSize: 15, color: 'var(--muted)' }}>No payment method on file. Upgrade above to unlock more sites and features.</div>
             </div>
-            <div style={{ fontSize: 15, color: 'var(--muted)', marginTop: 4 }}>Expires 12/28</div>
+            <button className="btn btn-primary btn-sm" onClick={() => openCheckout('starter', me?.email)}>Upgrade to Starter →</button>
           </div>
-          <button className="btn btn-ghost btn-sm" onClick={() => toast.info('Redirecting to Stripe portal...')}>Update payment method</button>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10, marginTop: 4 }}>
-          <div style={{ fontSize: 15, color: 'var(--muted)' }}>Next invoice: <strong style={{ color: 'var(--text)' }}>$49.00</strong> on {new Date(Date.now() + 2592000000).toLocaleDateString()}</div>
-          <button className="btn btn-ghost btn-sm" onClick={() => toast.info('Redirecting to Stripe portal...')}>View invoice history →</button>
-        </div>
+        ) : (
+          <div style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 10, padding: '20px 18px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 16 }}>
+            <div style={{ fontSize: 28 }}>🍋</div>
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 3 }}>Managed by Lemon Squeezy</div>
+              <div style={{ fontSize: 15, color: 'var(--muted)' }}>Your subscription, invoices, and payment method are managed securely via Lemon Squeezy.</div>
+            </div>
+            <a
+              href="https://app.lemonsqueezy.com/my-orders"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-ghost btn-sm"
+            >
+              Manage billing →
+            </a>
+          </div>
+        )}
       </div>
 
       {/* ── API key (secondary, collapsible) ── */}
