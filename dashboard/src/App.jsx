@@ -111,6 +111,54 @@ function EmptyState({ icon, title, description, action }) {
   )
 }
 
+// ── Tab Explainer — shown at top of every tab ─────────────────────────────
+function TabExplainer({ icon, title, description, features, cta, onCta, ctaLabel = 'Get started →' }) {
+  return (
+    <div style={{
+      borderRadius: 16,
+      background: 'linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%)',
+      border: '1px solid var(--border)',
+      padding: '28px 32px',
+      marginBottom: 4,
+    }}>
+      <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+        <div style={{
+          width: 52, height: 52, borderRadius: 14, flexShrink: 0,
+          background: 'linear-gradient(135deg, var(--accent)22, var(--accent2)22)',
+          border: '1px solid var(--accent)33',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24,
+        }}>{icon}</div>
+        <div style={{ flex: 1, minWidth: 220 }}>
+          <div style={{ fontWeight: 800, fontSize: 17, marginBottom: 6, letterSpacing: '-0.2px' }}>{title}</div>
+          <div style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.7, maxWidth: 560, marginBottom: features ? 20 : 0 }}>{description}</div>
+          {features && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 10 }}>
+              {features.map(({ icon: fi, label, sub }) => (
+                <div key={label} style={{
+                  display: 'flex', gap: 10, alignItems: 'flex-start',
+                  background: 'var(--surface)', border: '1px solid var(--border)',
+                  borderRadius: 10, padding: '10px 12px',
+                }}>
+                  <span style={{ fontSize: 18, flexShrink: 0, lineHeight: 1.3 }}>{fi}</span>
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 2 }}>{label}</div>
+                    <div style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.5 }}>{sub}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {cta && onCta && (
+            <button className="btn btn-primary btn-sm" onClick={onCta} style={{ marginTop: features ? 16 : 0 }}>
+              {ctaLabel}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ── Nav ─────────────────────────────────────────────────────────────────────
 const NAV_LINKS = [
   { id: 'overview', label: 'Overview' },
@@ -303,16 +351,24 @@ function OverviewPage({ setPage, setPendingScanDomain }) {
         </div>
       )}
 
-      {/* Empty state */}
+      {/* Empty state + explainer */}
       {!hasData && (
-        <div className="card" style={{ padding: '40px 32px', textAlign: 'center' }}>
-          <div style={{ fontSize: 40, marginBottom: 16 }}>🚀</div>
-          <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 8 }}>Scan your first site</div>
-          <div style={{ color: 'var(--muted)', fontSize: 13, maxWidth: 420, margin: '0 auto 20px', lineHeight: 1.7 }}>
-            Enter any URL above. We crawl every page, run a 4-pass AI analysis, and give you an AI Readiness Score in under 2 minutes.
-          </div>
-          <button className="btn btn-primary" onClick={() => setPage('snippet')}>View install guide →</button>
-        </div>
+        <TabExplainer
+          icon="🏠"
+          title="Welcome to Galuli — your AI readability dashboard"
+          description="Paste any URL in the box above to run your first scan. Galuli crawls every page, runs a 4-pass AI analysis, and gives you an AI Readiness Score in under 2 minutes. No install needed for the free scan."
+          features={[
+            { icon: '🔍', label: 'Free instant scan', sub: 'Paste any URL — results in ~60 seconds' },
+            { icon: '📊', label: 'AI Readiness Score', sub: '0-100 score across 5 AI-readiness dimensions' },
+            { icon: '📡', label: 'AI traffic analytics', sub: 'See which LLMs crawl your site and what they read' },
+            { icon: '🩺', label: 'Content Doctor', sub: 'Find authority gaps and structural issues AI won\'t trust' },
+            { icon: '🌐', label: 'GEO Score', sub: 'How likely each AI system is to cite your site' },
+            { icon: '⬡', label: 'One-line install', sub: 'Snippet unlocks live monitoring + WebMCP tools' },
+          ]}
+          cta={true}
+          onCta={() => setPage('snippet')}
+          ctaLabel="View install guide →"
+        />
       )}
 
       {/* Snippet CTA — only if no snippet yet */}
@@ -695,11 +751,18 @@ function ScorePage({ pendingDomain, clearPending }) {
       )}
 
       {!polling && registries.length === 0 && (
-        <EmptyState
+        <TabExplainer
           icon="◈"
-          title="No sites indexed yet"
-          description="Go to Overview and enter a URL to scan your first site."
-          action={null}
+          title="AI Readiness Score — understand exactly how AI sees your site"
+          description="The AI Readiness Score measures how well any AI agent can find, understand, and use your site. It's a 0–100 score across 5 dimensions. Scan a site from Overview to see yours."
+          features={[
+            { icon: '📝', label: 'Content Coverage (0–25)', sub: 'Are your capabilities, use cases, and value prop clearly documented?' },
+            { icon: '🏗️', label: 'Structure Quality (0–20)', sub: 'Pricing tiers, API docs, auth methods, SDK info' },
+            { icon: '📡', label: 'Machine Signals (0–20)', sub: 'llms.txt, ai-plugin.json, WebMCP, confidence score' },
+            { icon: '🏛️', label: 'Authority (0–20)', sub: 'Docs URL, support URL, pricing page, status page' },
+            { icon: '⏱️', label: 'Freshness (0–15)', sub: 'Pages crawled + whether snippet monitors live changes' },
+            { icon: '🏷️', label: 'Embeddable badge', sub: 'Show visitors you\'re AI-ready — auto-updates with score' },
+          ]}
         />
       )}
 
@@ -918,39 +981,45 @@ function AnalyticsPage({ setPage }) {
         </div>
       </div>
 
+      {!loading && registries.length === 0 && (
+        <TabExplainer
+          icon="📡"
+          title="AI Traffic Analytics — see who's reading your site right now"
+          description="Galuli detects 30+ AI crawlers and logs every visit in real time. Scan a site from Overview first, then install the snippet to start seeing live AI agent traffic."
+          features={[
+            { icon: '🤖', label: 'AI Attention Score', sub: 'Composite score: frequency × depth × recency × diversity' },
+            { icon: '🗺️', label: 'Topic Attention Map', sub: 'Which content areas AI reads most vs. ignores' },
+            { icon: '🔬', label: 'Per-LLM crawl depth', sub: 'Which AI systems go deep vs. skim your site' },
+            { icon: '📈', label: 'Daily trend chart', sub: 'AI traffic over time — spot spikes and drops' },
+            { icon: '🏆', label: 'Top pages by AI hits', sub: 'Which URLs LLMs fetch most often' },
+            { icon: '⚡', label: 'Agent breakdown', sub: 'GPTBot, ClaudeBot, PerplexityBot, Gemini and more' },
+          ]}
+        />
+      )}
+
       {loading && <div className="flex center gap-12" style={{ padding: 40, color: 'var(--muted)' }}><span className="spinner" /> Loading…</div>}
 
       {!loading && summary && summary.total_ai_hits === 0 && (
-        <div className="card flex col gap-20" style={{ padding: '32px 28px' }}>
-          <div className="empty-state">
-            <div className="empty-state-icon">📡</div>
-            <div className="empty-state-title">No AI traffic recorded yet</div>
-            <div className="empty-state-desc">
-              Install the Galuli snippet on <strong>{selected || 'your site'}</strong> to start tracking AI agent visits in real time.
-              The snippet detects 30+ AI crawlers and logs every visit — agent name, page visited, timestamp.
-            </div>
-            <div style={{ marginTop: 16 }}>
-              <button className="btn btn-primary btn-sm" onClick={() => setPage('snippet')}>
-                View install guide
-              </button>
-            </div>
-          </div>
-          <div style={{ borderTop: '1px solid var(--border)', paddingTop: 20 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 14 }}>What you'll see once the snippet is installed</div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
-              {[
-                { icon: '🤖', label: 'GPTBot & ChatGPT visits', sub: 'OpenAI crawler + live ChatGPT browsing' },
-                { icon: '🟣', label: 'ClaudeBot visits', sub: 'Anthropic crawler traffic' },
-                { icon: '🔵', label: 'PerplexityBot visits', sub: 'Perplexity AI search indexing' },
-                { icon: '📄', label: 'Pages AI agents read', sub: 'Which URLs they fetch most' },
-              ].map(({ icon, label, sub }) => (
-                <div key={label} style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 10, padding: '12px 14px' }}>
-                  <div style={{ fontSize: 18, marginBottom: 6 }}>{icon}</div>
-                  <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 2 }}>{label}</div>
-                  <div style={{ fontSize: 11, color: 'var(--muted)' }}>{sub}</div>
-                </div>
-              ))}
-            </div>
+        <div className="flex col gap-16">
+          <TabExplainer
+            icon="📡"
+            title="AI Traffic Analytics — see who's reading your site right now"
+            description={`The snippet detects 30+ AI crawlers and logs every visit — agent name, page visited, timestamp. Once installed on ${selected || 'your site'}, this tab shows a live feed of AI attention.`}
+            features={[
+              { icon: '🤖', label: 'AI Attention Score', sub: 'Composite score: frequency × depth × recency × diversity' },
+              { icon: '🗺️', label: 'Topic Attention Map', sub: 'Which content areas AI reads most vs. ignores' },
+              { icon: '🔬', label: 'Per-LLM crawl depth', sub: 'Which AI systems go deep vs. skim your site' },
+              { icon: '📈', label: 'Daily trend chart', sub: 'AI traffic over time — spot spikes and drops' },
+              { icon: '🏆', label: 'Top pages by AI hits', sub: 'Which URLs LLMs fetch most often' },
+              { icon: '⚡', label: 'Agent breakdown', sub: 'GPTBot, ClaudeBot, PerplexityBot, Gemini and more' },
+            ]}
+            cta={true}
+            onCta={() => setPage('snippet')}
+            ctaLabel="Install snippet to start tracking →"
+          />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', borderRadius: 10, background: 'var(--surface2)', border: '1px solid var(--border)', fontSize: 13, color: 'var(--muted)' }}>
+            <span style={{ fontSize: 16 }}>💡</span>
+            <span>No AI traffic recorded yet for <strong style={{ color: 'var(--text)' }}>{selected}</strong>. This is normal for new installs — AI crawlers visit on their own schedule, typically within 24–72 hours.</span>
           </div>
         </div>
       )}
@@ -1229,6 +1298,23 @@ function ContentDoctorPage() {
         title="Content Doctor"
         subtitle="AI-powered content analysis — find authority gaps and structural issues that hurt your GEO score"
       />
+
+      {/* Explainer — always shown, collapses visually once results appear */}
+      {!result && (
+        <TabExplainer
+          icon="🩺"
+          title="Content Doctor — find what's stopping AI from trusting your content"
+          description="Paste a URL or your content and Galuli's AI runs two diagnostic modules: the Authority Gap Scanner finds claims AI won't trust, and the Structural Optimizer finds paragraphs too dense or ambiguous for LLMs to parse cleanly."
+          features={[
+            { icon: '🔍', label: 'Authority Gap Scanner', sub: 'Finds every unsupported claim, vague assertion, and missing citation AI flags as low-trust' },
+            { icon: '🏗️', label: 'Structural Optimizer', sub: 'Spots dense paragraphs, buried key entities, and sections that need reformatting for AI parsing' },
+            { icon: '📊', label: 'Content Health Score', sub: 'A single 0–100 score combining authority + structure — track it over time as you improve' },
+            { icon: '✍️', label: 'Rewrite candidates', sub: 'Specific sentences flagged for rewriting with suggested fixes included' },
+            { icon: '🎯', label: 'Top priorities', sub: 'The 3 highest-impact fixes ranked by how much they\'ll move your GEO score' },
+            { icon: '⚡', label: 'Quick wins', sub: 'Low-effort improvements you can make in under 5 minutes' },
+          ]}
+        />
+      )}
 
       {/* Input panel */}
       <div className="card flex col gap-16">
@@ -1532,6 +1618,20 @@ function SnippetPage() {
       <PageHeader
         title="Install the Snippet"
         subtitle="One script tag. Your site becomes AI-readable, WebMCP-compliant, and fully tracked."
+      />
+
+      <TabExplainer
+        icon="⬡"
+        title="One script tag activates the entire Galuli stack"
+        description="Paste the snippet into your site's &lt;head&gt; and everything below activates automatically — no configuration needed. Works on any stack: WordPress, Webflow, Shopify, React, Next.js, plain HTML."
+        features={[
+          { icon: '📡', label: 'Live AI agent tracking', sub: 'Detects 30+ crawlers — GPTBot, ClaudeBot, PerplexityBot, Gemini and more' },
+          { icon: '⬡', label: 'WebMCP tool registration', sub: 'Your forms become AI-callable tools for agent workflows (W3C 2026 standard)' },
+          { icon: '📄', label: 'llms.txt auto-generated', sub: 'Machine-readable site summary served at /llms.txt — AI crawlers fetch this first' },
+          { icon: '🔗', label: 'Discovery tags injected', sub: 'ai-plugin.json link + registry URL added to your <head> automatically' },
+          { icon: '📊', label: 'Schema.org markup', sub: 'Auto-injected if missing — boosts Gemini and Google AI citation rate' },
+          { icon: '♻️', label: 'Smart re-indexing', sub: 'Only re-crawls when your content actually changes — efficient and automatic' },
+        ]}
       />
 
       {/* ── Step 1: Get your key ── */}
@@ -2032,22 +2132,25 @@ function SettingsPage({ setPage }) {
     </div>
   )
 
-  // No tenant key — show sign-up prompt
+  // No tenant key — show explainer + sign-up prompt
   if (!me && !activeKey) {
     return (
-      <div className="flex col gap-20" style={{ maxWidth: 540 }}>
+      <div className="flex col gap-20" style={{ maxWidth: 680 }}>
         <PageHeader title="Profile & Billing" subtitle="Manage your account, plan, and billing." />
-        <div className="card flex col gap-16" style={{ padding: '28px 24px', textAlign: 'center' }}>
-          <div style={{ fontSize: 36 }}>🔑</div>
-          <div style={{ fontWeight: 700, fontSize: 16 }}>No account connected</div>
-          <div style={{ color: 'var(--muted)', fontSize: 13, lineHeight: 1.7 }}>
-            Go to the <strong>Snippet</strong> tab to create your free account and get your API key.
-            Once connected, your profile, plan, and billing will appear here.
-          </div>
-          <div style={{ marginTop: 4 }}>
-            <button className="btn btn-primary" onClick={() => setPage('snippet')}>Go to Snippet tab →</button>
-          </div>
-        </div>
+        <TabExplainer
+          icon="⚙️"
+          title="Settings — your plan, API key, and billing in one place"
+          description="Once you create a free account in the Snippet tab, your profile appears here. You can upgrade your plan, see usage, manage domains, and copy your API key."
+          features={[
+            { icon: '📋', label: 'Plan & usage', sub: 'Sites used vs. limit, requests this month, plan details' },
+            { icon: '🔑', label: 'API key', sub: 'Copy your key for the snippet, direct API calls, or integrations' },
+            { icon: '🌐', label: 'Registered domains', sub: 'All sites sending data — with status and last-seen info' },
+            { icon: '💳', label: 'Billing', sub: 'Upgrade to Starter ($9/mo) or Pro ($29/mo), manage subscription' },
+          ]}
+          cta={true}
+          onCta={() => setPage('snippet')}
+          ctaLabel="Create free account in Snippet tab →"
+        />
       </div>
     )
   }
@@ -2329,11 +2432,18 @@ function GeoPage() {
       </div>
 
       {registries.length === 0 && !loading && (
-        <EmptyState
+        <TabExplainer
           icon="🌐"
-          title="No sites indexed yet"
-          description="Go to Overview and scan a site first to see its GEO score."
-          action={null}
+          title="GEO Score — how likely each AI is to cite and recommend your site"
+          description="GEO (Generative Engine Optimization) measures your site's citation readiness across 6 major AI systems. Each scores you 0–20 based on what that specific AI values — freshness, structured data, authority signals, or content depth. Scan a site from Overview to see your scores."
+          features={[
+            { icon: '🟢', label: 'ChatGPT / GPT-4o', sub: 'Values encyclopedic content, detailed use cases, clear pricing, docs URL' },
+            { icon: '🔵', label: 'Perplexity AI', sub: 'Values freshness, authority links, page coverage, pricing page' },
+            { icon: '🟠', label: 'Claude (Anthropic)', sub: 'Values clarity, problems-solved, constraints documented, specific category' },
+            { icon: '🟣', label: 'Gemini (Google)', sub: 'Values Schema.org markup, OpenAPI spec, SDKs, structured pricing tiers' },
+            { icon: '🩵', label: 'Grok (xAI)', sub: 'Values recency, topical breadth, page coverage, capability count' },
+            { icon: '🔴', label: 'Llama (Meta)', sub: 'Values registry completeness, confidence score, broad page indexing' },
+          ]}
         />
       )}
 
