@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     base_api_url: str = "http://localhost:8000"
 
     # --- Crawl Settings ---
-    max_pages_per_crawl: int = 20
+    max_pages_per_crawl: int = 8
     crawl_timeout_seconds: int = 10
     playwright_enabled: bool = False
 

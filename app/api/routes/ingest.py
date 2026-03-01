@@ -26,6 +26,7 @@ class IngestRequest(BaseModel):
     url: str
     force_refresh: bool = False
     use_playwright: bool = False
+    max_pages: int = 0  # 0 = use server default (config.max_pages_per_crawl)
 
 
 class IngestResponse(BaseModel):
@@ -89,6 +90,7 @@ async def ingest_url(req: IngestRequest, background_tasks: BackgroundTasks):
         url=job.url,
         domain=domain,
         use_playwright=req.use_playwright,
+        max_pages=req.max_pages or None,
     )
 
     return IngestResponse(
@@ -120,7 +122,7 @@ async def list_jobs(limit: int = 20):
 
 
 async def _run_ingestion_pipeline(
-    job_id: str, url: str, domain: str, use_playwright: bool
+    job_id: str, url: str, domain: str, use_playwright: bool, max_pages: int = None
 ):
     """
     Background pipeline: Crawl → Comprehend → Build → Store
@@ -140,7 +142,7 @@ async def _run_ingestion_pipeline(
         job.status = JobStatus.CRAWLING
         storage.save_job(job)
 
-        crawler = CrawlerService(use_playwright=use_playwright)
+        crawler = CrawlerService(use_playwright=use_playwright, max_pages=max_pages)
         crawl_result = await crawler.crawl(url)
         job.pages_crawled = crawl_result.total_pages
         logger.info(f"[{job_id}] Crawled {crawl_result.total_pages} pages")

@@ -8,7 +8,7 @@ async function scanSite(url) {
   const res = await fetch(`${API_BASE}/api/v1/ingest`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-API-Key': 'kotleryan1984' },
-    body: JSON.stringify({ url, force_refresh: false }),
+    body: JSON.stringify({ url, force_refresh: false, max_pages: 5 }),
   })
   if (!res.ok) throw new Error('Scan failed')
   return res.json()
@@ -340,12 +340,22 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
         onScanComplete({ domain, score, registry })
       }
       if (job.status === 'complete') { await finishScan(domain); return }
-      let stageIdx = 0, fakeProgress = 5
+      let stageIdx = 0, fakeProgress = 8
+      const startedAt = Date.now()
+      const TIMEOUT_MS = 90_000 // 90 seconds max wait
       const interval = setInterval(async () => {
         try {
+          // Timeout guard — surface a friendly error if crawl stalls
+          if (Date.now() - startedAt > TIMEOUT_MS) {
+            clearInterval(interval)
+            setStage('error')
+            setError('The scan is taking longer than expected. The site may be slow to respond — try again in a moment.')
+            return
+          }
           const updated = await pollJob(job.job_id)
-          const targetProgress = { crawling: 25, comprehending: 65, storing: 88 }[updated.status] || fakeProgress
-          fakeProgress = Math.min(fakeProgress + 3, targetProgress)
+          // Progress targets per stage — crawling reaches 35 fast (5-page scan is quick)
+          const targetProgress = { crawling: 35, comprehending: 72, storing: 90 }[updated.status] || fakeProgress
+          fakeProgress = Math.min(fakeProgress + 4, targetProgress)
           setProgress(Math.round(fakeProgress))
           const newStageIdx = { crawling: 0, comprehending: 1, storing: 3 }[updated.status] ?? stageIdx
           if (newStageIdx !== stageIdx) { stageIdx = newStageIdx }
