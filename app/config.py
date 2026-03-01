@@ -40,9 +40,11 @@ class Settings(BaseSettings):
     stripe_price_pro_yearly: str = ""      # price_... Pro $249/yr
 
     # --- Lemon Squeezy ---
-    ls_webhook_secret: str = ""            # from LS dashboard → Webhooks → secret
-    ls_variant_starter: str = ""           # variant ID for Starter $9/mo
-    ls_variant_pro: str = ""               # variant ID for Pro $29/mo
+    ls_webhook_secret: str = ""              # from LS dashboard → Webhooks → secret
+    ls_variant_starter: str = ""             # variant ID for Starter $9/mo
+    ls_variant_starter_annual: str = ""      # variant ID for Starter $90/yr
+    ls_variant_pro: str = ""                 # variant ID for Pro $29/mo
+    ls_variant_pro_annual: str = ""          # variant ID for Pro $290/yr
 
     # --- Email (Resend) ---
     resend_api_key: str = ""               # re_...

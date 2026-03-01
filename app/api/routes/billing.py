@@ -431,13 +431,16 @@ async def stripe_webhook(request: Request):
 # ── Lemon Squeezy variant → plan mapping ─────────────────────────────────────
 
 def _ls_variant_to_plan(variant_id: str) -> Optional[str]:
-    """Map a LS variant ID to a Galuli plan name."""
+    """Map a LS variant ID (monthly or annual) to a Galuli plan name."""
     from app.config import settings
     mapping = {
-        settings.ls_variant_starter: "starter",
-        settings.ls_variant_pro:     "pro",
+        settings.ls_variant_starter:        "starter",
+        settings.ls_variant_starter_annual: "starter",
+        settings.ls_variant_pro:            "pro",
+        settings.ls_variant_pro_annual:     "pro",
     }
-    return mapping.get(str(variant_id))
+    # Filter out empty strings so they don't all map to None via ""
+    return {k: v for k, v in mapping.items() if k}.get(str(variant_id))
 
 
 @router.post("/billing/ls-webhook", summary="Lemon Squeezy webhook handler", include_in_schema=False)
