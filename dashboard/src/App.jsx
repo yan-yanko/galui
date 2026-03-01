@@ -291,7 +291,7 @@ function OverviewPage({ setPage, setPendingScanDomain }) {
 
   return (
     <div className="flex col gap-20">
-      <PageHeader title="Overview" subtitle="Your AI readability dashboard" />
+      <PageHeader title="Overview" subtitle="Your AI accessibility dashboard" />
 
       {/* Quick scan */}
       <div className="card" style={{ padding: '20px 24px' }}>
@@ -739,7 +739,7 @@ function ScorePage({ pendingDomain, clearPending }) {
   return (
     <div className="flex col gap-24">
       <div className="flex between center wrap gap-12">
-        <PageHeader title="AI Readiness Score" subtitle="How visible and useful is your site to AI agents and LLMs?" />
+        <PageHeader title="AI Readability Score" subtitle="How well can AI systems read, understand, and trust your site?" />
         {registries.length > 0 && (
           <select value={selected} onChange={e => loadScore(e.target.value)} style={{ width: 'auto', minWidth: 200 }}>
             {registries.map(r => <option key={r.domain} value={r.domain}>{r.domain}</option>)}
@@ -1340,7 +1340,7 @@ function ContentDoctorPage() {
   // Still loading plan info — show spinner to avoid flicker
   if (me === undefined) return (
     <div className="flex col gap-24">
-      <PageHeader title="Content Doctor" subtitle="AI-powered content analysis — find authority gaps and structural issues that hurt your GEO score" />
+      <PageHeader title="Content Doctor" subtitle="Find the claims, structure, and gaps that stop AI from trusting and citing your content" />
       <div className="flex center gap-12" style={{ padding: 48, color: 'var(--muted)' }}>
         <span className="spinner" /> Loading…
       </div>
@@ -1351,7 +1351,7 @@ function ContentDoctorPage() {
     <div className="flex col gap-24">
       <PageHeader
         title="Content Doctor"
-        subtitle="AI-powered content analysis — find authority gaps and structural issues that hurt your GEO score"
+        subtitle="Find the claims, structure, and gaps that stop AI from trusting and citing your content"
       />
 
       {/* Explainer — always shown to everyone */}
@@ -1375,9 +1375,9 @@ function ContentDoctorPage() {
       {!isPaid && (
         <div className="card" style={{ textAlign: 'center', padding: '48px 32px' }}>
           <div style={{ fontSize: 36, marginBottom: 14 }}>🔒</div>
-          <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 10, color: 'var(--text)' }}>Content Doctor — Starter plan and above</div>
+          <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 10, color: 'var(--text)' }}>Content Doctor — Starter and above</div>
           <p style={{ color: 'var(--subtle)', fontSize: 14, lineHeight: 1.7, maxWidth: 420, margin: '0 auto 24px' }}>
-            Run AI-powered authority gap and structural analysis on any page. Galuli flags every unsupported claim, dense paragraph, and missing citation — with specific rewrites.
+            Finds every claim, paragraph, and assertion that AI won't trust — and gives you the specific rewrite. Not generic SEO advice. Actual fixes that make your content readable and citable by LLMs.
           </p>
           <a href="https://galuli.io/checkout/buy/8bc3ebee-b31d-43ee-bbcc-5b47ba3b0022" target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ fontSize: 14, padding: '10px 24px' }}>
             Upgrade to Starter — $9/mo →

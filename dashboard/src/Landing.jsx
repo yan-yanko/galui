@@ -365,22 +365,22 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
           {/* Left */}
           <div>
             <div className="badge badge-purple" style={{ marginBottom: 20, fontSize: 11 }}>
-              GEO — Generative Engine Optimization
+              AI Accessibility — one line of code
             </div>
             <h1 style={{ fontSize: 'clamp(42px, 5.5vw, 72px)', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.05, marginBottom: 22, color: 'var(--text)' }}>
               Make your website<br />
-              <span style={{ background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>visible to AI.</span>
+              <span style={{ background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>readable by AI.</span>
             </h1>
             <p style={{ fontSize: 18, color: 'var(--subtle)', lineHeight: 1.7, marginBottom: 28, maxWidth: 480 }}>
-              More and more people are getting answers from AI instead of clicking links. If your site isn't AI-readable, you're invisible to them. Galuli fixes this with one line of code.
+              Billions of people now get answers from ChatGPT, Claude, and Perplexity instead of clicking links. If AI can't read your site, you don't exist to them. Galuli makes your site fully accessible to every AI system — with one line of code.
             </p>
 
             {/* Bullets */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 28 }}>
               {[
-                { label: 'Effortless.', detail: 'One line of code for full AI readability — fully automated.' },
+                { label: 'Effortless.', detail: 'One script tag. Galuli handles everything else automatically.' },
                 { label: 'Affordable.', detail: 'From $9/month, free scan, no credit card required.' },
-                { label: 'Visible.', detail: 'All major LLMs will find, read, and recommend your site.' },
+                { label: 'Universal.', detail: 'ChatGPT, Claude, Perplexity, Gemini, Grok — all of them, at once.' },
               ].map(({ label, detail }) => (
                 <div key={label} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 15 }}>
                   <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'rgba(94,106,210,0.12)', border: '1px solid rgba(94,106,210,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)', fontWeight: 800, fontSize: 10, flexShrink: 0, marginTop: 1 }}>✓</div>
@@ -436,15 +436,15 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
       {/* ── How it works ── */}
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 32px' }}>
         <div style={{ marginBottom: 32 }}>
-          <div className="eyebrow">Simple Pipeline</div>
-          <h2 style={{ fontSize: 'clamp(28px, 3vw, 42px)', fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text)', marginBottom: 8, lineHeight: 1.1 }}>How it works</h2>
-          <p style={{ fontSize: 16, color: 'var(--subtle)' }}>Three steps to full AI visibility</p>
+          <div className="eyebrow">How it works</div>
+          <h2 style={{ fontSize: 'clamp(28px, 3vw, 42px)', fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text)', marginBottom: 8, lineHeight: 1.1 }}>AI accessibility in three steps</h2>
+          <p style={{ fontSize: 16, color: 'var(--subtle)' }}>From zero to fully AI-readable in under 5 minutes</p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 1, border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden', background: 'var(--border)' }}>
           {[
-            { step: '01', title: 'Scan your site free', desc: 'Enter your URL. Galuli crawls every page, runs a 4-pass AI analysis pipeline, extracts your site\'s capabilities, and gives you an AI Readiness Score (0–100) in under 2 minutes.' },
-            { step: '02', title: 'Add one script tag', desc: 'Copy one line into your site\'s <head>. Galuli automatically generates your llms.txt, registers WebMCP tools, and starts logging AI agent visits.', tag: '30 seconds to install' },
-            { step: '03', title: 'Get found by AI', desc: 'ChatGPT, Claude, Perplexity, Gemini, and every other LLM can now read, understand, and cite your site. Your score updates automatically as your content changes.' },
+            { step: '01', title: 'See your AI readability score', desc: 'Enter your URL. Galuli crawls every page, runs a 4-pass AI comprehension pipeline, and tells you exactly how well each LLM can read and understand your site — in under 2 minutes.' },
+            { step: '02', title: 'Add one script tag', desc: 'Copy one line into your site\'s <head>. Galuli auto-generates your llms.txt, registers your capabilities with WebMCP, and starts tracking which AI systems visit you.', tag: '30 seconds to install' },
+            { step: '03', title: 'Every AI can read you now', desc: 'ChatGPT, Claude, Perplexity, Gemini, Grok — they can all read, understand, and cite your site. Your readability score updates automatically as your content changes.' },
           ].map(({ step, title, desc, tag }) => (
             <div key={step} style={{ background: 'var(--surface)', padding: '24px 24px 20px', position: 'relative' }}>
               {tag && <div style={{ position: 'absolute', top: 16, right: 16, fontSize: 10, background: 'rgba(94,106,210,0.1)', border: '1px solid rgba(94,106,210,0.25)', color: 'var(--accent)', padding: '2px 8px', borderRadius: 3, fontWeight: 600 }}>{tag}</div>}
@@ -460,18 +460,18 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
       <div style={{ background: 'var(--surface)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '64px 32px' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ marginBottom: 32 }}>
-            <div className="eyebrow">What you get</div>
-            <h2 style={{ fontSize: 'clamp(28px, 3vw, 42px)', fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text)', marginBottom: 8, lineHeight: 1.1 }}>Everything included.<br />Zero configuration.</h2>
-            <p style={{ fontSize: 16, color: 'var(--subtle)' }}>Add one script tag. Every feature below activates automatically.</p>
+            <div className="eyebrow">What's included</div>
+            <h2 style={{ fontSize: 'clamp(28px, 3vw, 42px)', fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text)', marginBottom: 8, lineHeight: 1.1 }}>Everything AI needs<br />to read your site.</h2>
+            <p style={{ fontSize: 16, color: 'var(--subtle)' }}>One script tag. Every feature activates automatically — no config, no backend changes.</p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 1, border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden', background: 'var(--border)' }}>
             {[
-              { title: 'GEO Score — per AI system',        desc: 'Individual visibility scores for ChatGPT, Claude, Perplexity, Gemini, Grok, and Llama. Know exactly which AI is undervaluing your site and why.', color: 'var(--accent)' },
-              { title: 'AI Attention Score',               desc: 'A 0–100 composite metric: how often AI agents visit (frequency), how many pages they read (depth), how recently they crawled (recency), and how many distinct systems (diversity).', color: 'var(--green)' },
-              { title: 'Content Doctor',                   desc: 'AI-powered audit that finds authority gaps and structural issues. Returns specific rewrites, not vague advice.', color: 'var(--blue)' },
-              { title: 'Topic Attention Map',              desc: 'See which content areas get the most AI crawler attention, and which specific AI bots are driving it. Know where to invest.', color: 'var(--yellow)' },
-              { title: 'llms.txt + AI Plugin Manifest',    desc: 'Auto-generates /llms.txt and /.well-known/ai-plugin.json — the standards that let AI systems read your site in their native format, not scraped HTML.', color: 'var(--red)' },
-              { title: 'WebMCP + Smart Auto-refresh',      desc: 'Your site\'s actions register as callable AI tools automatically. Content change detection re-indexes you when pages update — no manual rescans needed.', color: 'var(--purple)' },
+              { title: 'AI Readability Score',             desc: 'A 0–100 score showing how well LLMs can read and understand your site — across content clarity, structure, machine signals, authority, and freshness.', color: 'var(--accent)' },
+              { title: 'llms.txt + AI Plugin Manifest',    desc: 'Auto-generates /llms.txt and /.well-known/ai-plugin.json — the files AI systems check first. Without them, LLMs guess your content from scraped HTML.', color: 'var(--green)' },
+              { title: 'Content Doctor',                   desc: 'Finds every claim AI won\'t trust — unsupported assertions, vague language, dense paragraphs. Returns specific rewrites, not generic advice.', color: 'var(--blue)' },
+              { title: 'AI Traffic Analytics',             desc: 'See which AI crawlers visit your site, which pages they read, how deep they go, and how that changes over time. Invisible to Google Analytics — visible to Galuli.', color: 'var(--yellow)' },
+              { title: 'WebMCP Registration',              desc: 'Your site\'s capabilities register as callable tools in AI agent frameworks. When an AI agent needs what you offer, it finds you — not your competitor.', color: 'var(--red)' },
+              { title: 'Smart Auto-refresh',               desc: 'Content change detection re-indexes your site automatically when pages update. AI systems always see your latest content — no manual rescans needed.', color: 'var(--purple)' },
             ].map(({ title, desc, color }) => (
               <div key={title} style={{ background: 'var(--surface)', padding: '20px 22px' }}>
                 <div style={{ width: 3, height: 16, background: color, borderRadius: 2, marginBottom: 12 }} />
@@ -487,23 +487,23 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 32px', borderBottom: '1px solid var(--border)' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: 56, alignItems: 'start' }}>
           <div>
-            <div className="eyebrow">What is AI Readability?</div>
+            <div className="eyebrow">Why AI accessibility matters</div>
             <h2 style={{ fontSize: 'clamp(26px, 2.8vw, 38px)', fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text)', marginBottom: 16, lineHeight: 1.1 }}>
-              Search engines read HTML.<br />AI reads meaning.
+              Google reads HTML.<br />AI reads meaning.
             </h2>
             <p style={{ color: 'var(--subtle)', fontSize: 16, lineHeight: 1.8, marginBottom: 14 }}>
-              Traditional SEO optimizes for Google's crawler. AI readability is different. LLMs like ChatGPT and Claude need to <em style={{ color: 'var(--subtle)', fontStyle: 'normal', fontWeight: 500 }}>understand</em> what your site <em style={{ color: 'var(--subtle)', fontStyle: 'normal', fontWeight: 500 }}>does</em>, who it's <em style={{ color: 'var(--subtle)', fontStyle: 'normal', fontWeight: 500 }}>for</em>, and what <em style={{ color: 'var(--subtle)', fontStyle: 'normal', fontWeight: 500 }}>actions</em> are possible.
+              SEO gets you ranked in Google. AI accessibility is different — and more urgent. LLMs like ChatGPT and Claude need to <em style={{ color: 'var(--text)', fontStyle: 'normal', fontWeight: 600 }}>understand</em> what your site does, who it's for, and what actions are possible. If they can't, they skip you entirely.
             </p>
             <p style={{ color: 'var(--subtle)', fontSize: 16, lineHeight: 1.8 }}>
-              Galuli bridges this gap by extracting your site's capabilities into structured formats that every AI system understands — without touching a single line of backend code.
+              Galuli extracts your site's capabilities into structured formats every AI understands — llms.txt, ai-plugin.json, WebMCP — without touching a single line of your backend code.
             </p>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {[
-              { term: 'AI Attention Score',     color: 'var(--accent)',  desc: 'A 0–100 composite: frequency, depth, recency, and diversity of AI systems. The ROI metric for GEO.' },
-              { term: 'Content Doctor',         color: 'var(--green)',   desc: 'Authority Gap Scanner + Structural Optimizer. Finds claims AI won\'t trust with specific rewrites.' },
-              { term: 'llms.txt + ai-plugin',   color: 'var(--yellow)',  desc: 'The machine-readable standards AI systems check before your homepage. Galuli generates both automatically.' },
-              { term: 'GEO Score per LLM',      color: 'var(--blue)',    desc: 'Separate visibility scores for ChatGPT, Claude, Perplexity, Gemini, Grok, and Llama.' },
+              { term: 'llms.txt + ai-plugin.json', color: 'var(--accent)',  desc: 'The files AI systems check before reading your homepage. Without them, LLMs infer your product from scraped marketing copy — and get it wrong.' },
+              { term: 'WebMCP registration',       color: 'var(--green)',   desc: 'Registers your site\'s actions as callable tools in AI agent frameworks. Agents that need what you offer will discover you automatically.' },
+              { term: 'Content Doctor',            color: 'var(--yellow)',  desc: 'Finds the specific sentences and claims AI won\'t trust — with rewrites. Not vague advice, actual fixes.' },
+              { term: 'AI Traffic Analytics',      color: 'var(--blue)',    desc: 'AI crawlers don\'t show up in Google Analytics. Galuli captures them — by system, by page, by depth.' },
             ].map(({ term, color, desc }) => (
               <div key={term} style={{ borderLeft: `2px solid ${color}`, paddingLeft: 14, paddingTop: 4, paddingBottom: 4 }}>
                 <div style={{ fontSize: 12, fontWeight: 600, color, marginBottom: 3 }}>{term}</div>
@@ -518,17 +518,17 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
       <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)', padding: '64px 32px' }}>
         <div style={{ maxWidth: 800, margin: '0 auto' }}>
           <div style={{ marginBottom: 28 }}>
-            <div className="eyebrow">The scoring system</div>
-            <h2 style={{ fontSize: 'clamp(26px, 2.8vw, 38px)', fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text)', marginBottom: 8, lineHeight: 1.1 }}>What does your score mean?</h2>
-            <p style={{ fontSize: 16, color: 'var(--subtle)' }}>AI Readiness Score is 0–100. Every point is a real signal.</p>
+            <div className="eyebrow">AI Readability Score</div>
+            <h2 style={{ fontSize: 'clamp(26px, 2.8vw, 38px)', fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text)', marginBottom: 8, lineHeight: 1.1 }}>How readable are you to AI?</h2>
+            <p style={{ fontSize: 16, color: 'var(--subtle)' }}>0–100. Every point reflects how well LLMs can actually read, parse, and trust your content.</p>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0, border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden' }}>
             {[
-              { range: '90–100', grade: 'A+', color: 'var(--green)',  pct: 100, label: 'Elite — Fully AI-Optimized', desc: 'ChatGPT, Claude, and Perplexity will confidently cite your site.' },
-              { range: '70–89',  grade: 'B',  color: 'var(--blue)',   pct: 80,  label: 'Good — AI-Readable',        desc: 'Solid visibility. A few improvements push you into Elite territory.' },
-              { range: '50–69',  grade: 'C',  color: 'var(--yellow)', pct: 60,  label: 'Average — Partially Visible',desc: 'AI agents can find you but may miss capabilities.' },
-              { range: '30–49',  grade: 'D',  color: 'var(--red)',    pct: 40,  label: 'Poor — Hard to Parse',      desc: 'Significant gaps. High risk of being skipped in AI answers.' },
-              { range: '0–29',   grade: 'F',  color: 'var(--subtle)',  pct: 20,  label: 'Not Readable — Invisible',  desc: 'Essentially invisible to AI. One snippet install changes everything.' },
+              { range: '90–100', grade: 'A+', color: 'var(--green)',  pct: 100, label: 'Fully AI-readable',      desc: 'Every LLM can read, parse, and cite your site with confidence.' },
+              { range: '70–89',  grade: 'B',  color: 'var(--blue)',   pct: 80,  label: 'Mostly readable',          desc: 'AI systems understand you well. A few gaps hold you back from full coverage.' },
+              { range: '50–69',  grade: 'C',  color: 'var(--yellow)', pct: 60,  label: 'Partially readable',       desc: 'AI can reach you but misses capabilities and context. Common for unoptimized sites.' },
+              { range: '30–49',  grade: 'D',  color: 'var(--red)',    pct: 40,  label: 'Hard to parse',            desc: 'LLMs struggle to understand your site. High risk of being skipped or misrepresented.' },
+              { range: '0–29',   grade: 'F',  color: 'var(--subtle)', pct: 20,  label: 'Not readable — invisible', desc: 'AI systems cannot understand your site. One script tag changes everything.' },
             ].map(({ range, grade, color, pct, label, desc }, i) => (
               <div key={grade} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '12px 16px', borderBottom: i < 4 ? '1px solid var(--border)' : 'none', background: 'var(--surface)' }}>
                 <div style={{ width: 36, height: 36, borderRadius: 6, background: color === 'var(--muted)' ? 'var(--surface2)' : `${color}15`, border: `1px solid ${color === 'var(--muted)' ? 'var(--border)' : `${color}30`}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color, fontSize: 13, flexShrink: 0 }}>{grade}</div>
@@ -560,8 +560,8 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
       {/* ── Bottom CTA ── */}
       <div style={{ background: 'var(--surface)', borderTop: '1px solid var(--border)', padding: '64px 32px' }}>
         <div style={{ maxWidth: 560, margin: '0 auto', textAlign: 'center' }}>
-          <h2 style={{ fontSize: 'clamp(30px, 3.5vw, 48px)', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 12, color: 'var(--text)', lineHeight: 1.1 }}>Ready to be found by AI?</h2>
-          <p style={{ fontSize: 17, color: 'var(--subtle)', marginBottom: 28 }}>Free scan. See your AI Readiness Score in 60 seconds.</p>
+          <h2 style={{ fontSize: 'clamp(30px, 3.5vw, 48px)', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 12, color: 'var(--text)', lineHeight: 1.1 }}>Is your site readable by AI?</h2>
+          <p style={{ fontSize: 17, color: 'var(--subtle)', marginBottom: 28 }}>Free scan. See your AI Readability Score in 60 seconds — no credit card.</p>
           <form onSubmit={handleScan} style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
             <input value={url} onChange={e => setUrl(e.target.value)} placeholder="yourwebsite.com" style={{ flex: 1, minWidth: 200, maxWidth: 300 }} />
             <button type="submit" className="btn btn-primary">Get free scan →</button>
