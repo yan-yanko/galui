@@ -1478,8 +1478,8 @@ function ContentDoctorPage() {
               {authority?.authority_score !== undefined && (
                 <ScoreGauge score={authority.authority_score} label="Authority Score" color="var(--blue)" />
               )}
-              {(result.information_gain_score ?? authority?.information_gain_score) !== undefined && (
-                <ScoreGauge score={result.information_gain_score ?? authority?.information_gain_score} label="Info Gain Score" color="var(--yellow)" />
+              {(result.information_gain_score != null || authority?.information_gain_score != null) && (
+                <ScoreGauge score={result.information_gain_score != null ? result.information_gain_score : authority?.information_gain_score} label="Info Gain Score" color="var(--yellow)" />
               )}
               {structure?.structure_score !== undefined && (
                 <ScoreGauge score={structure.structure_score} label="Structure Score" color="var(--green)" />
@@ -1569,29 +1569,26 @@ function ContentDoctorPage() {
           )}
 
           {/* Information Gain Issues */}
-          {(result.information_gain_issues?.length > 0 || authority?.information_gain_issues?.length > 0) && (() => {
-            const igIssues = result.information_gain_issues || authority?.information_gain_issues || []
-            return (
-              <div className="card flex col gap-14">
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: 13 }}>Information Gain Issues</div>
-                  <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2 }}>Generic content that AI already knows — add unique data, stats, or proprietary insights to get cited</div>
-                </div>
-                <div className="flex col gap-8">
-                  {igIssues.map((ig, i) => (
-                    <div key={i} style={{ border: '1px solid var(--border2)', borderRadius: 8, padding: '12px 14px', background: 'var(--surface2)' }}>
-                      <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', marginBottom: 6, lineHeight: 1.5 }}>{ig.issue}</div>
-                      {ig.fix && (
-                        <div style={{ fontSize: 13, color: 'var(--subtle)', lineHeight: 1.6 }}>
-                          <span style={{ color: 'var(--yellow)', fontWeight: 700 }}>Fix: </span>{ig.fix}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
+          {(result.information_gain_issues?.length > 0 || authority?.information_gain_issues?.length > 0) && (
+            <div className="card flex col gap-14">
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 13 }}>Information Gain Issues</div>
+                <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2 }}>Generic content that AI already knows — add unique data, stats, or proprietary insights to get cited</div>
               </div>
-            )
-          })()}
+              <div className="flex col gap-8">
+                {(result.information_gain_issues || authority?.information_gain_issues || []).map((ig, i) => (
+                  <div key={i} style={{ border: '1px solid var(--border2)', borderRadius: 8, padding: '12px 14px', background: 'var(--surface2)' }}>
+                    <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', marginBottom: 6, lineHeight: 1.5 }}>{ig.issue}</div>
+                    {ig.fix && (
+                      <div style={{ fontSize: 13, color: 'var(--subtle)', lineHeight: 1.6 }}>
+                        <span style={{ color: 'var(--yellow)', fontWeight: 700 }}>Fix: </span>{ig.fix}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Structural issues */}
           {structure?.issues?.length > 0 && (
