@@ -47,17 +47,28 @@ def _compute_score(registry) -> dict:
         struct_points += 4
     struct_score = min(20, struct_points)
 
-    # 3. Machine Signals (0-20)
+    # 3. Machine Signals (0-25 raw → capped at 20)
+    # Includes: llms.txt, ai-plugin, WebMCP, confidence, robots.txt, schema.org
     ai = registry.ai_metadata
     sig_points = 0
     if ai.llms_txt_url:
         sig_points += 5
     if ai.ai_plugin_url:
-        sig_points += 4
+        sig_points += 3
     if ai.webmcp_enabled:
         sig_points += 5
     # confidence_score is 0.0-1.0
-    sig_points += round(ai.confidence_score * 6)
+    sig_points += round(ai.confidence_score * 4)
+    # Robots.txt: not blocking high-impact AI crawlers = +3 bonus
+    if ai.robots_has_robots_txt and not ai.robots_blocks_ai_crawlers:
+        sig_points += 3
+    elif not ai.robots_has_robots_txt:
+        sig_points += 1  # no robots.txt = neutral (permissive by default)
+    # Schema.org: structured entity context for AI grounding
+    if ai.schema_org_has_organization:
+        sig_points += 2
+    if ai.schema_org_has_faq:
+        sig_points += 2
     machine_score = min(20, sig_points)
 
     # 4. Authority (0-20)
@@ -141,6 +152,16 @@ def _suggestions(registry, cap, struct, machine, auth) -> list:
             tips.append("Add a docs URL so AI systems can reference your documentation")
         if not m.support_url:
             tips.append("Add a support URL to signal trustworthiness to AI systems")
+    # Robots.txt tip
+    ai = registry.ai_metadata
+    if ai.robots_blocks_ai_crawlers and len(tips) < 4:
+        blocked = ", ".join(ai.robots_blocked_crawlers[:3])
+        tips.insert(0, f"Your robots.txt is blocking AI crawlers ({blocked}) — they cannot index your site")
+    # Schema.org tips
+    if not ai.schema_org_has_organization and len(tips) < 4:
+        tips.append("Add Organization schema.org JSON-LD so AI engines know your company's entity")
+    if not ai.schema_org_has_faq and len(tips) < 4:
+        tips.append("Add FAQPage schema.org markup — FAQ structured data is cited 3x more often by AI")
     if not tips:
         tips.append("Strong AI readiness! Install the Galuli snippet for continuous monitoring")
     return tips[:4]

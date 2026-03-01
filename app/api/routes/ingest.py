@@ -11,6 +11,8 @@ from app.services.crawler import CrawlerService
 from app.services.comprehension import ComprehensionService
 from app.services.registry_builder import RegistryBuilder, calculate_confidence
 from app.services.storage import StorageService
+from app.services.robots_checker import RobotsChecker
+from app.services.schema_checker import SchemaChecker
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -146,6 +148,28 @@ async def _run_ingestion_pipeline(
         if crawl_result.total_pages == 0:
             raise ValueError("Crawler returned zero pages — site may be unreachable or JS-only")
 
+        # Stage 1b: Robots.txt + Schema.org audit (parallel with crawl data)
+        logger.info(f"[{job_id}] Stage 1b: robots.txt + schema audit")
+        robots_result = {}
+        schema_result = {}
+        try:
+            robots_checker = RobotsChecker()
+            schema_checker = SchemaChecker()
+            import asyncio
+            robots_result, schema_result = await asyncio.gather(
+                robots_checker.check(domain),
+                schema_checker.check(domain),
+                return_exceptions=True,
+            )
+            if isinstance(robots_result, Exception):
+                logger.warning(f"[{job_id}] robots check failed: {robots_result}")
+                robots_result = {}
+            if isinstance(schema_result, Exception):
+                logger.warning(f"[{job_id}] schema check failed: {schema_result}")
+                schema_result = {}
+        except Exception as e:
+            logger.warning(f"[{job_id}] robots/schema audit error: {e}")
+
         # Stage 2: Comprehend
         logger.info(f"[{job_id}] Stage 2: comprehension (4 LLM passes)")
         job.status = JobStatus.COMPREHENDING
@@ -161,6 +185,8 @@ async def _run_ingestion_pipeline(
             raw=raw,
             confidence_score=confidence,
             base_api_url=settings.base_api_url,
+            robots_result=robots_result,
+            schema_result=schema_result,
         )
 
         # Stage 4: Store

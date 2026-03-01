@@ -135,6 +135,16 @@ class AIMetadata(BaseModel):
     webmcp_tools: List[Any] = Field(default_factory=list)
     # Source
     source: str = "crawl"   # "crawl" | "push" (snippet-driven)
+    # Robots.txt audit
+    robots_blocks_ai_crawlers: bool = False
+    robots_blocked_crawlers: List[str] = Field(default_factory=list)
+    robots_has_robots_txt: bool = False
+    robots_crawl_delay: Optional[int] = None
+    # Schema.org audit
+    schema_org_types: List[str] = Field(default_factory=list)
+    schema_org_has_faq: bool = False
+    schema_org_has_organization: bool = False
+    schema_org_has_howto: bool = False
 
 
 class CapabilityRegistry(BaseModel):

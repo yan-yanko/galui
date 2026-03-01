@@ -86,6 +86,8 @@ class RegistryBuilder:
         confidence_score: float = 0.0,
         base_api_url: str = "",
         webmcp_meta: Optional[Dict] = None,
+        robots_result: Optional[Dict] = None,
+        schema_result: Optional[Dict] = None,
     ) -> CapabilityRegistry:
         meta_raw = _dict(raw.get("metadata"))
         caps_raw = raw.get("capabilities") or []
@@ -100,6 +102,8 @@ class RegistryBuilder:
         limitations = self._build_limitations(limits_raw)
         integration = self._build_integration(meta_raw)
         reliability = self._build_reliability(meta_raw)
+        robots = robots_result or {}
+        schema = schema_result or {}
         ai_metadata = AIMetadata(
             llms_txt_url=f"{base_api_url}/registry/{domain}/llms.txt",
             ai_plugin_url=f"{base_api_url}/registry/{domain}/ai-plugin.json",
@@ -112,6 +116,16 @@ class RegistryBuilder:
             webmcp_tools_count=webmcp_meta.get("tools_count", 0),
             forms_exposed=webmcp_meta.get("forms_exposed", 0),
             webmcp_tools=webmcp_meta.get("tools", []),
+            # Robots.txt audit
+            robots_blocks_ai_crawlers=bool(robots.get("blocks_ai_crawlers", False)),
+            robots_blocked_crawlers=list(robots.get("blocked_crawlers", [])),
+            robots_has_robots_txt=bool(robots.get("has_robots_txt", False)),
+            robots_crawl_delay=robots.get("crawl_delay"),
+            # Schema.org audit
+            schema_org_types=list(schema.get("schema_org_types", [])),
+            schema_org_has_faq=bool(schema.get("has_faq", False)),
+            schema_org_has_organization=bool(schema.get("has_organization", False)),
+            schema_org_has_howto=bool(schema.get("has_howto", False)),
         )
 
         return CapabilityRegistry(

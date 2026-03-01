@@ -21,9 +21,11 @@ logger = logging.getLogger(__name__)
 
 # ── Prompts ────────────────────────────────────────────────────────────────────
 
-AUTHORITY_GAP_PROMPT = """You are an AI readability expert analyzing web content for Generative Engine Optimization (GEO).
+AUTHORITY_GAP_PROMPT = """You are an AI readability expert analyzing web content for Generative Engine Optimization (GEO) and AI citation optimization.
 
-Your job: identify "authority gaps" — claims, assertions, or statistics that AI systems will struggle to trust because they lack empirical backing (citations, data sources, named studies, or verifiable facts).
+Your job: identify "authority gaps" and "information gain deficits" — claims that AI systems will skip because they lack empirical backing, AND content that adds no new information beyond what AI already knows.
+
+Key insight from GEO research: Adding statistics and citations improves AI citation probability by 30-40% (Princeton GEO-bench study). AI engines prefer content that provides UNIQUE VALUE they cannot get elsewhere.
 
 Content to analyze:
 ---
@@ -32,19 +34,26 @@ Content to analyze:
 
 Return a JSON object with this exact structure:
 {{
-  "authority_score": <integer 0-100, where 100 = fully cited, 0 = all bare claims>,
+  "authority_score": <integer 0-100, where 100 = fully cited with unique insights, 0 = all bare claims>,
+  "information_gain_score": <integer 0-100, where 100 = highly unique data/insights AI cannot find elsewhere, 0 = generic content AI already knows>,
   "gaps": [
     {{
       "claim": "<exact quote or paraphrase of the unsupported claim>",
-      "type": "<one of: statistic | comparison | benefit_claim | historical_fact | technical_claim>",
+      "type": "<one of: statistic | comparison | benefit_claim | historical_fact | technical_claim | no_information_gain>",
       "severity": "<high | medium | low>",
       "suggestion": "<specific suggestion: what data/citation would strengthen this claim>",
       "example_fix": "<a concrete rewrite of the sentence with citation placeholder, e.g., 'According to [Source], X% of...'>",
-      "ai_risk": "<why AI systems might not cite this: e.g. 'unverifiable claim', 'too vague', 'contradicts known data'>"
+      "ai_risk": "<why AI systems might not cite this: e.g. 'unverifiable claim', 'too vague', 'no unique insight', 'contradicts known data'>"
+    }}
+  ],
+  "information_gain_issues": [
+    {{
+      "issue": "<description of generic/low-value content section>",
+      "fix": "<how to add unique data, primary research, or proprietary insight to this section>"
     }}
   ],
   "strengths": [
-    "<string: things the content does well for AI citation — e.g., 'Named specific tool versions', 'Referenced published study'>"
+    "<string: things the content does well — e.g., 'Named specific tool versions', 'Referenced published study', 'Proprietary benchmark data'>"
   ],
   "top_priority": "<the single most important gap to fix first and why>",
   "quick_wins": ["<2-3 fast fixes that take <30 min each>"]
@@ -53,9 +62,11 @@ Return a JSON object with this exact structure:
 Rules:
 - Return ONLY valid JSON, no markdown code fences
 - Identify 3-8 gaps maximum (focus on highest-impact)
-- Be specific in suggestions — name real data sources (Gartner, McKinsey, etc.) or suggest primary research
-- If content is well-cited, still return the structure with gaps: []
-- severity=high means fixing this would meaningfully increase AI citation probability"""
+- Be specific in suggestions — name real data sources (Gartner, McKinsey, Forrester, IDC, etc.) or suggest primary research
+- Flag content as 'no_information_gain' if it states commonly known facts without adding new value
+- information_gain_score: penalize generic how-to content, generic benefit lists, boilerplate descriptions
+- severity=high means fixing this would meaningfully increase AI citation probability
+- If content is well-cited and unique, still return the structure with gaps: [] and information_gain_issues: []"""
 
 
 STRUCTURAL_OPTIMIZER_PROMPT = """You are an AI readability expert specializing in Generative Engine Optimization (GEO).
@@ -233,10 +244,12 @@ class ContentDoctorService:
         authority = self.analyze_authority_gaps(content, url)
         structure = self.analyze_structure(content, url)
 
-        # Combined content health score (average of both)
+        # Combined content health score (weighted average)
         a_score = authority.get("authority_score", 0)
+        ig_score = authority.get("information_gain_score", a_score)  # fallback if old analysis
         s_score = structure.get("structure_score", 0)
-        combined = round((a_score + s_score) / 2)
+        # Weight: authority 35%, information gain 35%, structure 30%
+        combined = round((a_score * 0.35) + (ig_score * 0.35) + (s_score * 0.30))
 
         # Grade
         if combined >= 85:
@@ -261,10 +274,14 @@ class ContentDoctorService:
             "url": url,
             "content_health_score": combined,
             "grade": grade,
+            "authority_score": a_score,
+            "information_gain_score": ig_score,
+            "structure_score": s_score,
             "authority": authority,
             "structure": structure,
             "top_priorities": priorities,
             "quick_wins": authority.get("quick_wins", []),
+            "information_gain_issues": authority.get("information_gain_issues", []),
         }
 
     def analyze_from_registry(self, domain: str) -> Dict[str, Any]:
