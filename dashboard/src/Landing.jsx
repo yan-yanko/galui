@@ -295,11 +295,11 @@ function FaqAccordion() {
                 justifyContent: 'space-between', alignItems: 'center', gap: 14,
               }}
             >
-              <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)', lineHeight: 1.4 }}>{item.q}</span>
+              <span style={{ fontSize: 16, fontWeight: 500, color: 'var(--text)', lineHeight: 1.4 }}>{item.q}</span>
               <span style={{ fontSize: 16, color: 'var(--subtle)', flexShrink: 0, transform: isOpen ? 'rotate(45deg)' : 'rotate(0)', transition: 'transform 0.15s' }}>+</span>
             </button>
             {isOpen && (
-              <div style={{ paddingBottom: 14, fontSize: 13, color: 'var(--subtle)', lineHeight: 1.7, animation: 'fadeSlideUp 0.15s ease forwards' }}>
+              <div style={{ paddingBottom: 14, fontSize: 15, color: 'var(--subtle)', lineHeight: 1.7, animation: 'fadeSlideUp 0.15s ease forwards' }}>
                 {item.a}
               </div>
             )}
@@ -367,11 +367,11 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
             <div className="badge badge-purple" style={{ marginBottom: 20, fontSize: 11 }}>
               GEO — Generative Engine Optimization
             </div>
-            <h1 style={{ fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 800, letterSpacing: '-1.5px', lineHeight: 1.08, marginBottom: 18, color: 'var(--text)' }}>
+            <h1 style={{ fontSize: 'clamp(42px, 5.5vw, 72px)', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.05, marginBottom: 22, color: 'var(--text)' }}>
               Make your website<br />
               <span style={{ background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>visible to AI.</span>
             </h1>
-            <p style={{ fontSize: 15, color: 'var(--subtle)', lineHeight: 1.7, marginBottom: 28, maxWidth: 480 }}>
+            <p style={{ fontSize: 18, color: 'var(--subtle)', lineHeight: 1.7, marginBottom: 28, maxWidth: 480 }}>
               More and more people are getting answers from AI instead of clicking links. If your site isn't AI-readable, you're invisible to them. Galuli fixes this with one line of code.
             </p>
 
@@ -382,7 +382,7 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
                 { label: 'Fix what holds you back.', detail: 'Content Doctor finds issues AI won\'t trust — with specific rewrites.' },
                 { label: 'From $9/month, free scan.', detail: 'Free tier gets you the score instantly. No credit card.' },
               ].map(({ label, detail }) => (
-                <div key={label} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 13 }}>
+                <div key={label} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 15 }}>
                   <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'rgba(94,106,210,0.12)', border: '1px solid rgba(94,106,210,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)', fontWeight: 800, fontSize: 10, flexShrink: 0, marginTop: 1 }}>✓</div>
                   <span><strong style={{ color: 'var(--text)', fontWeight: 600 }}>{label}</strong>{' '}<span style={{ color: 'var(--subtle)' }}>{detail}</span></span>
                 </div>
@@ -437,8 +437,8 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 32px' }}>
         <div style={{ marginBottom: 32 }}>
           <div className="eyebrow">Simple Pipeline</div>
-          <h2 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.4px', color: 'var(--text)', marginBottom: 6 }}>How it works</h2>
-          <p style={{ fontSize: 13, color: 'var(--subtle)' }}>Three steps to full AI visibility</p>
+          <h2 style={{ fontSize: 'clamp(28px, 3vw, 42px)', fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text)', marginBottom: 8, lineHeight: 1.1 }}>How it works</h2>
+          <p style={{ fontSize: 16, color: 'var(--subtle)' }}>Three steps to full AI visibility</p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 1, border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden', background: 'var(--border)' }}>
           {[
@@ -449,8 +449,8 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
             <div key={step} style={{ background: 'var(--surface)', padding: '24px 24px 20px', position: 'relative' }}>
               {tag && <div style={{ position: 'absolute', top: 16, right: 16, fontSize: 10, background: 'rgba(94,106,210,0.1)', border: '1px solid rgba(94,106,210,0.25)', color: 'var(--accent)', padding: '2px 8px', borderRadius: 3, fontWeight: 600 }}>{tag}</div>}
               <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8 }}>Step {step}</div>
-              <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 8, color: 'var(--text)', letterSpacing: '-0.2px' }}>{title}</div>
-              <p style={{ fontSize: 13, color: 'var(--subtle)', lineHeight: 1.7 }}>{desc}</p>
+              <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8, color: 'var(--text)', letterSpacing: '-0.2px' }}>{title}</div>
+              <p style={{ fontSize: 15, color: 'var(--subtle)', lineHeight: 1.7 }}>{desc}</p>
             </div>
           ))}
         </div>
@@ -461,8 +461,8 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ marginBottom: 32 }}>
             <div className="eyebrow">What you get</div>
-            <h2 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.4px', color: 'var(--text)', marginBottom: 6 }}>Everything included. Zero configuration.</h2>
-            <p style={{ fontSize: 13, color: 'var(--subtle)' }}>Add one script tag. Every feature below activates automatically.</p>
+            <h2 style={{ fontSize: 'clamp(28px, 3vw, 42px)', fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text)', marginBottom: 8, lineHeight: 1.1 }}>Everything included.<br />Zero configuration.</h2>
+            <p style={{ fontSize: 16, color: 'var(--subtle)' }}>Add one script tag. Every feature below activates automatically.</p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 1, border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden', background: 'var(--border)' }}>
             {[
@@ -475,8 +475,8 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
             ].map(({ title, desc, color }) => (
               <div key={title} style={{ background: 'var(--surface)', padding: '20px 22px' }}>
                 <div style={{ width: 3, height: 16, background: color, borderRadius: 2, marginBottom: 12 }} />
-                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: 'var(--text)' }}>{title}</div>
-                <div style={{ fontSize: 12, color: 'var(--subtle)', lineHeight: 1.7 }}>{desc}</div>
+                <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 6, color: 'var(--text)' }}>{title}</div>
+                <div style={{ fontSize: 14, color: 'var(--subtle)', lineHeight: 1.7 }}>{desc}</div>
               </div>
             ))}
           </div>
@@ -488,13 +488,13 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: 56, alignItems: 'start' }}>
           <div>
             <div className="eyebrow">What is AI Readability?</div>
-            <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.3px', color: 'var(--text)', marginBottom: 14, lineHeight: 1.3 }}>
+            <h2 style={{ fontSize: 'clamp(26px, 2.8vw, 38px)', fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text)', marginBottom: 16, lineHeight: 1.1 }}>
               Search engines read HTML.<br />AI reads meaning.
             </h2>
-            <p style={{ color: 'var(--subtle)', fontSize: 13, lineHeight: 1.8, marginBottom: 14 }}>
+            <p style={{ color: 'var(--subtle)', fontSize: 16, lineHeight: 1.8, marginBottom: 14 }}>
               Traditional SEO optimizes for Google's crawler. AI readability is different. LLMs like ChatGPT and Claude need to <em style={{ color: 'var(--subtle)', fontStyle: 'normal', fontWeight: 500 }}>understand</em> what your site <em style={{ color: 'var(--subtle)', fontStyle: 'normal', fontWeight: 500 }}>does</em>, who it's <em style={{ color: 'var(--subtle)', fontStyle: 'normal', fontWeight: 500 }}>for</em>, and what <em style={{ color: 'var(--subtle)', fontStyle: 'normal', fontWeight: 500 }}>actions</em> are possible.
             </p>
-            <p style={{ color: 'var(--subtle)', fontSize: 13, lineHeight: 1.8 }}>
+            <p style={{ color: 'var(--subtle)', fontSize: 16, lineHeight: 1.8 }}>
               Galuli bridges this gap by extracting your site's capabilities into structured formats that every AI system understands — without touching a single line of backend code.
             </p>
           </div>
@@ -519,8 +519,8 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
         <div style={{ maxWidth: 800, margin: '0 auto' }}>
           <div style={{ marginBottom: 28 }}>
             <div className="eyebrow">The scoring system</div>
-            <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.3px', color: 'var(--text)', marginBottom: 6 }}>What does your score mean?</h2>
-            <p style={{ fontSize: 13, color: 'var(--subtle)' }}>AI Readiness Score is 0–100. Every point is a real signal.</p>
+            <h2 style={{ fontSize: 'clamp(26px, 2.8vw, 38px)', fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text)', marginBottom: 8, lineHeight: 1.1 }}>What does your score mean?</h2>
+            <p style={{ fontSize: 16, color: 'var(--subtle)' }}>AI Readiness Score is 0–100. Every point is a real signal.</p>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0, border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden' }}>
             {[
@@ -552,7 +552,7 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
       <div style={{ maxWidth: 720, margin: '0 auto', padding: '64px 32px' }}>
         <div style={{ marginBottom: 24 }}>
           <div className="eyebrow">FAQ</div>
-          <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.3px', color: 'var(--text)' }}>Questions we get asked a lot</h2>
+          <h2 style={{ fontSize: 'clamp(26px, 2.8vw, 38px)', fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text)', lineHeight: 1.1 }}>Questions we get asked a lot</h2>
         </div>
         <FaqAccordion />
       </div>
@@ -560,8 +560,8 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
       {/* ── Bottom CTA ── */}
       <div style={{ background: 'var(--surface)', borderTop: '1px solid var(--border)', padding: '64px 32px' }}>
         <div style={{ maxWidth: 560, margin: '0 auto', textAlign: 'center' }}>
-          <h2 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.4px', marginBottom: 10, color: 'var(--text)' }}>Ready to be found by AI?</h2>
-          <p style={{ fontSize: 13, color: 'var(--subtle)', marginBottom: 24 }}>Free scan. See your AI Readiness Score in 60 seconds.</p>
+          <h2 style={{ fontSize: 'clamp(30px, 3.5vw, 48px)', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 12, color: 'var(--text)', lineHeight: 1.1 }}>Ready to be found by AI?</h2>
+          <p style={{ fontSize: 17, color: 'var(--subtle)', marginBottom: 28 }}>Free scan. See your AI Readiness Score in 60 seconds.</p>
           <form onSubmit={handleScan} style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
             <input value={url} onChange={e => setUrl(e.target.value)} placeholder="yourwebsite.com" style={{ flex: 1, minWidth: 200, maxWidth: 300 }} />
             <button type="submit" className="btn btn-primary">Get free scan →</button>
