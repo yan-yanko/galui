@@ -378,9 +378,9 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
             {/* Bullets */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 28 }}>
               {[
-                { label: 'Know your AI Attention Score.', detail: 'See exactly how often, how deep, and how recently each AI system reads your content.' },
-                { label: 'Fix what holds you back.', detail: 'Content Doctor finds issues AI won\'t trust — with specific rewrites.' },
-                { label: 'From $9/month, free scan.', detail: 'Free tier gets you the score instantly. No credit card.' },
+                { label: 'Effortless.', detail: 'One line of code for full AI readability — fully automated.' },
+                { label: 'Affordable.', detail: 'From $9/month, free scan, no credit card required.' },
+                { label: 'Visible.', detail: 'All major LLMs will find, read, and recommend your site.' },
               ].map(({ label, detail }) => (
                 <div key={label} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 15 }}>
                   <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'rgba(94,106,210,0.12)', border: '1px solid rgba(94,106,210,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)', fontWeight: 800, fontSize: 10, flexShrink: 0, marginTop: 1 }}>✓</div>
