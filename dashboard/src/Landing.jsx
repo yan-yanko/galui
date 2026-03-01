@@ -64,8 +64,8 @@ export function ScoreRingLanding({ score, size = 80 }) {
 function LandingNav({ onSignIn }) {
   return (
     <nav style={{
-      height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: '0 32px', borderBottom: '1px solid var(--border)',
+      height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      padding: '0 64px', borderBottom: '1px solid var(--border)',
       background: 'var(--surface)', position: 'sticky', top: 0, zIndex: 100,
     }}>
       <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700, fontSize: 15, color: 'var(--text)', textDecoration: 'none', letterSpacing: '-0.3px' }}>
@@ -174,21 +174,21 @@ function ScanAnimation({ url, progress }) {
 // ── Hero animation widget ─────────────────────────────────────────────────────
 function HeroAnimation() {
   return (
-    <div style={{ width: 380, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden' }}>
+    <div style={{ width: '100%', maxWidth: 520, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden' }}>
       {/* Header bar */}
       <div style={{ height: 3, background: 'linear-gradient(90deg, var(--accent), var(--accent2))' }} />
-      <div style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
         {/* Step 01 */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--subtle)', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{ width: 16, height: 16, borderRadius: 4, background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 800, color: 'white' }}>01</div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--subtle)', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ width: 18, height: 18, borderRadius: 4, background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 800, color: 'white' }}>01</div>
             Your website
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 6, padding: '8px 12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 6, padding: '12px 16px' }}>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)' }}>yourwebsite.com</div>
-              <div style={{ fontSize: 10, color: 'var(--subtle)', marginTop: 2 }}>12 pages · 4.2k words</div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>yourwebsite.com</div>
+              <div style={{ fontSize: 12, color: 'var(--subtle)', marginTop: 3 }}>12 pages · 4.2k words</div>
             </div>
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--green)', boxShadow: '0 0 4px var(--green)' }} />
           </div>
@@ -204,11 +204,11 @@ function HeroAnimation() {
 
         {/* Step 02 */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--subtle)', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{ width: 16, height: 16, borderRadius: 4, background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 800, color: 'white' }}>02</div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--subtle)', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ width: 18, height: 18, borderRadius: 4, background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 800, color: 'white' }}>02</div>
             AI pipeline
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {[
               { label: 'Content extraction',   color: 'var(--accent)',  delay: '0s'    },
               { label: 'Capability mapping',    color: 'var(--blue)',    delay: '0.3s'  },
@@ -220,7 +220,7 @@ function HeroAnimation() {
                 <div style={{ flex: 1, height: 3, borderRadius: 2, background: 'var(--border)', overflow: 'hidden' }}>
                   <div className="animate-aipass" style={{ height: '100%', borderRadius: 2, background: color, animationDelay: delay }} />
                 </div>
-                <div style={{ fontSize: 10, color: 'var(--subtle)', width: 120 }}>{label}</div>
+                <div style={{ fontSize: 12, color: 'var(--subtle)', width: 140 }}>{label}</div>
               </div>
             ))}
           </div>
@@ -236,25 +236,25 @@ function HeroAnimation() {
 
         {/* Step 03 — Score */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--subtle)', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{ width: 16, height: 16, borderRadius: 4, background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 800, color: 'white' }}>03</div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--subtle)', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ width: 18, height: 18, borderRadius: 4, background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 800, color: 'white' }}>03</div>
             AI Readiness Score
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14, background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 6, padding: '10px 12px' }}>
-            <ScoreRingLanding score={78} size={52} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 18, background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 6, padding: '14px 16px' }}>
+            <ScoreRingLanding score={78} size={68} />
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 6 }}>Ready for AI</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8 }}>Ready for AI</div>
               {[
                 { d: 'Content',   v: 85, c: 'var(--accent)' },
                 { d: 'Structure', v: 72, c: 'var(--blue)' },
                 { d: 'WebMCP',    v: 40, c: 'var(--yellow)' },
               ].map(({ d, v, c }) => (
-                <div key={d} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
-                  <div style={{ fontSize: 9, color: 'var(--subtle)', width: 48 }}>{d}</div>
-                  <div style={{ flex: 1, height: 3, background: 'var(--border)', borderRadius: 2, overflow: 'hidden' }}>
+                <div key={d} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
+                  <div style={{ fontSize: 11, color: 'var(--subtle)', width: 56 }}>{d}</div>
+                  <div style={{ flex: 1, height: 4, background: 'var(--border)', borderRadius: 2, overflow: 'hidden' }}>
                     <div style={{ height: '100%', background: c, borderRadius: 2, width: `${v}%` }} />
                   </div>
-                  <div style={{ fontSize: 9, color: 'var(--subtle)', width: 16, textAlign: 'right' }}>{v}</div>
+                  <div style={{ fontSize: 11, color: 'var(--subtle)', width: 22, textAlign: 'right' }}>{v}</div>
                 </div>
               ))}
             </div>
@@ -361,7 +361,7 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
 
       {/* ── Hero ── */}
       <div style={{ borderBottom: '1px solid var(--border)' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '72px 32px 64px', display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,440px)', gap: 56, alignItems: 'center' }}>
+        <div style={{ maxWidth: 1400, margin: '0 auto', padding: '80px 64px 72px', display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,560px)', gap: 80, alignItems: 'center' }}>
           {/* Left */}
           <div>
             <div className="badge badge-purple" style={{ marginBottom: 20, fontSize: 11 }}>
@@ -417,7 +417,7 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
           </div>
 
           {/* Right — hero animation */}
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <HeroAnimation />
           </div>
         </div>
