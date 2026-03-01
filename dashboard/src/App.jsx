@@ -346,7 +346,7 @@ function OverviewPage({ setPage, setPendingScanDomain }) {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 2 }}>{r.domain}</div>
                     {s && <div style={{ fontSize: 13, color: scoreColor }}>{s.label} · {s.total}/100 · Grade {s.grade}</div>}
-                    {s?.suggestions?.[0] && <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 3 }}>💡 {s.suggestions[0].issue}</div>}
+                    {s?.suggestions?.[0]?.issue && <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 3 }}>💡 {s.suggestions[0].issue}</div>}
                   </div>
                   <div className="flex gap-6 wrap" style={{ flexShrink: 0, alignItems: 'center' }}>
                     <button className="btn btn-ghost btn-sm" onClick={() => setPage('score')}>Score</button>
