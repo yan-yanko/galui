@@ -1292,6 +1292,29 @@ function ContentDoctorPage() {
   const [expandedGap, setExpandedGap] = useState(null)
   const [expandedIssue, setExpandedIssue] = useState(null)
 
+  // Plan + domain fetching
+  const [me, setMe] = useState(undefined) // undefined = still loading, null = no account
+  const [domains, setDomains] = useState([])
+  useEffect(() => {
+    Promise.all([
+      api.getMe().catch(() => null),
+      api.getMyDomains().catch(() => ({ domains: [] })),
+    ]).then(([meData, domainsData]) => {
+      setMe(meData)
+      setDomains(domainsData?.domains || [])
+    })
+  }, [])
+
+  // Auto-populate URL from first registered domain
+  useEffect(() => {
+    if (domains.length > 0 && !inputUrl) {
+      setInputUrl(`https://${domains[0]}`)
+    }
+  }, [domains])
+
+  const plan = me?.plan || 'free'
+  const isPaid = plan === 'starter' || plan === 'pro' || plan === 'enterprise'
+
   const run = async () => {
     setError(''); setResult(null); setLoading(true)
     try {
@@ -1314,6 +1337,16 @@ function ContentDoctorPage() {
   const authority = result?.authority || (result?.authority_score !== undefined ? result : null)
   const structure = result?.structure || (result?.structure_score !== undefined ? result : null)
 
+  // Still loading plan info — show spinner to avoid flicker
+  if (me === undefined) return (
+    <div className="flex col gap-24">
+      <PageHeader title="Content Doctor" subtitle="AI-powered content analysis — find authority gaps and structural issues that hurt your GEO score" />
+      <div className="flex center gap-12" style={{ padding: 48, color: 'var(--muted)' }}>
+        <span className="spinner" /> Loading…
+      </div>
+    </div>
+  )
+
   return (
     <div className="flex col gap-24">
       <PageHeader
@@ -1321,7 +1354,7 @@ function ContentDoctorPage() {
         subtitle="AI-powered content analysis — find authority gaps and structural issues that hurt your GEO score"
       />
 
-      {/* Explainer — always shown, collapses visually once results appear */}
+      {/* Explainer — always shown to everyone */}
       {!result && (
         <TabExplainer
           icon="🩺"
@@ -1338,7 +1371,25 @@ function ContentDoctorPage() {
         />
       )}
 
-      {/* Input panel */}
+      {/* Paywall — free users */}
+      {!isPaid && (
+        <div className="card" style={{ textAlign: 'center', padding: '48px 32px' }}>
+          <div style={{ fontSize: 36, marginBottom: 14 }}>🔒</div>
+          <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 10, color: 'var(--text)' }}>Content Doctor — Starter plan and above</div>
+          <p style={{ color: 'var(--subtle)', fontSize: 14, lineHeight: 1.7, maxWidth: 420, margin: '0 auto 24px' }}>
+            Run AI-powered authority gap and structural analysis on any page. Galuli flags every unsupported claim, dense paragraph, and missing citation — with specific rewrites.
+          </p>
+          <a href="https://galuli.io/checkout/buy/8bc3ebee-b31d-43ee-bbcc-5b47ba3b0022" target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ fontSize: 14, padding: '10px 24px' }}>
+            Upgrade to Starter — $9/mo →
+          </a>
+          <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 12 }}>
+            Free scan available on the <a href="/" style={{ color: 'var(--accent)' }}>homepage</a> · No credit card to try
+          </div>
+        </div>
+      )}
+
+      {/* Input panel — paid users only */}
+      {isPaid && (
       <div className="card flex col gap-16">
         {/* Mode tabs */}
         <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid var(--border)', marginBottom: 4 }}>
@@ -1356,9 +1407,29 @@ function ContentDoctorPage() {
           <div className="flex col gap-12">
             <div>
               <label className="label">Page URL to analyze</label>
-              <input value={inputUrl} onChange={e => setInputUrl(e.target.value)}
-                placeholder="https://yoursite.com/blog/your-post"
-                onKeyDown={e => e.key === 'Enter' && run()} />
+              {domains.length > 1 ? (
+                <div className="flex gap-8">
+                  <select value={inputUrl} onChange={e => setInputUrl(e.target.value)} style={{ flex: 1 }}>
+                    {domains.map(d => <option key={d} value={`https://${d}`}>{d}</option>)}
+                    <option value="">Enter custom URL…</option>
+                  </select>
+                  {inputUrl === '' && (
+                    <input value={inputUrl} onChange={e => setInputUrl(e.target.value)}
+                      placeholder="https://yoursite.com/blog/your-post"
+                      onKeyDown={e => e.key === 'Enter' && run()}
+                      style={{ flex: 2 }} />
+                  )}
+                </div>
+              ) : (
+                <input value={inputUrl} onChange={e => setInputUrl(e.target.value)}
+                  placeholder="https://yoursite.com/blog/your-post"
+                  onKeyDown={e => e.key === 'Enter' && run()} />
+              )}
+              {domains.length > 0 && (
+                <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>
+                  ✓ Pre-filled from your registered domain — or type any page URL
+                </div>
+              )}
             </div>
             <div>
               <label className="label">Analysis type</label>
@@ -1393,6 +1464,7 @@ function ContentDoctorPage() {
           {loading ? <><span className="spinner" style={{ width: 14, height: 14, borderWidth: 2 }} /> Analyzing…</> : '🩺 Run Content Doctor'}
         </button>
       </div>
+      )}
 
       {/* Results */}
       {result && (
