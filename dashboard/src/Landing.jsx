@@ -720,12 +720,15 @@ export function ResultsPage({ data, onRegistered }) {
           <div className="card" style={{ marginBottom: 16 }}>
             <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 14 }}>Top improvements</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {score.suggestions.map((tip, i) => (
-                <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                  <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--surface2)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 10, fontWeight: 700, color: 'var(--accent)' }}>{i + 1}</div>
-                  <div style={{ fontSize: 12, color: 'var(--subtle)', lineHeight: 1.6, paddingTop: 1 }}>{tip}</div>
-                </div>
-              ))}
+              {score.suggestions.map((tip, i) => {
+                const text = typeof tip === 'string' ? tip : (tip?.issue || tip?.fix || '')
+                return (
+                  <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                    <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--surface2)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 10, fontWeight: 700, color: 'var(--accent)' }}>{i + 1}</div>
+                    <div style={{ fontSize: 12, color: 'var(--subtle)', lineHeight: 1.6, paddingTop: 1 }}>{text}</div>
+                  </div>
+                )
+              })}
             </div>
           </div>
         )}
