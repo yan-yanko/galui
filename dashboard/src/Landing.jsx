@@ -54,7 +54,7 @@ export function ScoreRingLanding({ score, size = 80 }) {
       </svg>
       <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
         <span style={{ fontSize: size * 0.22, fontWeight: 700, color, lineHeight: 1 }}>{score}</span>
-        <span style={{ fontSize: size * 0.14, color: 'var(--muted)', marginTop: 2 }}>{grade}</span>
+        <span style={{ fontSize: size * 0.14, color: 'var(--subtle)', marginTop: 2 }}>{grade}</span>
       </div>
     </div>
   )
@@ -73,10 +73,10 @@ function LandingNav({ onSignIn }) {
         galuli
       </a>
       <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-        <a href="/blog"    className="btn btn-ghost btn-sm" style={{ color: 'var(--muted)' }}>Blog</a>
-        <a href="/about"   className="btn btn-ghost btn-sm" style={{ color: 'var(--muted)' }}>About</a>
-        <a href="/pricing" className="btn btn-ghost btn-sm" style={{ color: 'var(--muted)' }}>Pricing</a>
-        <button className="btn btn-ghost btn-sm" style={{ color: 'var(--muted)' }} onClick={() => onSignIn && onSignIn()}>Sign in</button>
+        <a href="/blog"    className="btn btn-ghost btn-sm" style={{ color: 'var(--subtle)' }}>Blog</a>
+        <a href="/about"   className="btn btn-ghost btn-sm" style={{ color: 'var(--subtle)' }}>About</a>
+        <a href="/pricing" className="btn btn-ghost btn-sm" style={{ color: 'var(--subtle)' }}>Pricing</a>
+        <button className="btn btn-ghost btn-sm" style={{ color: 'var(--subtle)' }} onClick={() => onSignIn && onSignIn()}>Sign in</button>
         <a href="/pricing" className="btn btn-primary btn-sm" style={{ marginLeft: 6 }}>Get started free</a>
       </div>
     </nav>
@@ -111,7 +111,7 @@ function ScanAnimation({ url, progress }) {
       {/* Terminal bar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: 'var(--surface2)', borderBottom: '1px solid var(--border)' }}>
         {['#e5484d','#d9a53a','#4aad52'].map(c => <div key={c} style={{ width: 9, height: 9, borderRadius: '50%', background: c }} />)}
-        <div style={{ flex: 1, textAlign: 'center', fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--font)' }}>galuli scanner</div>
+        <div style={{ flex: 1, textAlign: 'center', fontSize: 11, color: 'var(--subtle)', fontFamily: 'var(--font)' }}>galuli scanner</div>
       </div>
 
       <div style={{ padding: '12px 14px 0' }}>
@@ -119,11 +119,11 @@ function ScanAnimation({ url, progress }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
           <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', flexShrink: 0 }} />
           <div style={{ fontSize: 12, color: 'var(--accent2)', fontWeight: 600 }}>{url.replace(/https?:\/\//, '')}</div>
-          <div style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--muted)' }}>{pagesFound} pages</div>
+          <div style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--subtle)' }}>{pagesFound} pages</div>
         </div>
 
         {/* Progress bar */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: 'var(--muted)', marginBottom: 4 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: 'var(--subtle)', marginBottom: 4 }}>
           <span>PROGRESS</span>
           <span style={{ color: 'var(--accent)' }}>{progress}%</span>
         </div>
@@ -146,12 +146,12 @@ function ScanAnimation({ url, progress }) {
                 }}>
                   {done ? <span style={{ color: 'var(--green)' }}>✓</span>
                     : active ? <span className="spinner" style={{ width: 8, height: 8, borderWidth: 1.5 }} />
-                    : <span style={{ color: 'var(--muted)' }}>{i + 1}</span>}
+                    : <span style={{ color: 'var(--subtle)' }}>{i + 1}</span>}
                 </div>
                 <span style={{ fontSize: 11, color: done ? 'var(--green)' : active ? 'var(--accent2)' : 'var(--muted)', fontWeight: done || active ? 500 : 400 }}>
                   {s.label}
                 </span>
-                {done && <span style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--muted)' }}>done</span>}
+                {done && <span style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--subtle)' }}>done</span>}
               </div>
             )
           })}
@@ -181,14 +181,14 @@ function HeroAnimation() {
 
         {/* Step 01 */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--subtle)', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 16, height: 16, borderRadius: 4, background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 800, color: 'white' }}>01</div>
             Your website
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 6, padding: '8px 12px' }}>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)' }}>yourwebsite.com</div>
-              <div style={{ fontSize: 10, color: 'var(--muted)', marginTop: 2 }}>12 pages · 4.2k words</div>
+              <div style={{ fontSize: 10, color: 'var(--subtle)', marginTop: 2 }}>12 pages · 4.2k words</div>
             </div>
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--green)', boxShadow: '0 0 4px var(--green)' }} />
           </div>
@@ -204,7 +204,7 @@ function HeroAnimation() {
 
         {/* Step 02 */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--subtle)', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 16, height: 16, borderRadius: 4, background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 800, color: 'white' }}>02</div>
             AI pipeline
           </div>
@@ -220,7 +220,7 @@ function HeroAnimation() {
                 <div style={{ flex: 1, height: 3, borderRadius: 2, background: 'var(--border)', overflow: 'hidden' }}>
                   <div className="animate-aipass" style={{ height: '100%', borderRadius: 2, background: color, animationDelay: delay }} />
                 </div>
-                <div style={{ fontSize: 10, color: 'var(--muted)', width: 120 }}>{label}</div>
+                <div style={{ fontSize: 10, color: 'var(--subtle)', width: 120 }}>{label}</div>
               </div>
             ))}
           </div>
@@ -236,7 +236,7 @@ function HeroAnimation() {
 
         {/* Step 03 — Score */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--subtle)', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 16, height: 16, borderRadius: 4, background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 800, color: 'white' }}>03</div>
             AI Readiness Score
           </div>
@@ -250,11 +250,11 @@ function HeroAnimation() {
                 { d: 'WebMCP',    v: 40, c: 'var(--yellow)' },
               ].map(({ d, v, c }) => (
                 <div key={d} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
-                  <div style={{ fontSize: 9, color: 'var(--muted)', width: 48 }}>{d}</div>
+                  <div style={{ fontSize: 9, color: 'var(--subtle)', width: 48 }}>{d}</div>
                   <div style={{ flex: 1, height: 3, background: 'var(--border)', borderRadius: 2, overflow: 'hidden' }}>
                     <div style={{ height: '100%', background: c, borderRadius: 2, width: `${v}%` }} />
                   </div>
-                  <div style={{ fontSize: 9, color: 'var(--muted)', width: 16, textAlign: 'right' }}>{v}</div>
+                  <div style={{ fontSize: 9, color: 'var(--subtle)', width: 16, textAlign: 'right' }}>{v}</div>
                 </div>
               ))}
             </div>
@@ -296,10 +296,10 @@ function FaqAccordion() {
               }}
             >
               <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)', lineHeight: 1.4 }}>{item.q}</span>
-              <span style={{ fontSize: 16, color: 'var(--muted)', flexShrink: 0, transform: isOpen ? 'rotate(45deg)' : 'rotate(0)', transition: 'transform 0.15s' }}>+</span>
+              <span style={{ fontSize: 16, color: 'var(--subtle)', flexShrink: 0, transform: isOpen ? 'rotate(45deg)' : 'rotate(0)', transition: 'transform 0.15s' }}>+</span>
             </button>
             {isOpen && (
-              <div style={{ paddingBottom: 14, fontSize: 13, color: 'var(--muted)', lineHeight: 1.7, animation: 'fadeSlideUp 0.15s ease forwards' }}>
+              <div style={{ paddingBottom: 14, fontSize: 13, color: 'var(--subtle)', lineHeight: 1.7, animation: 'fadeSlideUp 0.15s ease forwards' }}>
                 {item.a}
               </div>
             )}
@@ -371,7 +371,7 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
               Make your website<br />
               <span style={{ background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>visible to AI.</span>
             </h1>
-            <p style={{ fontSize: 15, color: 'var(--muted)', lineHeight: 1.7, marginBottom: 28, maxWidth: 480 }}>
+            <p style={{ fontSize: 15, color: 'var(--subtle)', lineHeight: 1.7, marginBottom: 28, maxWidth: 480 }}>
               More and more people are getting answers from AI instead of clicking links. If your site isn't AI-readable, you're invisible to them. Galuli fixes this with one line of code.
             </p>
 
@@ -384,7 +384,7 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
               ].map(({ label, detail }) => (
                 <div key={label} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 13 }}>
                   <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'rgba(94,106,210,0.12)', border: '1px solid rgba(94,106,210,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)', fontWeight: 800, fontSize: 10, flexShrink: 0, marginTop: 1 }}>✓</div>
-                  <span><strong style={{ color: 'var(--text)', fontWeight: 600 }}>{label}</strong>{' '}<span style={{ color: 'var(--muted)' }}>{detail}</span></span>
+                  <span><strong style={{ color: 'var(--text)', fontWeight: 600 }}>{label}</strong>{' '}<span style={{ color: 'var(--subtle)' }}>{detail}</span></span>
                 </div>
               ))}
             </div>
@@ -413,7 +413,7 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
                 <ScanAnimation url={url} progress={progress} />
               </div>
             )}
-            <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 10 }}>Free scan · No credit card · Results in ~60 seconds</p>
+            <p style={{ fontSize: 11, color: 'var(--subtle)', marginTop: 10 }}>Free scan · No credit card · Results in ~60 seconds</p>
           </div>
 
           {/* Right — hero animation */}
@@ -426,7 +426,7 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
       {/* ── Trust strip ── */}
       <div style={{ borderBottom: '1px solid var(--border)', padding: '14px 32px' }}>
         <div style={{ maxWidth: 800, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 28, flexWrap: 'wrap', justifyContent: 'center' }}>
-          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Visible to</span>
+          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--subtle)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Visible to</span>
           {['ChatGPT', 'Claude', 'Perplexity', 'Gemini', 'Grok', 'Llama', 'WebMCP Agents'].map(name => (
             <span key={name} style={{ fontSize: 13, color: 'var(--subtle)', fontWeight: 500 }}>{name}</span>
           ))}
@@ -438,7 +438,7 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
         <div style={{ marginBottom: 32 }}>
           <div className="eyebrow">Simple Pipeline</div>
           <h2 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.4px', color: 'var(--text)', marginBottom: 6 }}>How it works</h2>
-          <p style={{ fontSize: 13, color: 'var(--muted)' }}>Three steps to full AI visibility</p>
+          <p style={{ fontSize: 13, color: 'var(--subtle)' }}>Three steps to full AI visibility</p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 1, border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden', background: 'var(--border)' }}>
           {[
@@ -450,7 +450,7 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
               {tag && <div style={{ position: 'absolute', top: 16, right: 16, fontSize: 10, background: 'rgba(94,106,210,0.1)', border: '1px solid rgba(94,106,210,0.25)', color: 'var(--accent)', padding: '2px 8px', borderRadius: 3, fontWeight: 600 }}>{tag}</div>}
               <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8 }}>Step {step}</div>
               <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 8, color: 'var(--text)', letterSpacing: '-0.2px' }}>{title}</div>
-              <p style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.7 }}>{desc}</p>
+              <p style={{ fontSize: 13, color: 'var(--subtle)', lineHeight: 1.7 }}>{desc}</p>
             </div>
           ))}
         </div>
@@ -462,7 +462,7 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
           <div style={{ marginBottom: 32 }}>
             <div className="eyebrow">What you get</div>
             <h2 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.4px', color: 'var(--text)', marginBottom: 6 }}>Everything included. Zero configuration.</h2>
-            <p style={{ fontSize: 13, color: 'var(--muted)' }}>Add one script tag. Every feature below activates automatically.</p>
+            <p style={{ fontSize: 13, color: 'var(--subtle)' }}>Add one script tag. Every feature below activates automatically.</p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 1, border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden', background: 'var(--border)' }}>
             {[
@@ -476,7 +476,7 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
               <div key={title} style={{ background: 'var(--surface)', padding: '20px 22px' }}>
                 <div style={{ width: 3, height: 16, background: color, borderRadius: 2, marginBottom: 12 }} />
                 <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: 'var(--text)' }}>{title}</div>
-                <div style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.7 }}>{desc}</div>
+                <div style={{ fontSize: 12, color: 'var(--subtle)', lineHeight: 1.7 }}>{desc}</div>
               </div>
             ))}
           </div>
@@ -491,10 +491,10 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
             <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.3px', color: 'var(--text)', marginBottom: 14, lineHeight: 1.3 }}>
               Search engines read HTML.<br />AI reads meaning.
             </h2>
-            <p style={{ color: 'var(--muted)', fontSize: 13, lineHeight: 1.8, marginBottom: 14 }}>
+            <p style={{ color: 'var(--subtle)', fontSize: 13, lineHeight: 1.8, marginBottom: 14 }}>
               Traditional SEO optimizes for Google's crawler. AI readability is different. LLMs like ChatGPT and Claude need to <em style={{ color: 'var(--subtle)', fontStyle: 'normal', fontWeight: 500 }}>understand</em> what your site <em style={{ color: 'var(--subtle)', fontStyle: 'normal', fontWeight: 500 }}>does</em>, who it's <em style={{ color: 'var(--subtle)', fontStyle: 'normal', fontWeight: 500 }}>for</em>, and what <em style={{ color: 'var(--subtle)', fontStyle: 'normal', fontWeight: 500 }}>actions</em> are possible.
             </p>
-            <p style={{ color: 'var(--muted)', fontSize: 13, lineHeight: 1.8 }}>
+            <p style={{ color: 'var(--subtle)', fontSize: 13, lineHeight: 1.8 }}>
               Galuli bridges this gap by extracting your site's capabilities into structured formats that every AI system understands — without touching a single line of backend code.
             </p>
           </div>
@@ -507,7 +507,7 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
             ].map(({ term, color, desc }) => (
               <div key={term} style={{ borderLeft: `2px solid ${color}`, paddingLeft: 14, paddingTop: 4, paddingBottom: 4 }}>
                 <div style={{ fontSize: 12, fontWeight: 600, color, marginBottom: 3 }}>{term}</div>
-                <div style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.6 }}>{desc}</div>
+                <div style={{ fontSize: 12, color: 'var(--subtle)', lineHeight: 1.6 }}>{desc}</div>
               </div>
             ))}
           </div>
@@ -520,7 +520,7 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
           <div style={{ marginBottom: 28 }}>
             <div className="eyebrow">The scoring system</div>
             <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.3px', color: 'var(--text)', marginBottom: 6 }}>What does your score mean?</h2>
-            <p style={{ fontSize: 13, color: 'var(--muted)' }}>AI Readiness Score is 0–100. Every point is a real signal.</p>
+            <p style={{ fontSize: 13, color: 'var(--subtle)' }}>AI Readiness Score is 0–100. Every point is a real signal.</p>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0, border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden' }}>
             {[
@@ -528,19 +528,19 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
               { range: '70–89',  grade: 'B',  color: 'var(--blue)',   pct: 80,  label: 'Good — AI-Readable',        desc: 'Solid visibility. A few improvements push you into Elite territory.' },
               { range: '50–69',  grade: 'C',  color: 'var(--yellow)', pct: 60,  label: 'Average — Partially Visible',desc: 'AI agents can find you but may miss capabilities.' },
               { range: '30–49',  grade: 'D',  color: 'var(--red)',    pct: 40,  label: 'Poor — Hard to Parse',      desc: 'Significant gaps. High risk of being skipped in AI answers.' },
-              { range: '0–29',   grade: 'F',  color: 'var(--muted)',  pct: 20,  label: 'Not Readable — Invisible',  desc: 'Essentially invisible to AI. One snippet install changes everything.' },
+              { range: '0–29',   grade: 'F',  color: 'var(--subtle)',  pct: 20,  label: 'Not Readable — Invisible',  desc: 'Essentially invisible to AI. One snippet install changes everything.' },
             ].map(({ range, grade, color, pct, label, desc }, i) => (
               <div key={grade} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '12px 16px', borderBottom: i < 4 ? '1px solid var(--border)' : 'none', background: 'var(--surface)' }}>
                 <div style={{ width: 36, height: 36, borderRadius: 6, background: color === 'var(--muted)' ? 'var(--surface2)' : `${color}15`, border: `1px solid ${color === 'var(--muted)' ? 'var(--border)' : `${color}30`}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color, fontSize: 13, flexShrink: 0 }}>{grade}</div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
                     <span style={{ fontWeight: 600, fontSize: 13, color: 'var(--text)' }}>{label}</span>
-                    <span style={{ fontSize: 12, color: 'var(--muted)', flexShrink: 0, marginLeft: 10 }}>{range}</span>
+                    <span style={{ fontSize: 12, color: 'var(--subtle)', flexShrink: 0, marginLeft: 10 }}>{range}</span>
                   </div>
                   <div style={{ background: 'var(--border)', borderRadius: 3, height: 3, overflow: 'hidden', marginBottom: 4 }}>
                     <div style={{ height: '100%', borderRadius: 3, background: color, width: `${pct}%` }} />
                   </div>
-                  <div style={{ fontSize: 12, color: 'var(--muted)' }}>{desc}</div>
+                  <div style={{ fontSize: 12, color: 'var(--subtle)' }}>{desc}</div>
                 </div>
               </div>
             ))}
@@ -561,7 +561,7 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
       <div style={{ background: 'var(--surface)', borderTop: '1px solid var(--border)', padding: '64px 32px' }}>
         <div style={{ maxWidth: 560, margin: '0 auto', textAlign: 'center' }}>
           <h2 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.4px', marginBottom: 10, color: 'var(--text)' }}>Ready to be found by AI?</h2>
-          <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 24 }}>Free scan. See your AI Readiness Score in 60 seconds.</p>
+          <p style={{ fontSize: 13, color: 'var(--subtle)', marginBottom: 24 }}>Free scan. See your AI Readiness Score in 60 seconds.</p>
           <form onSubmit={handleScan} style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
             <input value={url} onChange={e => setUrl(e.target.value)} placeholder="yourwebsite.com" style={{ flex: 1, minWidth: 200, maxWidth: 300 }} />
             <button type="submit" className="btn btn-primary">Get free scan →</button>
@@ -577,10 +577,10 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
         </div>
         <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
           {[['Pricing', '/pricing'], ['Blog', '/blog'], ['About', '/about'], ['Roadmap', '/roadmap']].map(([label, href]) => (
-            <a key={label} href={href} style={{ fontSize: 12, color: 'var(--muted)', textDecoration: 'none' }}>{label}</a>
+            <a key={label} href={href} style={{ fontSize: 12, color: 'var(--subtle)', textDecoration: 'none' }}>{label}</a>
           ))}
-          <a href="mailto:hello@galuli.io" style={{ fontSize: 12, color: 'var(--muted)', textDecoration: 'none' }}>hello@galuli.io</a>
-          <span style={{ fontSize: 12, color: 'var(--muted)' }}>© 2025 Galuli</span>
+          <a href="mailto:hello@galuli.io" style={{ fontSize: 12, color: 'var(--subtle)', textDecoration: 'none' }}>hello@galuli.io</a>
+          <span style={{ fontSize: 12, color: 'var(--subtle)' }}>© 2025 Galuli</span>
         </div>
         <a href="/dashboard/" style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 600 }}>Dashboard →</a>
       </div>
@@ -640,7 +640,7 @@ export function ResultsPage({ data, onRegistered }) {
           <div style={{ width: 20, height: 20, background: 'var(--accent)', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: 'white', fontWeight: 800 }}>g</div>
           galuli
         </div>
-        <div style={{ fontSize: 13, color: 'var(--muted)' }}>
+        <div style={{ fontSize: 13, color: 'var(--subtle)' }}>
           AI Readiness Report · <strong style={{ color: 'var(--text)' }}>{domain}</strong>
         </div>
         <button onClick={() => onRegistered && onRegistered()} className="btn btn-primary btn-sm">Open Dashboard →</button>
@@ -652,9 +652,9 @@ export function ResultsPage({ data, onRegistered }) {
         <div className="card" style={{ marginBottom: 16, display: 'flex', gap: 24, alignItems: 'center', flexWrap: 'wrap', borderColor: `${gradeColor}30` }}>
           <ScoreRingLanding score={score.total} size={100} />
           <div style={{ flex: 1, minWidth: 180 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 4 }}>AI Readiness Score</div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--subtle)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 4 }}>AI Readiness Score</div>
             <div style={{ fontSize: 22, fontWeight: 700, marginBottom: 4, letterSpacing: '-0.3px' }}>{score.label}</div>
-            <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 10 }}>{domain}</div>
+            <div style={{ fontSize: 12, color: 'var(--subtle)', marginBottom: 10 }}>{domain}</div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               <span className="badge badge-blue">Score: {score.total}/100</span>
               <span className="badge" style={{ color: gradeColor, border: `1px solid ${gradeColor}40`, background: `${gradeColor}12` }}>Grade: {score.grade}</span>
@@ -675,7 +675,7 @@ export function ResultsPage({ data, onRegistered }) {
                 <div key={key}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 5 }}>
                     <span style={{ fontWeight: 500 }}>{key}</span>
-                    <span style={{ color: 'var(--muted)' }}>{dim.score}/{dim.max}</span>
+                    <span style={{ color: 'var(--subtle)' }}>{dim.score}/{dim.max}</span>
                   </div>
                   <div style={{ background: 'var(--border)', borderRadius: 3, height: 4 }}>
                     <div style={{ height: 4, borderRadius: 3, background: color, width: `${pct}%`, transition: 'width 1s ease 0.3s' }} />
@@ -694,7 +694,7 @@ export function ResultsPage({ data, onRegistered }) {
               {score.suggestions.map((tip, i) => (
                 <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                   <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--surface2)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 10, fontWeight: 700, color: 'var(--accent)' }}>{i + 1}</div>
-                  <div style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.6, paddingTop: 1 }}>{tip}</div>
+                  <div style={{ fontSize: 12, color: 'var(--subtle)', lineHeight: 1.6, paddingTop: 1 }}>{tip}</div>
                 </div>
               ))}
             </div>
@@ -719,12 +719,12 @@ export function ResultsPage({ data, onRegistered }) {
                   <div style={{ position: 'absolute', inset: 0, background: 'rgba(14,14,16,0.85)', backdropFilter: 'blur(3px)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, zIndex: 2 }}>
                     <div style={{ textAlign: 'center' }}>
                       <div style={{ fontSize: 16, marginBottom: 3 }}>🔒</div>
-                      <div style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 600 }}>Starter plan</div>
+                      <div style={{ fontSize: 10, color: 'var(--subtle)', fontWeight: 600 }}>Starter plan</div>
                     </div>
                   </div>
                 )}
                 <div style={{ fontWeight: 600, fontSize: 12, marginBottom: 4, color: 'var(--text)' }}>{title}</div>
-                <div style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.6 }}>{desc}</div>
+                <div style={{ fontSize: 11, color: 'var(--subtle)', lineHeight: 1.6 }}>{desc}</div>
               </div>
             ))}
           </div>
@@ -734,7 +734,7 @@ export function ResultsPage({ data, onRegistered }) {
         {!emailDone ? (
           <div className="card" style={{ marginBottom: 16, borderColor: 'rgba(94,106,210,0.25)', background: 'var(--surface)' }}>
             <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 6, letterSpacing: '-0.2px' }}>See {domain}'s full AI picture</div>
-            <p style={{ color: 'var(--muted)', fontSize: 12, lineHeight: 1.7, marginBottom: 16, maxWidth: 440 }}>
+            <p style={{ color: 'var(--subtle)', fontSize: 12, lineHeight: 1.7, marginBottom: 16, maxWidth: 440 }}>
               Free account — no credit card. AI Attention Score, GEO scores for 6 AI systems, and one install snippet.
             </p>
             <form onSubmit={handleEmailSubmit} style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -743,12 +743,12 @@ export function ResultsPage({ data, onRegistered }) {
                 {submitting ? <><span className="spinner" style={{ width: 12, height: 12 }} /> Creating…</> : 'Get free account →'}
               </button>
             </form>
-            <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 10 }}>Free forever for 3 sites · No credit card</p>
+            <p style={{ fontSize: 11, color: 'var(--subtle)', marginTop: 10 }}>Free forever for 3 sites · No credit card</p>
           </div>
         ) : (
           <div className="card" style={{ marginBottom: 16, borderColor: 'rgba(74,173,82,0.25)' }}>
             <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 6 }}>✓ You're in — open your dashboard</div>
-            <p style={{ color: 'var(--muted)', fontSize: 12, lineHeight: 1.7, marginBottom: 14 }}>
+            <p style={{ color: 'var(--subtle)', fontSize: 12, lineHeight: 1.7, marginBottom: 14 }}>
               Your free account is ready. Add the snippet to {domain} and Galuli starts tracking AI traffic immediately.
             </p>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -765,14 +765,14 @@ export function ResultsPage({ data, onRegistered }) {
               <div style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: 18, marginBottom: 4 }}>🔒</div>
                 <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', marginBottom: 3 }}>Embeddable Score Badge</div>
-                <div style={{ fontSize: 11, color: 'var(--muted)' }}>Create a free account to unlock</div>
+                <div style={{ fontSize: 11, color: 'var(--subtle)' }}>Create a free account to unlock</div>
               </div>
             </div>
           )}
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, flexWrap: 'wrap' }}>
             <div>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 6 }}>Embed your score badge</div>
-              <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 12, maxWidth: 340 }}>Show visitors your site is AI-ready. Updates automatically.</p>
+              <p style={{ fontSize: 12, color: 'var(--subtle)', marginBottom: 12, maxWidth: 340 }}>Show visitors your site is AI-ready. Updates automatically.</p>
               <img src={badgeUrl} alt="AI Readiness Score badge" style={{ display: 'block', marginBottom: 12, borderRadius: 6 }} />
             </div>
             <div style={{ flex: 1, minWidth: 240 }}>
@@ -789,7 +789,7 @@ export function ResultsPage({ data, onRegistered }) {
         {emailDone && (
           <div className="card" style={{ borderColor: 'rgba(94,106,210,0.25)' }}>
             <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 6 }}>Start monitoring {domain}</div>
-            <p style={{ color: 'var(--muted)', fontSize: 12, marginBottom: 14 }}>Paste this in your site's &lt;head&gt;. Galuli generates your llms.txt, registers WebMCP, and tracks AI agent visits.</p>
+            <p style={{ color: 'var(--subtle)', fontSize: 12, marginBottom: 14 }}>Paste this in your site's &lt;head&gt;. Galuli generates your llms.txt, registers WebMCP, and tracks AI agent visits.</p>
             <div className="code-block" style={{ marginBottom: 12 }}>
               {`<script src="${API_BASE}/galuli.js" defer></script>`}
             </div>
