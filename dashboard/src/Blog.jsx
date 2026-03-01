@@ -964,6 +964,278 @@ The difference is that Content Doctor makes the standard explicit and measurable
     ],
     cta: 'Run Content Doctor on your site →'
   },
+  {
+    slug: 'robots-txt-ai-crawlers',
+    title: 'Is Your robots.txt Blocking ChatGPT, Claude, and Perplexity?',
+    subtitle: "Thousands of websites are accidentally invisible to AI search engines because of a single misconfigured robots.txt file. Here's how to find out if yours is one of them — and how to fix it.",
+    date: 'March 1, 2026',
+    readTime: '9 min read',
+    category: 'Technical',
+    coverEmoji: '🚫',
+    intro: `There's a version of AI invisibility that has nothing to do with content quality, schema markup, or llms.txt files.
+
+It's simpler and more brutal: your robots.txt file is telling AI crawlers to go away, and they're listening.
+
+This happens more often than you'd think. A developer adds a broad disallow rule during a site migration, or copies a robots.txt template from the internet, or an overzealous security recommendation blocks all non-Google bots. The site looks fine in Google Search Console. It has no idea it's invisible to Perplexity, ChatGPT Browse, and Claude.
+
+Galuli now audits robots.txt as part of every site scan. Here's everything you need to know.`,
+    sections: [
+      {
+        heading: 'How AI crawlers work — and why robots.txt matters',
+        body: `Every major AI search system sends its own crawler to read the web. These crawlers operate similarly to Googlebot: they request pages, read content, and feed that information back to the AI's retrieval and training systems.
+
+The crawlers you need to know:
+
+**GPTBot** (OpenAI) — Used by ChatGPT Browse and OpenAI training. User-agent: \`GPTBot\`. Introduced August 2023.
+
+**ChatGPT-User** (OpenAI) — A separate user agent for real-time ChatGPT browsing. Some blocks target one but not the other.
+
+**ClaudeBot** (Anthropic) — Anthropic's crawler for Claude's retrieval. Also sometimes listed as \`anthropic-ai\`.
+
+**PerplexityBot** (Perplexity) — Powers Perplexity's real-time web retrieval, which is the core of its product.
+
+**Google-Extended** — Google's crawler for AI training and Gemini retrieval.
+
+Each checks your robots.txt before fetching any page. If your robots.txt says go away, they don't visit. No visit = no content = no chance of being cited.`
+      },
+      {
+        heading: 'The three ways robots.txt blocks AI access',
+        body: `**1. Explicit user-agent block**
+
+\`\`\`
+User-agent: GPTBot
+Disallow: /
+\`\`\`
+
+Deliberate. In 2023–2024, there was widespread advice to block AI crawlers to "protect your content." Many sites followed it. Those sites are now invisible to ChatGPT Browse.
+
+**2. Wildcard block with no exceptions**
+
+\`\`\`
+User-agent: *
+Disallow: /
+\`\`\`
+
+This "block everything" rule appears in dev environments and sometimes gets accidentally pushed to production. It blocks all crawlers — Google, AI, everything.
+
+**3. Wildcard block with Google exceptions but no AI exceptions**
+
+\`\`\`
+User-agent: *
+Disallow: /
+
+User-agent: Googlebot
+Disallow:
+\`\`\`
+
+The most insidious pattern. The site appears normally in Google Analytics (Googlebot is whitelisted), but every AI crawler hits the wildcard block. Invisible to Perplexity, ChatGPT, and Claude — while Google traffic continues as normal.
+
+This is surprisingly common in enterprise sites carefully optimized for Google years ago.`
+      },
+      {
+        heading: 'What you\'re losing — the business case',
+        body: `Perplexity answers over 100 million queries per day. Its product is retrieval-first: it crawls the web in real time and synthesizes answers from what it finds. A blocked PerplexityBot means your product doesn't appear in Perplexity answers — regardless of content quality.
+
+ChatGPT Browse uses GPTBot. Blocking it means ChatGPT falls back to training data, which may be months or years out of date.
+
+The stakes: AI traffic converts at **14.2% vs. 2.8%** for traditional search — a 5x difference driven by the high intent of users who've already received an AI recommendation. A blocked robots.txt means none of that traffic reaches you. Not because your content isn't good enough. Because a configuration file is turning crawlers away at the door.`
+      },
+      {
+        heading: 'The correct robots.txt for AI accessibility',
+        body: `If you want all AI crawlers to have full access:
+
+\`\`\`
+User-agent: *
+Disallow:
+
+# AI crawlers — explicitly welcome
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://yourdomain.com/sitemap.xml
+\`\`\`
+
+If you have content to protect, be surgical — only Disallow what you genuinely need to restrict:
+
+\`\`\`
+User-agent: *
+Disallow: /admin/
+Disallow: /api/
+Disallow: /private/
+\`\`\`
+
+The fix takes about 90 seconds once you know the problem. Galuli's AI Readability Score audit shows exactly which crawlers are blocked.`
+      },
+      {
+        heading: 'Beyond robots.txt: the full crawl access checklist',
+        body: `Robots.txt is one layer. Also check:
+
+**Meta robots tags** — Pages can have \`<meta name="robots" content="noindex, nofollow">\` in their HTML, overriding robots.txt for some crawlers.
+
+**X-Robots-Tag headers** — HTTP headers can also block indexing. Check with:
+\`\`\`
+curl -I https://yourdomain.com/your-key-page
+\`\`\`
+
+**Cloudflare / WAF rules** — Firewalls blocking "bot traffic" broadly may catch AI crawlers.
+
+**JavaScript-only rendering** — AI crawlers typically don't execute JavaScript. If your content is client-side rendered (SPA without SSR), crawlers see an empty page. Galuli's JS rendering mode (Pro plan) handles this.
+
+**Crawl rate and timeouts** — Some AI crawlers have higher crawl rates than Googlebot. If your server rate-limits bot traffic aggressively, AI crawlers may get throttled.
+
+Run a free Galuli scan to get a complete robots.txt + crawl access report in 60 seconds.`
+      },
+    ],
+    cta: 'Audit your robots.txt — free →'
+  },
+  {
+    slug: 'information-gain-geo',
+    title: 'Information Gain: Why Generic Content Gets Ignored by AI',
+    subtitle: "AI systems don't just evaluate whether your content is credible — they evaluate whether it adds anything new. If AI already knows what you're saying, it won't cite you for saying it again.",
+    date: 'March 1, 2026',
+    readTime: '11 min read',
+    category: 'Research',
+    coverEmoji: '📊',
+    intro: `Princeton researchers studying AI citation patterns made a finding that should change how anyone thinks about content strategy.
+
+They tested what happens when you make targeted additions to the same piece of content: adding statistics with sources, quotations from authoritative sources, unique data points not found elsewhere. The result: AI citation probability increased by 30–40%.
+
+The researchers called this "information gain" — the degree to which content adds unique, new information to what the AI already knows. Content with low information gain gets skipped. Content with high information gain gets cited.
+
+Most web content has very low information gain. It restates things the model already knows from the billions of documents in its training data. General advice, common knowledge, boilerplate best practices with no data, no primary research, no unique perspective.
+
+Galuli's Content Doctor now measures this directly.`,
+    sections: [
+      {
+        heading: 'What information gain actually means',
+        body: `The concept comes from information theory, but the practical meaning is simple: does this content tell me something I don't already know?
+
+For an AI language model, "already know" has a specific meaning. During training, the model absorbed billions of documents — facts, patterns, relationships, heuristics. When it reads new content at retrieval time, it's comparing that content to everything it already has.
+
+**Low information gain:**
+- "Email marketing has a high ROI" — the model has read this in thousands of marketing articles
+- "You should test different subject lines" — ubiquitous advice
+- "Customer retention is important for SaaS businesses" — common knowledge
+
+**High information gain:**
+- "Our analysis of 12,000 email campaigns found subject lines under 7 words had 23% higher open rates in B2B contexts" — new data, specific methodology, quantified result
+- "Contrary to common advice, longer emails (400+ words) had a 12% higher click-through in our product demo sequences" — unexpected finding, falsifiable claim
+- "In Q4 2025, we A/B tested 4 subject line formats across enterprise audiences. Emoji reduced open rates by 8.4%." — proprietary finding, defined scope
+
+The second category is what AI systems want to cite. It's specific, it's unique, and it's the kind of information a user asking a real question would actually find valuable.`
+      },
+      {
+        heading: 'The Princeton GEO-bench research',
+        body: `The foundational research: "GEO: Generative Engine Optimization" (Aggarwal et al., Princeton, 2023, updated 2024). The researchers built a benchmark of 10,000 queries across multiple AI systems and measured citation rates under controlled conditions.
+
+Key findings:
+
+**Adding statistics improves citation probability by 30–40%.** The most reliable signal. A claim backed by a number with a source is dramatically more likely to be cited than the same claim without one.
+
+**Quotation from authoritative sources adds 15–20%.** Named experts, official reports, and primary sources are heavily weighted. "According to Gartner's 2024 Magic Quadrant..." outperforms "according to analysts..."
+
+**Fluency improvements add 10–15%.** Clear, scannable structure makes content easier to process at retrieval time.
+
+**Traditional SEO tactics (keyword optimization) had minimal positive impact** and can slightly reduce citation probability. GEO and SEO are different disciplines.
+
+The practical implication: the biggest lever for AI citation probability is adding genuine primary research and data — not more keywords, not more pages, not more backlinks.`
+      },
+      {
+        heading: 'Five types of information gain deficits',
+        body: `Galuli's Content Doctor identifies five patterns of low information gain:
+
+**1. Common knowledge statements**
+"AI is transforming industries." The model has read this approximately ten thousand times.
+Fix: Which industries? By what metric? From what evidence?
+
+**2. Boilerplate best practices**
+"Use headers to structure your content." Every blog post about readability says this.
+Fix: Add your own data. "Pages with 3–5 H2 headers per 1,000 words in our database had 2.3x higher citation rates."
+
+**3. Vague benefit claims**
+"Our solution saves time and reduces costs." No information gain.
+Fix: "Customers report saving an average of 4.2 hours per week on data entry — based on a survey of 87 customers in Q3 2025."
+
+**4. Uncited statistics**
+"73% of companies are investing in AI." Numbers without sources are nearly as bad as no numbers.
+Fix: Name the source, date, and methodology every time.
+
+**5. Derivative content**
+Summarizing what other content says, without adding a new perspective or data point.
+Fix: What do you specifically know from your experience? What's your interpretation that isn't elsewhere?`
+      },
+      {
+        heading: 'How to increase information gain in existing content',
+        body: `The good news: information gain improvements are surgical. You don't need to rewrite everything.
+
+**Step 1: Audit with Content Doctor.**
+The Information Gain Score tells you how much unique value your content adds. Below 60 is a meaningful problem. Below 40 means AI systems are very unlikely to cite this content.
+
+**Step 2: Prioritize high-traffic, low-gain pages.**
+Focus on pages where you most want AI citation — pricing, product pages, key landing pages.
+
+**Step 3: Add primary data.**
+The highest-leverage change: add one or two statistics from your own data with clear methodology. Not "customers report..." but "in a survey of 143 customers conducted in January 2026, 68% reported..."
+
+**Step 4: Add named expert quotes.**
+A direct quote with name and title is citable in a way third-person paraphrase is not.
+
+**Step 5: Add counterintuitive findings.**
+What does your experience suggest that contradicts common wisdom? These are high-information-gain opportunities because they differ from what the model already knows.
+
+**Step 6: Update regularly.**
+76.4% of pages cited by AI systems were updated within 30 days. Fresh data — quarterly reports, updated surveys, new case studies — is intrinsically higher information gain than stale content.`
+      },
+      {
+        heading: 'Information gain vs. authority gaps',
+        body: `Content Doctor measures two related but distinct problems:
+
+**Authority gaps** are claims that lack citation backing. Adding a source fixes them.
+
+**Information gain deficits** are content sections that say things the AI already knows — regardless of how well-cited they are. Content can be perfectly cited and still have low information gain if it's restating cited common knowledge.
+
+Example: "Email marketing has an average ROI of 36:1 (Source: Litmus, 2023)" — well-cited (no authority gap), but the Litmus statistic is in thousands of articles. It doesn't give AI a reason to cite you specifically.
+
+Higher-information-gain version: "In our analysis of 230 e-commerce email campaigns in Q4 2025, abandoned cart sequences had a median ROI of 47:1 — compared to Litmus's industry average of 36:1. Multi-email sequences with progressive urgency outperformed single-email sequences by 2.4x."
+
+That version has no authority gap AND high information gain — the primary finding about multi-email sequences is not already in the model's training data.
+
+Content Doctor returns both scores separately so you know which problem you're solving and how to fix each.`
+      },
+      {
+        heading: 'The three-score system',
+        body: `Content Doctor returns three scores for every analysis:
+
+**Authority Score (0–100):** Are your claims backed by citations and evidence?
+
+**Information Gain Score (0–100):** Does your content add unique information beyond common knowledge?
+
+**Structure Score (0–100):** Is your content organized for AI readability?
+
+The Content Health Score is a weighted average: authority and information gain each count 35%, structure 30%. This reflects the research: content with high information gain and strong authority is the most citable — structure is important but less decisive.
+
+**Target for any page you want AI to cite:** 70+ on all three dimensions.
+
+The most common starting point: 55 Authority, 40 Information Gain, 60 Structure. Moving the information gain score from 40 to 70 is typically the highest-impact work. Galuli's Content Doctor identifies exactly what to change to make that jump.`
+      },
+    ],
+    cta: 'Check your Information Gain Score →'
+  },
 ]
 
 // ── Blog List Page ──────────────────────────────────────────────────────────────

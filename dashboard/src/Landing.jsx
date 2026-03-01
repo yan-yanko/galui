@@ -424,6 +424,24 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
         </div>
       </div>
 
+      {/* ── Stats strip ── */}
+      <div style={{ borderBottom: '1px solid var(--border)', background: 'var(--surface)', padding: '20px 32px' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, textAlign: 'center' }}>
+          {[
+            { number: '14.2%', label: 'AI traffic conversion rate', sub: 'vs 2.8% traditional search' },
+            { number: '$750B', label: 'AI-mediated commerce by 2028', sub: 'Gartner estimate' },
+            { number: '30–40%', label: 'more AI citations', sub: 'by adding stats — Princeton GEO-bench' },
+            { number: '76.4%', label: 'of AI-cited pages', sub: 'updated in the last 30 days' },
+          ].map(({ number, label, sub }) => (
+            <div key={number}>
+              <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--accent)', letterSpacing: '-0.03em', lineHeight: 1.1 }}>{number}</div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', marginTop: 3 }}>{label}</div>
+              <div style={{ fontSize: 11, color: 'var(--muted)' }}>{sub}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* ── Trust strip ── */}
       <div style={{ borderBottom: '1px solid var(--border)', padding: '14px 32px' }}>
         <div style={{ maxWidth: 800, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 28, flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -467,12 +485,12 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 1, border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden', background: 'var(--border)' }}>
             {[
-              { title: 'AI Readability Score',             desc: 'A 0–100 score showing how well LLMs can read and understand your site — across content clarity, structure, machine signals, authority, and freshness.', color: 'var(--accent)' },
+              { title: 'AI Readability Score',             desc: 'A 0–100 score across 5 dimensions: content clarity, structure, machine signals, authority, and freshness. 76.4% of AI-cited pages were updated in the last 30 days — we track all of it.', color: 'var(--accent)' },
               { title: 'llms.txt + AI Plugin Manifest',    desc: 'Auto-generates /llms.txt and /.well-known/ai-plugin.json — the files AI systems check first. Without them, LLMs guess your content from scraped HTML.', color: 'var(--green)' },
-              { title: 'Content Doctor',                   desc: 'Finds every claim AI won\'t trust — unsupported assertions, vague language, dense paragraphs. Returns specific rewrites, not generic advice.', color: 'var(--blue)' },
-              { title: 'AI Traffic Analytics',             desc: 'See which AI crawlers visit your site, which pages they read, how deep they go, and how that changes over time. Invisible to Google Analytics — visible to Galuli.', color: 'var(--yellow)' },
-              { title: 'WebMCP Registration',              desc: 'Your site\'s capabilities register as callable tools in AI agent frameworks. When an AI agent needs what you offer, it finds you — not your competitor.', color: 'var(--red)' },
-              { title: 'Smart Auto-refresh',               desc: 'Content change detection re-indexes your site automatically when pages update. AI systems always see your latest content — no manual rescans needed.', color: 'var(--purple)' },
+              { title: 'robots.txt + Schema.org Audit',    desc: 'Many sites accidentally block GPTBot, ClaudeBot, and PerplexityBot. We check your robots.txt, flag blocked crawlers, and audit your schema.org markup — Organization, FAQPage, HowTo.', color: 'var(--yellow)' },
+              { title: 'Content Doctor',                   desc: 'Finds authority gaps (claims without citations) AND information gain deficits (generic content AI already knows). Returns specific rewrites — Princeton research shows +30–40% citation boost from this.', color: 'var(--blue)' },
+              { title: 'AI Traffic Analytics',             desc: 'See which AI crawlers visit your site, which pages they read, how deep they go, and how that changes over time. Invisible to Google Analytics — visible to Galuli.', color: 'var(--red)' },
+              { title: 'WebMCP + Auto-refresh',            desc: 'Registers your capabilities as callable tools in AI agent frameworks. Content change detection re-indexes automatically — AI systems always see your latest version.', color: 'var(--purple)' },
             ].map(({ title, desc, color }) => (
               <div key={title} style={{ background: 'var(--surface)', padding: '20px 22px' }}>
                 <div style={{ width: 3, height: 16, background: color, borderRadius: 2, marginBottom: 12 }} />
@@ -502,9 +520,9 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {[
               { term: 'llms.txt + ai-plugin.json', color: 'var(--accent)',  desc: 'The files AI systems check before reading your homepage. Without them, LLMs infer your product from scraped marketing copy — and get it wrong.' },
-              { term: 'WebMCP registration',       color: 'var(--green)',   desc: 'Registers your site\'s actions as callable tools in AI agent frameworks. Agents that need what you offer will discover you automatically.' },
-              { term: 'Content Doctor',            color: 'var(--yellow)',  desc: 'Finds the specific sentences and claims AI won\'t trust — with rewrites. Not vague advice, actual fixes.' },
-              { term: 'AI Traffic Analytics',      color: 'var(--blue)',    desc: 'AI crawlers don\'t show up in Google Analytics. Galuli captures them — by system, by page, by depth.' },
+              { term: 'robots.txt audit',          color: 'var(--yellow)',  desc: 'GPTBot, ClaudeBot, PerplexityBot — your robots.txt may be blocking them right now. Galuli detects this and flags it as a critical issue.' },
+              { term: 'Schema.org audit',          color: 'var(--green)',   desc: 'FAQPage, Organization, HowTo schema makes you 3x more likely to be cited by AI. We detect what you have and what\'s missing.' },
+              { term: 'Content Doctor',            color: 'var(--blue)',    desc: 'Authority gaps + information gain deficits. Not vague advice — specific rewrites based on Princeton\'s GEO-bench research.' },
             ].map(({ term, color, desc }) => (
               <div key={term} style={{ borderLeft: `2px solid ${color}`, paddingLeft: 14, paddingTop: 4, paddingBottom: 4 }}>
                 <div style={{ fontSize: 12, fontWeight: 600, color, marginBottom: 3 }}>{term}</div>

@@ -74,7 +74,7 @@ export function AboutPage({ onNavigate }) {
               {
                 icon: '🔬',
                 title: 'Standards over tricks',
-                body: "There are no shortcuts in AI visibility. We teach and implement the emerging standards — llms.txt, ai-plugin.json, WebMCP, Schema.org — because these are what AI systems actually use, not gaming tricks that stop working when an algorithm updates."
+                body: "There are no shortcuts in AI visibility. We implement the proven standards — llms.txt, ai-plugin.json, WebMCP, Schema.org, robots.txt hygiene — because these are what AI systems actually use. Princeton's GEO-bench research confirms: adding citations and statistics to content increases AI citation probability by 30–40%. We automate that."
               },
               {
                 icon: '📊',
@@ -100,34 +100,39 @@ export function AboutPage({ onNavigate }) {
         <section style={{ marginBottom: 80 }}>
           <h2 style={{ fontSize: 28, fontWeight: 700, marginBottom: 24, color: 'var(--fg)' }}>What Galuli actually does</h2>
           <p style={{ fontSize: 16, color: 'var(--muted)', lineHeight: 1.7, marginBottom: 40 }}>
-            One script tag on your website unlocks the full Galuli platform:
+            One script tag on your website unlocks the full Galuli platform. Here's everything we do — and why each piece matters for AI accessibility:
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             {[
               {
                 step: '01',
-                title: 'AI Readiness Score',
-                body: 'A 0-100 score across five dimensions: Content Clarity, Structural Legibility, Machine-Readable Signals, Authority & Citation, and Freshness. You see exactly where you stand and exactly what to fix.'
+                title: 'AI Readability Score',
+                body: 'A 0–100 score across five dimensions: Content Coverage, Structural Quality, Machine-Readable Signals (llms.txt, robots.txt, schema.org, WebMCP), Authority, and Freshness. You see exactly where you stand — and exactly what to fix.'
               },
               {
                 step: '02',
-                title: 'GEO Score (6 AI systems)',
-                body: 'Individual scores for ChatGPT, Perplexity, Claude, Gemini, Grok, and Llama. Each LLM weighs different signals differently — we break down what each one cares about and how you can improve.'
+                title: 'robots.txt + Schema.org Audit',
+                body: 'Many sites unknowingly block GPTBot, ClaudeBot, and PerplexityBot in their robots.txt — making them invisible to those AI systems. We also audit schema.org markup: Organization, FAQPage, and HowTo are proven to significantly increase AI citation probability.'
               },
               {
                 step: '03',
-                title: 'AI Agent Analytics',
-                body: 'Track which AI systems are visiting your site, which pages they\'re reading, how often, and how that changes over time. See the traffic you\'ve been invisible to.'
+                title: 'Content Doctor — Authority & Information Gain',
+                body: 'Two-module AI content audit. The Authority Gap Scanner finds claims without citations that AI won\'t trust. The Information Gain Checker flags generic content that adds no unique value — AI skips what it already knows. Based on Princeton\'s GEO-bench findings: adding stats and citations increases AI citation probability by 30–40%.'
               },
               {
                 step: '04',
-                title: 'Auto-generated llms.txt',
-                body: 'Based on your crawl and AI analysis, we generate a production-ready llms.txt file that you can publish with one click. Structured for maximum AI comprehension.'
+                title: 'GEO Score (6 AI systems)',
+                body: 'Individual scores for ChatGPT, Perplexity, Claude, Gemini, Grok, and Llama. Each LLM weights different signals differently — we break down what each one cares about and how you can improve your score for each.'
               },
               {
                 step: '05',
-                title: 'WebMCP Tool Registration',
-                body: 'We automatically register your service with AI agent frameworks so AI tools can discover and interact with your capabilities directly — without guessing.'
+                title: 'AI Agent Analytics',
+                body: 'Track which AI systems are visiting your site, which pages they\'re reading, how often, and how that changes over time. AI crawlers are invisible in Google Analytics — Galuli captures them.'
+              },
+              {
+                step: '06',
+                title: 'Auto-generated llms.txt + WebMCP',
+                body: 'Galuli generates your /llms.txt and /.well-known/ai-plugin.json from your crawled site data — the files AI systems check before reading your homepage. WebMCP registration makes your capabilities discoverable by AI agent frameworks directly.'
               },
             ].map(item => (
               <div key={item.step} className="glass-panel" style={{ padding: '24px 32px', borderRadius: 16, display: 'flex', gap: 24, alignItems: 'flex-start' }}>
@@ -180,25 +185,25 @@ export function AboutPage({ onNavigate }) {
                 plan: 'Free',
                 price: '$0',
                 period: 'forever',
-                features: ['3 sites', 'AI Readiness Score', 'GEO Score', 'AI Agent Analytics', '10 req/min'],
+                features: ['3 sites', 'AI Readability Score', 'robots.txt audit', 'Schema.org audit', 'GEO Score (6 LLMs)', 'AI Agent Analytics', '10 req/min'],
                 cta: 'Get started',
                 highlight: false
               },
               {
-                plan: 'Pro',
-                price: '$49',
-                period: 'per year',
-                features: ['50 sites', 'Everything in Free', 'Priority crawl', 'Automated weekly re-scan', '60 req/min', 'Badge generator'],
-                cta: 'Go Pro',
-                highlight: true
+                plan: 'Starter',
+                price: '$9',
+                period: 'per month',
+                features: ['10 sites', 'Everything in Free', 'Content Doctor', 'Auto weekly re-scan', 'llms.txt + AI Plugin', '30 req/min', 'Score badge'],
+                cta: 'Upgrade to Starter',
+                highlight: false
               },
               {
-                plan: 'Enterprise',
-                price: 'Custom',
-                period: 'contact us',
-                features: ['999 sites', 'Everything in Pro', 'SSO / team access', 'Dedicated support', 'SLA', '300 req/min'],
-                cta: 'Talk to us',
-                highlight: false
+                plan: 'Pro',
+                price: '$29',
+                period: 'per month',
+                features: ['Unlimited sites', 'Everything in Starter', 'JS rendering', 'Priority crawl', '120 req/min', 'WebMCP registration'],
+                cta: 'Go Pro',
+                highlight: true
               },
             ].map(tier => (
               <div key={tier.plan} className="glass-panel" style={{

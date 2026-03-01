@@ -3,7 +3,7 @@ export function RoadmapPage({ onNavigate }) {
 
   const QUARTERS = [
     {
-      label: 'Q1 2025',
+      label: 'Q1 2026',
       status: 'shipped',
       title: 'Foundation',
       items: [
@@ -20,49 +20,50 @@ export function RoadmapPage({ onNavigate }) {
       ]
     },
     {
-      label: 'Q2 2025',
+      label: 'Q2 2026',
       status: 'current',
-      title: 'Growth & Monetization',
+      title: 'AI Accessibility Platform',
       items: [
-        { status: 'in-progress', text: 'Stripe payments — Free → Pro upgrade flow', note: 'In progress' },
+        { status: 'done', text: 'Lemon Squeezy payments — Free → Starter → Pro upgrade flow', note: 'Shipped Feb 2026' },
+        { status: 'done', text: 'robots.txt AI directive audit — detect blocked GPTBot, ClaudeBot, PerplexityBot', note: 'Shipped Mar 2026' },
+        { status: 'done', text: 'Schema.org audit — detect missing Organization, FAQPage, HowTo JSON-LD', note: 'Shipped Mar 2026' },
+        { status: 'done', text: 'Content Doctor: Information Gain scoring — flag generic content AI skips', note: 'Shipped Mar 2026' },
+        { status: 'done', text: 'Content Doctor paywall — Starter plan required, auto-fills from registered domain', note: 'Shipped Mar 2026' },
+        { status: 'done', text: 'AI Accessibility positioning — reframed from "GEO tool" to "AI readability platform"', note: 'Shipped Mar 2026' },
         { status: 'in-progress', text: 'Email auth — signup/login with email + magic link', note: 'In progress' },
-        { status: 'planned', text: 'Automated weekly re-scan (Pro plan)', note: 'Planned' },
-        { status: 'planned', text: 'Score badge SVG — embed in your README or website', note: 'Planned' },
-        { status: 'planned', text: 'Email notifications — score reports, significant changes', note: 'Planned' },
-        { status: 'planned', text: 'Landing page → dashboard direct handoff with ?domain= param', note: 'Planned' },
-        { status: 'planned', text: 'Blog + About + Roadmap pages (you are here)', note: 'Shipping now' },
+        { status: 'in-progress', text: 'Score badge SVG — embed in your README or website', note: 'In progress' },
+        { status: 'planned', text: 'Email notifications — weekly score reports, significant change alerts', note: 'Planned' },
         { status: 'planned', text: 'Competitor comparison — "How do you compare to [competitor]?"', note: 'Planned' },
-        { status: 'planned', text: 'robots.txt AI directive audit', note: 'Planned' },
       ]
     },
     {
-      label: 'Q3 2025',
+      label: 'Q3 2026',
       status: 'upcoming',
       title: 'Deep Analysis',
       items: [
-        { status: 'planned', text: 'Citation tracker — monitor when AI systems mention your brand', note: 'Research phase' },
-        { status: 'planned', text: 'Content gap analysis — what questions is your site failing to answer?', note: 'Research phase' },
-        { status: 'planned', text: 'AI hallucination detection — is an AI saying wrong things about you?', note: 'Research phase' },
-        { status: 'planned', text: 'Historical score tracking — how has your AI visibility changed over time?', note: 'Planned' },
-        { status: 'planned', text: 'Category-level GEO benchmarking — how do you rank vs. competitors?', note: 'Planned' },
-        { status: 'planned', text: 'API v2 — full programmatic access for enterprise integrations', note: 'Planned' },
+        { status: 'planned', text: 'Citation tracker — monitor when AI systems mention your brand by name', note: 'Research phase' },
+        { status: 'planned', text: 'Content Availability Gap (CAG) detection — queries your site answers vs. what users ask AI', note: 'Research phase' },
+        { status: 'planned', text: 'AI hallucination detection — catch when AI systems state wrong facts about you', note: 'Research phase' },
+        { status: 'planned', text: 'Historical score tracking — how has your AI accessibility changed over time?', note: 'Planned' },
+        { status: 'planned', text: 'Category-level GEO benchmarking — how do you rank vs. competitors in your space?', note: 'Planned' },
+        { status: 'planned', text: 'Freshness alerting — notify when content is >30 days stale (76.4% of cited pages updated in 30 days)', note: 'Planned' },
         { status: 'planned', text: 'Chrome extension — instant AI Readiness scan from any page', note: 'Research phase' },
-        { status: 'planned', text: 'Webhook support — get notified on score changes', note: 'Planned' },
+        { status: 'planned', text: 'Webhook support — get notified on score changes or crawler blocks', note: 'Planned' },
       ]
     },
     {
-      label: 'Q4 2025',
+      label: 'Q4 2026',
       status: 'future',
       title: 'Platform & Scale',
       items: [
         { status: 'planned', text: 'White-label / agency plan — resell Galuli under your brand', note: 'Future' },
         { status: 'planned', text: 'Team access / multi-seat dashboard', note: 'Future' },
         { status: 'planned', text: 'AI visibility leaderboard — top-scoring sites by category', note: 'Future' },
-        { status: 'planned', text: 'Content recommendations powered by AI — specific rewrite suggestions', note: 'Future' },
+        { status: 'planned', text: 'Schema.org JSON-LD auto-injection — add markup to your site without touching code', note: 'Future' },
         { status: 'planned', text: 'OpenAPI auto-generation from crawl', note: 'Future' },
-        { status: 'planned', text: 'Schema.org markup auto-injection', note: 'Future' },
-        { status: 'planned', text: 'WordPress plugin', note: 'Future' },
-        { status: 'planned', text: 'Zapier / Make integration', note: 'Future' },
+        { status: 'planned', text: 'WordPress plugin — one-click Galuli integration for WP sites', note: 'Future' },
+        { status: 'planned', text: 'Zapier / Make integration — trigger workflows on score changes', note: 'Future' },
+        { status: 'planned', text: 'API v2 — full programmatic access for enterprise integrations', note: 'Future' },
       ]
     }
   ]
@@ -132,7 +133,7 @@ export function RoadmapPage({ onNavigate }) {
             This is our public roadmap — what we've shipped, what we're building now, and where we're headed. We update it as we ship.
           </p>
           <p style={{ fontSize: 13, color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}>
-            Last updated: February 2025
+            Last updated: March 2026
           </p>
         </div>
 
