@@ -29,15 +29,17 @@ _svc = CitationService()
 def _require_pro(request: Request) -> str:
     """Returns api_key. TODO: restore Pro gate after testing."""
     tenant = getattr(request.state, "tenant", None)
-    if not tenant:
+    api_key = getattr(request.state, "api_key", None)
+    # During testing: accept any authenticated request (tenant key OR master key)
+    if not tenant and not api_key:
         raise HTTPException(
             status_code=403,
             detail="Authentication required. Add your API key via X-API-Key header.",
         )
     # TODO: restore plan gate after testing:
-    # if tenant.plan not in ("pro", "agency", "enterprise"):
+    # if not tenant or tenant.plan not in ("pro", "agency", "enterprise"):
     #     raise HTTPException(403, "Citation Tracker is a Pro feature.")
-    return tenant.api_key
+    return tenant.api_key if tenant else api_key
 
 
 def _norm(domain: str) -> str:
