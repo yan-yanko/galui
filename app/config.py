@@ -56,6 +56,11 @@ class Settings(BaseSettings):
     # --- Refresh ---
     auto_refresh_interval_hours: int = 168  # 7 days
 
+    # --- Citation Tracker ---
+    perplexity_api_key: str = ""           # Required for Perplexity citation checks (sonar model)
+    openai_api_key: str = ""               # Optional — enables ChatGPT (gpt-4o-search-preview) checks
+    citation_max_queries: int = 5          # Max tracked queries per domain (cost control)
+
     model_config = {
         "env_file": str(_ENV_FILE),
         "env_file_encoding": "utf-8",

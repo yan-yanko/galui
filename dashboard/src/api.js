@@ -77,4 +77,13 @@ export var api = {
   getMe:         function() { return req("/api/v1/tenants/me") },
   getMyUsage:    function() { return req("/api/v1/tenants/me/usage") },
   getMyDomains:  function() { return req("/api/v1/tenants/domains") },
+
+  // Citation Tracker (Pro)
+  getCitationQueries:   function(d)             { return req("/api/v1/citations/" + d + "/queries") },
+  addCitationQuery:     function(d, type, val)  { return req("/api/v1/citations/" + d + "/queries", { method: "POST", body: JSON.stringify({ type: type, value: val }) }) },
+  removeCitationQuery:  function(d, id)         { return req("/api/v1/citations/" + d + "/queries/" + id, { method: "DELETE" }) },
+  triggerCitationCheck: function(d)             { return req("/api/v1/citations/" + d + "/check", { method: "POST" }) },
+  getCitationResults:   function(d)             { return req("/api/v1/citations/" + d + "/results") },
+  getCitationTrend:     function(d)             { return req("/api/v1/citations/" + d + "/trend") },
+  getCitationHistory:   function(d)             { return req("/api/v1/citations/" + d + "/history") },
 }

@@ -29,8 +29,16 @@ def start_scheduler():
             replace_existing=True,
             next_run_time=datetime.utcnow() + timedelta(minutes=2),  # First run 2min after boot
         )
+        _scheduler.add_job(
+            _run_citation_checks,
+            trigger=IntervalTrigger(weeks=1),  # Weekly citation checks for Pro users
+            id="weekly_citation_checks",
+            replace_existing=True,
+            next_run_time=datetime.utcnow() + timedelta(hours=1),  # First run 1h after boot
+        )
         _scheduler.start()
         logger.info("Auto-refresh scheduler started (checks every 6h, re-crawls if >7d stale)")
+        logger.info("Citation check scheduler started (weekly, Pro tenants)")
     except ImportError:
         logger.warning("APScheduler not installed — auto-refresh disabled. pip install apscheduler")
     except Exception as e:
@@ -136,3 +144,42 @@ async def _refresh_one(domain: str, storage, settings):
         job.completed_at = datetime.utcnow()
         storage.save_job(job)
         raise
+
+
+def _run_citation_checks():
+    """
+    Weekly: run citation checks for all Pro+ tenants with configured queries.
+    Same pattern as _refresh_stale_domains — sync wrapper using asyncio.run().
+    """
+    import asyncio
+    from app.services.tenant import TenantService
+    from app.services.citation_tracker import CitationService
+
+    try:
+        ts = TenantService()
+        cs = CitationService()
+
+        all_tenants = ts.list_tenants()
+        pro_tenants = [t for t in all_tenants if getattr(t, "plan", "free") in ("pro", "agency", "enterprise")]
+
+        logger.info(f"Weekly citation check: {len(pro_tenants)} Pro+ tenants")
+
+        for tenant in pro_tenants:
+            api_key = tenant.api_key
+            try:
+                domains = ts.get_tenant_domains(api_key)
+            except Exception:
+                continue
+
+            for domain in domains:
+                queries = cs.list_queries(api_key, domain)
+                if not queries:
+                    continue
+                try:
+                    asyncio.run(cs.run_check(api_key, domain))
+                    logger.info(f"Citation check done: {domain} ({getattr(tenant, 'email', '?')})")
+                except Exception as e:
+                    logger.error(f"Citation check failed for {domain}: {e}")
+
+    except Exception as e:
+        logger.error(f"Weekly citation check job error: {e}", exc_info=True)

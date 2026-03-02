@@ -35,12 +35,16 @@ async def lifespan(app: FastAPI):
     logger.info(f"  Base URL:     {settings.base_api_url}")
     logger.info(f"  Fast model:   {settings.fast_model}")
     logger.info(f"  Deep model:   {settings.deep_model}")
+    logger.info(f"  Perplexity:   {'OK' if settings.perplexity_api_key else 'not configured'}")
+    logger.info(f"  OpenAI:       {'OK' if settings.openai_api_key else 'not configured'}")
     logger.info("=" * 55)
 
     # Init all storage tables
     StorageService()
     TenantService()
     AnalyticsService()
+    from app.services.citation_tracker import CitationService
+    CitationService()  # creates citation_queries + citation_results tables
 
     # Start auto-refresh scheduler
     start_scheduler()
@@ -93,7 +97,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from app.api.routes import ingest, registry, admin, tenants, push, analytics, billing, content_doctor, score
+from app.api.routes import ingest, registry, admin, tenants, push, analytics, billing, content_doctor, score, citations
 
 app.include_router(ingest.router,         prefix="/api/v1",                  tags=["Ingestion"])
 app.include_router(push.router,           prefix="/api/v1",                  tags=["Snippet / Push"])
@@ -104,6 +108,7 @@ app.include_router(tenants.router,        prefix="/api/v1/tenants",          tag
 app.include_router(analytics.router,      prefix="/api/v1/analytics",        tags=["Analytics"])
 app.include_router(billing.router,        prefix="/api/v1",                  tags=["Auth & Billing"])
 app.include_router(content_doctor.router, prefix="/api/v1/content-doctor",   tags=["Content Doctor"])
+app.include_router(citations.router,      prefix="/api/v1/citations",        tags=["Citation Tracker"])
 
 
 @app.get("/health", tags=["System"])
