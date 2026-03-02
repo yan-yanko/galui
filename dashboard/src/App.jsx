@@ -2854,9 +2854,14 @@ function CitationTrackerPage() {
     Promise.all([
       api.getMe().catch(() => null),
       api.getMyDomains().catch(() => ({ domains: [] })),
-    ]).then(([meData, domainsData]) => {
+      api.listRegistries().catch(() => ({ registries: [] })),
+    ]).then(([meData, domainsData, regData]) => {
       setMe(meData)
-      const doms = domainsData?.domains || []
+      // Prefer tenant-linked domains, but fall back to all indexed registries
+      // so users can test even if domains aren't formally linked to their key
+      const tenantDoms = domainsData?.domains || []
+      const registryDoms = (regData?.registries || []).map(r => r.domain)
+      const doms = tenantDoms.length > 0 ? tenantDoms : registryDoms
       setDomains(doms)
       if (doms.length > 0) setSelected(doms[0])
     }).finally(() => setMeLoading(false))
