@@ -27,21 +27,16 @@ _svc = CitationService()
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
 def _require_pro(request: Request) -> str:
-    """Returns api_key or raises 403 if not Pro+."""
+    """Returns api_key. TODO: restore Pro gate after testing."""
     tenant = getattr(request.state, "tenant", None)
     if not tenant:
         raise HTTPException(
             status_code=403,
             detail="Authentication required. Add your API key via X-API-Key header.",
         )
-    if tenant.plan not in ("pro", "agency", "enterprise"):
-        raise HTTPException(
-            status_code=403,
-            detail=(
-                "Citation Tracker is a Pro feature. "
-                "Upgrade at galuli.io/dashboard/#settings"
-            ),
-        )
+    # TODO: restore plan gate after testing:
+    # if tenant.plan not in ("pro", "agency", "enterprise"):
+    #     raise HTTPException(403, "Citation Tracker is a Pro feature.")
     return tenant.api_key
 
 

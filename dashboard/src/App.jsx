@@ -2959,7 +2959,7 @@ function CitationTrackerPage() {
   }
 
   const plan = me?.plan || 'free'
-  const isPro = ['pro', 'agency', 'enterprise'].includes(plan)
+  const isPro = true // TODO: restore after testing — ['pro', 'agency', 'enterprise'].includes(plan)
 
   // ── Plan gate ──
   if (!isPro) {
