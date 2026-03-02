@@ -2923,7 +2923,7 @@ function CitationTrackerPage() {
       // Poll /history until our run_id appears or 60s timeout
       const started = Date.now()
       const interval = setInterval(async () => {
-        if (Date.now() - started > 60_000) {
+        if (Date.now() - started > 60000) {
           clearInterval(interval)
           setChecking(false)
           toast.error('Check timed out — results may still appear in a minute')

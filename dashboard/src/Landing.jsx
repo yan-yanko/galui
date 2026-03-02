@@ -342,7 +342,7 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
       if (job.status === 'complete') { await finishScan(domain); return }
       let stageIdx = 0, fakeProgress = 8
       const startedAt = Date.now()
-      const TIMEOUT_MS = 90_000 // 90 seconds max wait
+      const TIMEOUT_MS = 90000 // 90 seconds max wait
       const interval = setInterval(async () => {
         try {
           // Timeout guard — surface a friendly error if crawl stalls
