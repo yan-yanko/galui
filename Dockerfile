@@ -25,10 +25,10 @@ COPY --from=frontend /dashboard/dist ./static/dashboard
 # Ensure data directory exists for SQLite
 RUN mkdir -p data
 
-# Run as non-root for least-privilege (SOC 2 CC6.2)
-RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
-USER appuser
-
+# NOTE: Running as root is required because Railway mounts volumes at runtime
+# with root ownership, and a non-root user cannot write to the mounted /app/data/
+# directory (the SQLite DB path). Revisit when Railway supports volume chown
+# or when we migrate to a hosted DB (Postgres).
 ENV PORT=8000
 EXPOSE ${PORT}
 
