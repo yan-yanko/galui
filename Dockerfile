@@ -25,6 +25,10 @@ COPY --from=frontend /dashboard/dist ./static/dashboard
 # Ensure data directory exists for SQLite
 RUN mkdir -p data
 
+# Run as non-root for least-privilege (SOC 2 CC6.2)
+RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
+USER appuser
+
 ENV PORT=8000
 EXPOSE ${PORT}
 

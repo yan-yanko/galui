@@ -82,7 +82,12 @@ app = FastAPI(
 )
 
 from app.api.auth import APIKeyMiddleware
+from app.api.limiter import limiter
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 app.add_middleware(APIKeyMiddleware)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(
     CORSMiddleware,
     # "*" is required because galuli.js runs on customer sites (any domain) and

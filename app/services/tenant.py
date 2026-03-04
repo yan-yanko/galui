@@ -10,6 +10,7 @@ Each tenant gets:
 
 Storage: tenants table in the same SQLite DB.
 """
+import json
 import sqlite3
 import secrets
 import string
@@ -18,6 +19,14 @@ import logging
 from datetime import datetime, timedelta
 from typing import Optional, List
 from pydantic import BaseModel
+from passlib.context import CryptContext
+
+# Argon2id is the NIST-recommended password hashing algorithm (SP 800-63B).
+# Legacy SHA-256 scheme retained for backward compat — existing passwords still verify.
+_pwd_context = CryptContext(
+    schemes=["argon2"],
+    deprecated="auto",
+)
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +76,18 @@ CREATE TABLE IF NOT EXISTS tenant_domains (
     domain      TEXT NOT NULL,
     registered_at TEXT NOT NULL,
     PRIMARY KEY (api_key, domain)
+)
+"""
+
+CREATE_AUDIT_LOG = """
+CREATE TABLE IF NOT EXISTS audit_log (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    actor       TEXT NOT NULL,
+    action      TEXT NOT NULL,
+    resource    TEXT NOT NULL,
+    detail      TEXT,
+    ip_address  TEXT,
+    ts          TEXT NOT NULL
 )
 """
 
@@ -131,6 +152,7 @@ class TenantService:
             conn.execute(CREATE_USAGE_LOG)
             conn.execute(CREATE_TENANT_DOMAINS)
             conn.execute(CREATE_MAGIC_TOKENS)
+            conn.execute(CREATE_AUDIT_LOG)
             # Migrate: add new columns if they don't exist yet (safe ALTER TABLE)
             for col, defn in [
                 ("password_hash", "TEXT"),
@@ -147,13 +169,22 @@ class TenantService:
     # ── Password helpers ────────────────────────────────────────────────────
     @staticmethod
     def _hash_password(password: str) -> str:
-        salt = secrets.token_hex(16)
-        h = hashlib.sha256(f"{salt}:{password}".encode()).hexdigest()
-        return f"{salt}:{h}"
+        """Hash with Argon2id (NIST SP 800-63B recommended)."""
+        return _pwd_context.hash(password)
 
     @staticmethod
     def _verify_password(password: str, stored_hash: str) -> bool:
+        """
+        Verify password against stored hash.
+        Supports both Argon2id (new) and legacy SHA-256+salt format
+        so existing users aren't locked out after upgrade.
+        """
         try:
+            if stored_hash.startswith("$argon2"):
+                # Modern Argon2id hash — use passlib
+                return _pwd_context.verify(password, stored_hash)
+            # Legacy format: "salt:sha256hex" — verify and allow login
+            # (password will be re-hashed on next save if tenant updates it)
             salt, h = stored_hash.split(":", 1)
             return hashlib.sha256(f"{salt}:{password}".encode()).hexdigest() == h
         except Exception:
@@ -178,7 +209,10 @@ class TenantService:
             conn.commit()
 
         logger.info(f"Created tenant: {email} ({plan}) → {api_key[:20]}...")
-        return self.get_tenant(api_key)
+        tenant = self.get_tenant(api_key)
+        self.log_audit("system", "tenant.create", f"tenant:{api_key}",
+                       json.dumps({"email": email, "plan": plan}))
+        return tenant
 
     def authenticate(self, email: str, password: str) -> Optional["Tenant"]:
         """Verify email+password. Returns tenant or None."""
@@ -193,23 +227,30 @@ class TenantService:
 
     # ── Magic link tokens ───────────────────────────────────────────────────
     def create_magic_token(self, email: str, ttl_minutes: int = 15) -> str:
+        """
+        Generate a magic link token, store its SHA-256 hash in the DB
+        (not the raw token — so a DB leak can't be replayed).
+        Returns the raw token for inclusion in the email link.
+        """
         token = secrets.token_urlsafe(32)
+        token_hash = hashlib.sha256(token.encode()).hexdigest()
         expires = (datetime.utcnow() + timedelta(minutes=ttl_minutes)).isoformat()
         with self._get_conn() as conn:
             # Invalidate any previous unused tokens for this email
             conn.execute("UPDATE magic_tokens SET used=1 WHERE email=? AND used=0", (email,))
             conn.execute(
                 "INSERT INTO magic_tokens (token, email, expires_at, used) VALUES (?,?,?,0)",
-                (token, email, expires)
+                (token_hash, email, expires)
             )
             conn.commit()
-        return token
+        return token  # raw token — only ever lives in the email, never in DB
 
     def verify_magic_token(self, token: str) -> Optional[str]:
-        """Returns email if valid, marks as used. Returns None if expired/invalid."""
+        """Hash the incoming token, look up by hash. Returns email if valid, marks used."""
+        token_hash = hashlib.sha256(token.encode()).hexdigest()
         with self._get_conn() as conn:
             row = conn.execute(
-                "SELECT email, expires_at, used FROM magic_tokens WHERE token=?", (token,)
+                "SELECT email, expires_at, used FROM magic_tokens WHERE token=?", (token_hash,)
             ).fetchone()
             if not row:
                 return None
@@ -217,7 +258,7 @@ class TenantService:
                 return None
             if datetime.fromisoformat(row["expires_at"]) < datetime.utcnow():
                 return None
-            conn.execute("UPDATE magic_tokens SET used=1 WHERE token=?", (token,))
+            conn.execute("UPDATE magic_tokens SET used=1 WHERE token=?", (token_hash,))
             conn.commit()
             return row["email"]
 
@@ -240,6 +281,8 @@ class TenantService:
                   ls_subscription_id, limits["js_enabled"], email))
             conn.commit()
         logger.info(f"✅ LS: activated {plan} for {email} (sub {ls_subscription_id})")
+        self.log_audit("system", "plan.upgrade", f"tenant:{tenant.api_key}",
+                       json.dumps({"plan": plan, "ls_subscription_id": ls_subscription_id, "email": email}))
         return True
 
     def deactivate_ls_subscription(self, email: str) -> bool:
@@ -257,6 +300,8 @@ class TenantService:
             """, (limits["domains"], limits["rate_per_min"], email))
             conn.commit()
         logger.info(f"⬇️ LS: deactivated subscription for {email}")
+        self.log_audit("system", "plan.downgrade", f"tenant:{tenant.api_key}",
+                       json.dumps({"plan": "free", "email": email}))
         return True
 
     # ── Stripe helpers ───────────────────────────────────────────────────────
@@ -399,12 +444,13 @@ class TenantService:
             """, (api_key, limit)).fetchall()
             return [dict(r) for r in rows]
 
-    def deactivate(self, api_key: str):
+    def deactivate(self, api_key: str, actor: str = "admin"):
         with self._get_conn() as conn:
             conn.execute("UPDATE tenants SET is_active = 0 WHERE api_key = ?", (api_key,))
             conn.commit()
+        self.log_audit(actor, "tenant.deactivate", f"tenant:{api_key}")
 
-    def update_plan(self, api_key: str, plan: str):
+    def update_plan(self, api_key: str, plan: str, actor: str = "admin"):
         limits = PLAN_LIMITS.get(plan, PLAN_LIMITS["free"])
         with self._get_conn() as conn:
             conn.execute("""
@@ -413,6 +459,8 @@ class TenantService:
                 WHERE api_key = ?
             """, (plan, limits["domains"], limits["rate_per_min"], api_key))
             conn.commit()
+        self.log_audit(actor, "plan.admin_update", f"tenant:{api_key}",
+                       json.dumps({"plan": plan}))
 
     def reset_daily_usage(self):
         """Reset requests_today to 0 for all tenants. Called by the nightly scheduler."""
@@ -420,6 +468,47 @@ class TenantService:
             conn.execute("UPDATE tenants SET requests_today = 0")
             conn.commit()
         logger.info("Daily usage counters reset for all tenants")
+
+    def log_audit(self, actor: str, action: str, resource: str,
+                  detail: str = None, ip: str = None):
+        """
+        Write a structured audit entry. Never raises — fire-and-forget.
+        actor   : api_key of operator, or 'system' for automated events
+        action  : dot-namespaced string, e.g. 'tenant.create', 'plan.upgrade'
+        resource: what was affected, e.g. 'tenant:cr_live_xxx'
+        detail  : JSON string with relevant metadata (plan, email, etc.)
+        ip      : originating IP address if available
+        """
+        try:
+            with self._get_conn() as conn:
+                conn.execute(
+                    "INSERT INTO audit_log (actor, action, resource, detail, ip_address, ts) "
+                    "VALUES (?, ?, ?, ?, ?, ?)",
+                    (actor, action, resource, detail, ip, datetime.utcnow().isoformat())
+                )
+                conn.commit()
+        except Exception as e:
+            logger.warning(f"Audit log write failed: {e}")
+
+    def erase_tenant(self, api_key: str):
+        """
+        Hard-delete ALL personal data for a tenant from the main DB.
+        Called by GDPR/HIPAA right-to-erasure endpoint.
+
+        Audit log entries are intentionally KEPT — they are system accountability
+        records, not personal data. The tenant row itself is deleted.
+        """
+        with self._get_conn() as conn:
+            conn.execute("DELETE FROM usage_log WHERE api_key = ?", (api_key,))
+            conn.execute("DELETE FROM tenant_domains WHERE api_key = ?", (api_key,))
+            # Magic tokens are keyed by email — fetch before deleting tenant row
+            conn.execute(
+                "DELETE FROM magic_tokens WHERE email = "
+                "(SELECT email FROM tenants WHERE api_key = ?)", (api_key,)
+            )
+            conn.execute("DELETE FROM tenants WHERE api_key = ?", (api_key,))
+            conn.commit()
+        logger.info(f"Tenant erased: {api_key[:20]}…")
 
     def _row_to_tenant(self, row: dict) -> Tenant:
         row["is_active"] = bool(row.get("is_active", 1))

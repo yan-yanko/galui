@@ -137,6 +137,22 @@ class StorageService:
             conn.commit()
             return cursor.rowcount > 0
 
+    def erase_domains(self, domains: list):
+        """
+        Hard-delete registries, jobs, schedule, and hashes for a list of domains.
+        Called by GDPR/HIPAA tenant erasure flow.
+        """
+        if not domains:
+            return
+        placeholders = ",".join("?" * len(domains))
+        with self._get_conn() as conn:
+            for table in ("registries", "ingest_jobs", "crawl_schedule", "page_hashes"):
+                conn.execute(
+                    f"DELETE FROM {table} WHERE domain IN ({placeholders})",
+                    domains
+                )
+            conn.commit()
+
     # --- Jobs ---
 
     def save_job(self, job: IngestJob):

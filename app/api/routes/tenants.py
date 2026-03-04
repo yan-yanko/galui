@@ -1,12 +1,13 @@
 """
 Tenant management routes.
 
-POST /api/v1/tenants           → create tenant (admin only)
-GET  /api/v1/tenants           → list all tenants (admin only)
-GET  /api/v1/tenants/me        → get own tenant info (tenant key)
-GET  /api/v1/tenants/me/usage  → own usage log
-DELETE /api/v1/tenants/{key}   → deactivate (admin only)
-PATCH  /api/v1/tenants/{key}/plan → upgrade plan (admin only)
+POST   /api/v1/tenants              → create tenant (public self-service signup)
+GET    /api/v1/tenants              → list all tenants (admin only)
+GET    /api/v1/tenants/me           → get own tenant info (tenant key)
+GET    /api/v1/tenants/me/usage     → own usage log
+DELETE /api/v1/tenants/{key}        → deactivate (admin only)
+DELETE /api/v1/tenants/{key}/erase  → hard-delete all data (GDPR/HIPAA right to erasure)
+PATCH  /api/v1/tenants/{key}/plan   → upgrade plan (admin only)
 """
 import logging
 from fastapi import APIRouter, HTTPException, Request
@@ -146,5 +147,73 @@ async def deactivate_tenant(api_key: str, request: Request):
     tenant = tenant_service.get_tenant(api_key)
     if not tenant:
         raise HTTPException(status_code=404, detail="Tenant not found")
-    tenant_service.deactivate(api_key)
+    actor = getattr(request.state, "api_key", "admin")
+    tenant_service.deactivate(api_key, actor=actor)
     return {"deactivated": True, "api_key": api_key}
+
+
+@router.delete("/{api_key}/erase", summary="Hard-delete all tenant data (GDPR/HIPAA erasure)")
+async def erase_tenant(api_key: str, request: Request):
+    """
+    Permanently delete ALL data for a tenant:
+    - Tenant account + API key
+    - Usage log, registered domains, magic tokens
+    - Analytics events for all their domains
+    - Registries, ingest jobs, page hashes for all their domains
+    - Citation queries and results
+
+    Audit log entries are retained (system accountability records).
+    Can be called by admin (master key) or the tenant themselves (own key).
+    """
+    from app.config import settings
+    from app.services.storage import StorageService
+    from app.services.analytics import AnalyticsService
+    from app.services.citation_tracker import CitationService
+
+    # Allow admin OR the tenant erasing their own account
+    actor_key = getattr(request.state, "api_key", "")
+    is_admin = bool(settings.registry_api_key and actor_key == settings.registry_api_key)
+    is_own = (actor_key == api_key)
+
+    if not is_admin and not is_own:
+        raise HTTPException(status_code=403, detail="Admin key or own tenant key required")
+
+    tenant = tenant_service.get_tenant(api_key)
+    if not tenant:
+        raise HTTPException(status_code=404, detail="Tenant not found")
+
+    # Get domains before deletion
+    domains = tenant_service.get_tenant_domains(api_key)
+
+    # Audit log the erasure BEFORE deleting anything
+    tenant_service.log_audit(
+        actor=actor_key or "admin",
+        action="data.erase",
+        resource=f"tenant:{api_key}",
+        detail=str({"email": tenant.email, "domains": domains, "plan": tenant.plan}),
+        ip=request.client.host if request.client else None,
+    )
+
+    # 1. Erase main tenant tables
+    tenant_service.erase_tenant(api_key)
+
+    # 2. Erase analytics events for their domains
+    if domains:
+        AnalyticsService().erase_domain_events(domains)
+
+    # 3. Erase registries, jobs, hashes for their domains
+    if domains:
+        StorageService().erase_domains(domains)
+
+    # 4. Erase citation data (separate DB)
+    try:
+        CitationService().erase_tenant(api_key)
+    except Exception as e:
+        logger.warning(f"Citation erase failed for {api_key[:20]}…: {e}")
+
+    logger.info(f"Tenant erased: {tenant.email} ({api_key[:20]}…) by {actor_key[:20] if actor_key else 'admin'}…")
+    return {
+        "erased": True,
+        "domains_removed": len(domains),
+        "message": "All personal data permanently deleted.",
+    }

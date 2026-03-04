@@ -127,6 +127,29 @@ class CitationService:
             logger.error(f"remove_query error: {e}")
             return False
 
+    def erase_tenant(self, api_key: str):
+        """Hard-delete all citation data for a tenant (GDPR/HIPAA erasure)."""
+        try:
+            with self._conn() as conn:
+                conn.execute("DELETE FROM citation_results WHERE api_key = ?", (api_key,))
+                conn.execute("DELETE FROM citation_queries WHERE api_key = ?", (api_key,))
+                conn.commit()
+            logger.info(f"Citation data erased for {api_key[:20]}…")
+        except Exception as e:
+            logger.warning(f"Citation erase failed: {e}")
+
+    def purge_old_results(self, days: int = 90):
+        """Delete citation results older than N days (retention policy)."""
+        from datetime import datetime, timedelta
+        cutoff = (datetime.utcnow() - timedelta(days=days)).isoformat()
+        try:
+            with self._conn() as conn:
+                conn.execute("DELETE FROM citation_results WHERE checked_at < ?", (cutoff,))
+                conn.commit()
+            logger.debug(f"Purged citation results older than {days} days")
+        except Exception as e:
+            logger.warning(f"Citation purge failed: {e}")
+
     def list_queries(self, api_key: str, domain: str) -> list[dict]:
         try:
             with self._conn() as conn:

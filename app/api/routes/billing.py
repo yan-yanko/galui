@@ -17,6 +17,7 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional
 
 from app.services.tenant import TenantService
+from app.api.limiter import limiter
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -174,7 +175,8 @@ def _get_stripe_price_id(plan_id: str) -> Optional[str]:
 # ── Auth routes ──────────────────────────────────────────────────────────────
 
 @router.post("/auth/signup", summary="Create account")
-async def signup(req: SignupRequest):
+@limiter.limit("10/minute")
+async def signup(request: Request, req: SignupRequest):
     """
     Create a free account. Returns api_key immediately.
     Password is optional — users can also sign in via magic link.
@@ -210,7 +212,8 @@ async def signup(req: SignupRequest):
 
 
 @router.post("/auth/login", summary="Login with email + password")
-async def login(req: LoginRequest):
+@limiter.limit("5/minute")
+async def login(request: Request, req: LoginRequest):
     tenant = tenant_service.authenticate(req.email, req.password)
     if not tenant:
         raise HTTPException(status_code=401, detail="Invalid email or password")
@@ -224,7 +227,8 @@ async def login(req: LoginRequest):
 
 
 @router.post("/auth/magic-link", summary="Send magic link email")
-async def send_magic_link(req: MagicLinkRequest):
+@limiter.limit("3/minute")
+async def send_magic_link(request: Request, req: MagicLinkRequest):
     """
     Always returns 200 (don't reveal whether email exists).
     Sends a magic link email if the account exists.
@@ -460,17 +464,23 @@ async def ls_webhook(request: Request):
 
     payload = await request.body()
 
-    # Verify HMAC-SHA256 signature if secret is configured
-    if settings.ls_webhook_secret:
-        sig = request.headers.get("X-Signature", "")
-        expected = hmac.new(
-            settings.ls_webhook_secret.encode(),
-            payload,
-            hashlib.sha256
-        ).hexdigest()
-        if not hmac.compare_digest(sig, expected):
-            logger.warning("LS webhook: invalid signature")
-            raise HTTPException(status_code=400, detail="Invalid signature")
+    # Verify HMAC-SHA256 signature — mandatory, not optional.
+    # If LS_WEBHOOK_SECRET is not configured we reject the request so an
+    # attacker cannot spoof billing events on a misconfigured deployment.
+    if not settings.ls_webhook_secret:
+        logger.error("LS_WEBHOOK_SECRET not configured — rejecting webhook")
+        raise HTTPException(status_code=500,
+                            detail="Webhook secret not configured on this server")
+    sig = request.headers.get("X-Signature", "")
+    expected = hmac.new(
+        settings.ls_webhook_secret.encode(),
+        payload,
+        hashlib.sha256
+    ).hexdigest()
+    if not hmac.compare_digest(sig, expected):
+        logger.warning("LS webhook: invalid signature from %s",
+                       request.client.host if request.client else "?")
+        raise HTTPException(status_code=400, detail="Invalid signature")
 
     import json
     try:

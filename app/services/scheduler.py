@@ -47,6 +47,13 @@ def start_scheduler():
         logger.info("Auto-refresh scheduler started (checks every 6h, re-crawls if >7d stale)")
         logger.info("Citation check scheduler started (weekly, Pro tenants)")
         logger.info("Daily usage reset scheduler started (midnight UTC)")
+        _scheduler.add_job(
+            _purge_old_citation_results,
+            trigger=CronTrigger(hour=2, minute=0, timezone="UTC"),  # 2am UTC daily
+            id="purge_old_citations",
+            replace_existing=True,
+        )
+        logger.info("Citation purge scheduler started (daily 02:00 UTC, >90 days)")
     except ImportError:
         logger.warning("APScheduler not installed — auto-refresh disabled. pip install apscheduler")
     except Exception as e:
@@ -164,6 +171,18 @@ def _reset_daily_usage():
         TenantService().reset_daily_usage()
     except Exception as e:
         logger.error(f"Daily usage reset job error: {e}", exc_info=True)
+
+
+def _purge_old_citation_results():
+    """
+    Daily 02:00 UTC: delete citation results older than 90 days.
+    Keeps the citations DB from growing unbounded and limits data retention scope.
+    """
+    from app.services.citation_tracker import CitationService
+    try:
+        CitationService().purge_old_results(days=90)
+    except Exception as e:
+        logger.error(f"Citation purge job error: {e}", exc_info=True)
 
 
 def _run_citation_checks():

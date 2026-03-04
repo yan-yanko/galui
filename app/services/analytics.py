@@ -101,6 +101,22 @@ def _infer_topic(page_url: str) -> str:
         return "Other"
 
 
+def _strip_pii_from_url(url: str) -> str:
+    """
+    Remove query string and fragment from a URL before storage.
+    Prevents PII leakage (e.g. ?email=user@example.com, ?token=xxx).
+    """
+    if not url:
+        return url
+    try:
+        from urllib.parse import urlparse, urlunparse
+        p = urlparse(url)
+        # Keep scheme + host + path only; drop query + fragment
+        return urlunparse((p.scheme, p.netloc, p.path, "", "", ""))
+    except Exception:
+        return url
+
+
 def detect_agent(user_agent: str) -> Optional[tuple]:
     """
     Returns (agent_name, agent_type) if UA matches a known AI agent.
@@ -145,6 +161,9 @@ class AnalyticsService:
         ts: Optional[str] = None,
     ):
         """Fire-and-forget. Never blocks the request."""
+        # Strip query strings + fragments to prevent PII leakage in stored URLs
+        safe_url = _strip_pii_from_url(page_url)
+        safe_referrer = _strip_pii_from_url(referrer) if referrer else None
         try:
             with self._get_conn() as conn:
                 conn.execute(
@@ -155,17 +174,33 @@ class AnalyticsService:
                     """,
                     (
                         domain,
-                        page_url,
+                        safe_url,
                         agent_name,
                         agent_type,
                         user_agent,
-                        referrer,
+                        safe_referrer,
                         ts or datetime.utcnow().isoformat(),
                     ),
                 )
                 conn.commit()
         except Exception as e:
             logger.warning(f"Analytics record_event failed: {e}")
+
+    def erase_domain_events(self, domains: list):
+        """Hard-delete all analytics events for a list of domains (GDPR erasure)."""
+        if not domains:
+            return
+        placeholders = ",".join("?" * len(domains))
+        try:
+            with self._get_conn() as conn:
+                conn.execute(
+                    f"DELETE FROM agent_events WHERE domain IN ({placeholders})",
+                    domains
+                )
+                conn.commit()
+            logger.info(f"Erased analytics events for {len(domains)} domain(s)")
+        except Exception as e:
+            logger.warning(f"Analytics erase failed: {e}")
 
     def get_summary(self, domain: str, days: int = 30) -> Dict[str, Any]:
         """Full analytics summary for a domain."""
