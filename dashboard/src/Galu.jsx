@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 /**
  * Galu — Galuli's mascot. A purple octopus with 6 arms,
  * one for each AI engine: ChatGPT, Perplexity, Claude, Gemini, Grok, Llama.
@@ -9,6 +11,8 @@
  *   <GaluMascot mood="scan" />          — gentle pulse
  */
 export function GaluMascot({ size = 56, mood = 'default', style = {} }) {
+  const [imgFailed, setImgFailed] = useState(false)
+
   const moodStyle = {
     default: {},
     celebrate: {
@@ -33,14 +37,26 @@ export function GaluMascot({ size = 56, mood = 'default', style = {} }) {
         }
       `}</style>
       <div style={{ display: 'inline-block', lineHeight: 0, ...style }}>
-        <img
-          src="/dashboard/galu.png"
-          alt="Galu"
-          width={size}
-          height={size}
-          style={{ objectFit: 'contain', display: 'block', ...moodStyle }}
-          onError={e => { e.currentTarget.style.display = 'none' }}
-        />
+        {imgFailed ? (
+          <div style={{
+            width: size,
+            height: size,
+            fontSize: size * 0.75,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            ...moodStyle,
+          }}>🐙</div>
+        ) : (
+          <img
+            src="/dashboard/galu.png"
+            alt="Galu"
+            width={size}
+            height={size}
+            style={{ objectFit: 'contain', display: 'block', ...moodStyle }}
+            onError={() => setImgFailed(true)}
+          />
+        )}
       </div>
     </>
   )

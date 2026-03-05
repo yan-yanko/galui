@@ -644,6 +644,7 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
       {/* ── Bottom CTA ── */}
       <div style={{ background: 'var(--surface)', borderTop: '1px solid var(--border)', padding: '64px 32px' }}>
         <div style={{ maxWidth: 560, margin: '0 auto', textAlign: 'center' }}>
+          <GaluMascot size={72} mood="default" style={{ marginBottom: 20, display: 'inline-block' }} />
           <div className="badge badge-purple" style={{ fontSize: 11, marginBottom: 16, display: 'inline-block' }}>Private Beta</div>
           <h2 style={{ fontSize: 'clamp(30px, 3.5vw, 48px)', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 12, color: 'var(--text)', lineHeight: 1.1 }}>Ready to join?</h2>
           <p style={{ fontSize: 17, color: 'var(--subtle)', marginBottom: 28 }}>Drop your email. Free forever, no credit card. You'll get personal onboarding — not a drip campaign.</p>
