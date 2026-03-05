@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback, useRef } from 'react'
 import { api } from './api'
 import './index.css'
 import './App.css'
@@ -791,6 +791,13 @@ function ScorePage({ pendingDomain, clearPending }) {
 
       {!polling && loading && <div className="flex center gap-12" style={{ padding: 40, color: 'var(--muted)' }}><span className="spinner" /> Calculating score…</div>}
 
+      {!polling && !loading && !score && registries.length > 0 && (
+        <div className="card flex col gap-12" style={{ padding: '32px 28px', textAlign: 'center', alignItems: 'center' }}>
+          <span style={{ color: 'var(--muted)', fontSize: 13 }}>Could not load score for <strong style={{ color: 'var(--text)' }}>{selected}</strong></span>
+          <button className="btn btn-ghost btn-sm" onClick={() => loadScore(selected)}>Retry →</button>
+        </div>
+      )}
+
       {!polling && !loading && score && (
         <>
           {/* Score hero */}
@@ -1314,7 +1321,7 @@ function ContentDoctorPage() {
   }, [domains])
 
   const plan = me?.plan || 'free'
-  const isPaid = plan === 'starter' || plan === 'pro' || plan === 'enterprise'
+  const isPaid = ['starter', 'pro', 'agency', 'enterprise'].includes(plan)
 
   const run = async () => {
     setError(''); setResult(null); setLoading(true)
@@ -2130,7 +2137,7 @@ function TenantsPage() {
     }
   }
 
-  const planBadge = { enterprise: 'badge-blue', pro: 'badge-green', free: 'badge-gray' }
+  const planBadge = { enterprise: 'badge-blue', pro: 'badge-green', agency: 'badge-purple', starter: 'badge-yellow', free: 'badge-gray' }
 
   return (
     <div className="flex col gap-24">
@@ -2214,9 +2221,9 @@ function TenantsPage() {
 // Annual URLs — replace TODOs once you have the annual checkout links from LS
 const LS_URLS = {
   starter:        'https://galuli.io/checkout/buy/8bc3ebee-b31d-43ee-bbcc-5b47ba3b0022',
-  starter_annual: null, // TODO: paste Starter $90/yr checkout URL here
+  starter_annual: null, // TODO: paste Starter $79/yr checkout URL here
   pro:            'https://galuli.io/checkout/buy/e280dc25-998e-4ca5-b224-5d6548d8f4e0',
-  pro_annual:     null, // TODO: paste Pro $290/yr checkout URL here
+  pro_annual:     null, // TODO: paste Pro $249/yr checkout URL here
 }
 function openCheckout(plan, email) {
   const base = LS_URLS[plan]
@@ -2673,6 +2680,13 @@ function GeoPage() {
         </div>
       )}
 
+      {!loading && !geo && registries.length > 0 && (
+        <div className="card flex col gap-12" style={{ padding: '32px 28px', textAlign: 'center', alignItems: 'center' }}>
+          <span style={{ color: 'var(--muted)', fontSize: 13 }}>Could not load GEO score for <strong style={{ color: 'var(--text)' }}>{selected}</strong></span>
+          <button className="btn btn-ghost btn-sm" onClick={() => loadGeo(selected)}>Retry →</button>
+        </div>
+      )}
+
       {!loading && geo && (
         <>
           {/* Hero */}
@@ -2957,7 +2971,7 @@ function CitationTrackerPage() {
   const ENGINE_LABELS = { perplexity: 'Perplexity', openai: 'ChatGPT', claude: 'Claude (training)' }
 
   const plan = me?.plan || 'free'
-  const isPro = true // TODO: restore after testing — ['pro', 'agency', 'enterprise'].includes(plan)
+  const isPro = ['pro', 'agency', 'enterprise'].includes(plan)
 
   // ── Plan gate ──
   if (!isPro) {
@@ -3209,16 +3223,25 @@ export default function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem('galuli_theme') || 'light')
   const [pendingScanDomain, setPendingScanDomain] = useState(null)
 
+  // Track which pages have ever been visited so they stay mounted (preserves their data/state)
+  // useRef avoids triggering an extra re-render when we add a new page to the set
+  const visitedRef = useRef(new Set([getPageFromHash()]))
+
   // Sync hash → page on back/forward navigation
   useEffect(() => {
-    const onHashChange = () => setPage(getPageFromHash())
+    const onHashChange = () => {
+      const p = getPageFromHash()
+      visitedRef.current.add(p)
+      setPage(p)
+    }
     window.addEventListener('hashchange', onHashChange)
     return () => window.removeEventListener('hashchange', onHashChange)
   }, [])
 
-  // Wrapped setPage that also updates the URL hash
+  // Wrapped setPage that also updates the URL hash and marks the page as visited
   const navigate = useCallback((p) => {
     window.location.hash = p
+    visitedRef.current.add(p) // ensure the page stays mounted after first visit
     setPage(p)
   }, [])
 
@@ -3236,26 +3259,27 @@ export default function App() {
     api.health().then(setHealth).catch(() => { })
   }, [])
 
-  const pages = {
-    overview: <OverviewPage setPage={navigate} setPendingScanDomain={setPendingScanDomain} />,
-    score: <ScorePage pendingDomain={pendingScanDomain} clearPending={() => setPendingScanDomain(null)} />,
-    geo: <GeoPage />,
-    analytics: <AnalyticsPage setPage={navigate} />,
-    'content-doctor': <ContentDoctorPage />,
-    citations: <CitationTrackerPage />,
-    snippet: <SnippetPage />,
-    settings: <SettingsPage setPage={navigate} />,
-    // Hidden pages — reachable via buttons, not main nav
-    ingest: <IngestPage />,
-    registries: <RegistriesPage />,
-    tenants: <TenantsPage />,
-  }
+  // Helper: show/hide a page slot without unmounting it (preserves component state & fetched data)
+  const show = (p) => ({ display: page === p ? undefined : 'none' })
+  const v = visitedRef.current // alias for brevity
 
   return (
     <div className="app-shell">
       <Nav page={page} setPage={navigate} health={health} theme={theme} toggleTheme={toggleTheme} />
       <main className="main-content">
-        {pages[page] ?? <OverviewPage setPage={navigate} />}
+        {/* Lazy-mount + display:none: each page mounts on first visit and stays mounted.
+            Switching tabs only toggles visibility — no unmount, no data loss, no re-fetch flash. */}
+        {v.has('overview') && <div style={show('overview')}><OverviewPage setPage={navigate} setPendingScanDomain={setPendingScanDomain} /></div>}
+        {v.has('score') && <div style={show('score')}><ScorePage pendingDomain={pendingScanDomain} clearPending={() => setPendingScanDomain(null)} /></div>}
+        {v.has('geo') && <div style={show('geo')}><GeoPage /></div>}
+        {v.has('analytics') && <div style={show('analytics')}><AnalyticsPage setPage={navigate} /></div>}
+        {v.has('content-doctor') && <div style={show('content-doctor')}><ContentDoctorPage /></div>}
+        {v.has('citations') && <div style={show('citations')}><CitationTrackerPage /></div>}
+        {v.has('snippet') && <div style={show('snippet')}><SnippetPage /></div>}
+        {v.has('settings') && <div style={show('settings')}><SettingsPage setPage={navigate} /></div>}
+        {v.has('ingest') && <div style={show('ingest')}><IngestPage /></div>}
+        {v.has('registries') && <div style={show('registries')}><RegistriesPage /></div>}
+        {v.has('tenants') && <div style={show('tenants')}><TenantsPage /></div>}
       </main>
       <ToastContainer />
     </div>
