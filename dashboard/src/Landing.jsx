@@ -453,7 +453,7 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 28 }}>
               {[
                 { label: 'Effortless.', detail: 'One script tag. Galuli handles everything else automatically.' },
-                { label: 'Beta access.', detail: 'Scan your site free. Every signup gets a personal onboarding — not automated.' },
+                { label: 'Affordable.', detail: 'Free scan, no credit card. Paid plans start at $9/month.' },
                 { label: 'Universal.', detail: 'ChatGPT, Claude, Perplexity, Gemini, Grok — all of them, at once.' },
               ].map(({ label, detail }) => (
                 <div key={label} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 15 }}>
