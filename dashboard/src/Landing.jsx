@@ -65,7 +65,7 @@ export function ScoreRingLanding({ score, size = 80, accentColor }) {
 // ── Top nav (shared between landing + results) ─────────────────────────────
 function LandingNav({ onSignIn }) {
   return (
-    <nav style={{
+    <nav className="landing-nav" style={{
       height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       padding: '0 64px', borderBottom: '1px solid var(--border)',
       background: 'var(--surface)', position: 'sticky', top: 0, zIndex: 100,
@@ -75,9 +75,11 @@ function LandingNav({ onSignIn }) {
         galuli
       </a>
       <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-        <a href="/blog"    className="btn btn-ghost btn-sm" style={{ color: 'var(--subtle)' }}>Blog</a>
-        <a href="/about"   className="btn btn-ghost btn-sm" style={{ color: 'var(--subtle)' }}>About</a>
-        <a href="/pricing" className="btn btn-ghost btn-sm" style={{ color: 'var(--subtle)' }}>Pricing</a>
+        <div className="nav-links-desktop" style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+          <a href="/blog"    className="btn btn-ghost btn-sm" style={{ color: 'var(--subtle)' }}>Blog</a>
+          <a href="/about"   className="btn btn-ghost btn-sm" style={{ color: 'var(--subtle)' }}>About</a>
+          <a href="/pricing" className="btn btn-ghost btn-sm" style={{ color: 'var(--subtle)' }}>Pricing</a>
+        </div>
         <button className="btn btn-ghost btn-sm" style={{ color: 'var(--subtle)' }} onClick={() => onSignIn && onSignIn()}>Sign in</button>
         <a href="/pricing" className="btn btn-primary btn-sm" style={{ marginLeft: 6 }}>Join the beta →</a>
       </div>
@@ -431,10 +433,10 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
 
       {/* ── Hero ── */}
       <div style={{ borderBottom: '1px solid var(--border)' }}>
-        <div style={{ maxWidth: 1400, margin: '0 auto', padding: '80px 64px 72px', display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,560px)', gap: 80, alignItems: 'center' }}>
+        <div className="hero-grid" style={{ maxWidth: 1400, margin: '0 auto', padding: '80px 64px 72px', display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,560px)', gap: 80, alignItems: 'center' }}>
           {/* Left */}
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
+            <div className="hero-badge-row" style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
               <div className="badge badge-purple" style={{ fontSize: 11 }}>
                 Private Beta
               </div>
@@ -568,7 +570,7 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
 
       {/* ── What is AI Readability ── */}
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 32px', borderBottom: '1px solid var(--border)' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: 56, alignItems: 'start' }}>
+        <div className="two-col-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: 56, alignItems: 'start' }}>
           <div>
             <div className="eyebrow">Why AI accessibility matters</div>
             <h2 style={{ fontSize: 'clamp(26px, 2.8vw, 38px)', fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text)', marginBottom: 16, lineHeight: 1.1 }}>
@@ -678,15 +680,45 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
       </div>
 
       <style>{`
+        /* ── Mobile layout ── */
         @media (max-width: 800px) {
-          .hero-grid { grid-template-columns: 1fr !important; }
+          .landing-nav { padding: 0 16px !important; }
+          .nav-links-desktop { display: none !important; }
+
+          .hero-grid {
+            grid-template-columns: 1fr !important;
+            padding: 40px 20px 36px !important;
+            gap: 36px !important;
+          }
+          .hero-badge-row {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 6px !important;
+          }
+          .two-col-grid {
+            grid-template-columns: 1fr !important;
+            gap: 32px !important;
+          }
         }
-        .feature-card:hover {
-          background: var(--surface2) !important;
-          box-shadow: inset 0 0 0 1px var(--border2);
+        @media (max-width: 600px) {
+          .hero-grid h1 {
+            font-size: 32px !important;
+            letter-spacing: -0.02em !important;
+          }
+          .hero-grid p {
+            font-size: 16px !important;
+          }
         }
-        .step-card:hover {
-          background: var(--surface2) !important;
+
+        /* ── Hover effects (desktop only) ── */
+        @media (hover: hover) {
+          .feature-card:hover {
+            background: var(--surface2) !important;
+            box-shadow: inset 0 0 0 1px var(--border2);
+          }
+          .step-card:hover {
+            background: var(--surface2) !important;
+          }
         }
       `}</style>
     </div>
@@ -868,14 +900,14 @@ export function ResultsPage({ data, onRegistered }) {
                 {submitting ? <><span className="spinner" style={{ width: 12, height: 12 }} /> Joining…</> : 'Join the beta →'}
               </button>
             </form>
-            <p style={{ fontSize: 11, color: 'var(--subtle)', marginTop: 10 }}>Free · No credit card · Yan reviews every signup</p>
+            <p style={{ fontSize: 11, color: 'var(--subtle)', marginTop: 10 }}>Free · No credit card · Personal onboarding</p>
           </div>
         ) : (
           <div className="card" style={{ marginBottom: 16, borderColor: 'rgba(74,173,82,0.25)' }}>
             <GaluMascot size={56} mood="celebrate" style={{ marginBottom: 10 }} />
             <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 6, letterSpacing: '-0.2px' }}>You're on the list!</div>
             <p style={{ color: 'var(--subtle)', fontSize: 13, lineHeight: 1.7, marginBottom: 14, maxWidth: 420 }}>
-              Yan will reach out to you at <strong style={{ color: 'var(--text)' }}>{email}</strong> personally — usually within a day.
+              We'll reach out to you at <strong style={{ color: 'var(--text)' }}>{email}</strong> personally — usually within a day.
               In the meantime, your dashboard is ready to explore.
             </p>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
