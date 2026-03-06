@@ -1,6 +1,6 @@
 # Galuli — Claude Session Memory
 
-> Last updated: 2026-03-05
+> Last updated: 2026-03-06
 
 ---
 
@@ -93,8 +93,9 @@ galuli/
 ├── dashboard/
 │   └── src/
 │       ├── main.jsx             ← Root router (path-based, no react-router)
-│       ├── App.jsx              ← Dashboard SPA (~3,280 lines, one file — see Known Technical Debt)
+│       ├── App.jsx              ← Dashboard SPA (~3,500+ lines, one file — see Known Technical Debt)
 │       ├── Landing.jsx          ← LandingPage + ResultsPage (root /)
+│       ├── Galu.jsx             ← GaluMascot component (renders galu.png or 🐙 emoji fallback)
 │       ├── Blog.jsx             ← BlogListPage + BlogPostPage + POSTS array (12 posts)
 │       ├── About.jsx            ← AboutPage (/about)
 │       ├── Roadmap.jsx          ← RoadmapPage (/roadmap)
@@ -104,6 +105,8 @@ galuli/
 │       ├── api.js               ← fetch wrapper + all API calls
 │       ├── index.css            ← design system / global styles (Linear-inspired)
 │       └── App.css
+├── dashboard/public/
+│   └── galu.png                 ← Mascot PNG (served at /dashboard/galu.png by Vite)
 ├── static/
 │   └── galuli.js                ← Customer snippet (vanilla JS IIFE, v3.2.0)
 ├── Dockerfile
@@ -192,6 +195,10 @@ app.include_router(citations.router,      prefix="/api/v1/citations")
 | GET | `/registry/{domain}/status` | Live liveness check |
 | GET | `/api/v1/billing/plans` | Plan list (public pricing page) |
 | GET | `/api/v1/auth/magic-verify` | Magic link login redirect |
+| GET | `/api/v1/score/{domain}` | AI Readiness Score — **now public** (2026-03-06) |
+| GET | `/api/v1/score/{domain}/badge` | Embeddable SVG badge — always public |
+| GET | `/api/v1/score/{domain}/suggestions` | Improvement suggestions — **now public** |
+| GET | `/api/v1/geo/{domain}` | Per-LLM GEO score — **now public** (2026-03-06) |
 
 ### Snippet endpoints (public POST — tenant auth via payload)
 | Method | Path | Description |
@@ -205,10 +212,6 @@ app.include_router(citations.router,      prefix="/api/v1/citations")
 | POST | `/api/v1/tenants` | Create tenant / sign up |
 | POST | `/api/v1/auth/login` | Email + password login |
 | POST | `/api/v1/auth/magic-link` | Send magic link email |
-| GET | `/api/v1/score/{domain}` | AI Readiness Score (5 dimensions) |
-| GET | `/api/v1/score/{domain}/badge` | Embeddable SVG badge (score ring, 220×80) |
-| GET | `/api/v1/score/{domain}/suggestions` | Improvement suggestions |
-| GET | `/api/v1/geo/{domain}` | Per-LLM GEO citation readiness score |
 | GET | `/api/v1/analytics/{domain}` | AI traffic summary |
 | GET | `/api/v1/analytics/{domain}/agents` | Agent breakdown |
 | GET | `/api/v1/analytics/{domain}/pages` | Per-page breakdown |
@@ -216,8 +219,8 @@ app.include_router(citations.router,      prefix="/api/v1/citations")
 | GET | `/api/v1/jobs/{job_id}` | Poll ingest job status |
 | GET | `/api/v1/citations/{domain}` | Citation results (Pro+ only) |
 | GET | `/api/v1/content-doctor/{domain}` | Content Doctor analysis |
-| DELETE | `/api/v1/admin/wipe-all` | Wipe all data (master key required in prod) |
-| DELETE | `/api/v1/admin/registry/{domain}` | Delete one registry |
+| DELETE | `/api/v1/admin/wipe-all` | Wipe all data (**master key only** in prod) |
+| DELETE | `/api/v1/admin/registry/{domain}` | Delete one registry (tenant key OK) |
 | POST | `/api/v1/admin/refresh` | Force re-crawl a domain |
 
 ---
@@ -231,7 +234,20 @@ app.include_router(citations.router,      prefix="/api/v1/citations")
 ### Key sets in auth.py
 ```python
 PUBLIC_EXACT = { "/health", "/", "/galuli.js", "/robots.txt", "/llms.txt", ... }
-PUBLIC_PREFIXES = ("/registry/", "/dashboard", "/blog", "/about", ...)
+PUBLIC_PREFIXES = (
+    "/registry/",
+    "/dashboard",
+    "/assets/",
+    "/dashboard/assets/",
+    "/blog",
+    "/about",
+    "/roadmap",
+    "/pricing",
+    "/auth",
+    "/.well-known/",
+    "/api/v1/score/",   # ← added 2026-03-06 (read-only, registry already public)
+    "/api/v1/geo/",     # ← added 2026-03-06 (read-only)
+)
 PUBLIC_POST_EXACT = {
     "/api/v1/tenants",          # signup
     "/api/v1/auth/signup",
@@ -251,6 +267,10 @@ After middleware, handlers receive:
 
 ### CORS
 `allow_origins=["*"]` (intentional) — galuli.js runs on any customer domain and needs to POST. `allow_credentials=False` (required when using `*`).
+
+### ⚠️ Admin endpoint auth notes
+- `DELETE /api/v1/admin/wipe-all` → **requires master `REGISTRY_API_KEY`** in prod. Regular tenant keys return 403. The dashboard "Remove all sites" button now bypasses this by looping `getMyDomains()` + individual `deleteRegistry()` calls instead.
+- `DELETE /api/v1/admin/registry/{domain}` → accepts any valid tenant key (no master key needed). Requires the user to be logged in (key in localStorage).
 
 ---
 
@@ -287,6 +307,7 @@ The snippet authenticates via `payload.tenant_key` inside the POST body (NOT via
 ## Score Algorithm (score.py routes)
 
 Active endpoint: `GET /api/v1/score/{domain}` (handled by `app/api/routes/score.py`)
+**Now public** — no auth required as of 2026-03-06.
 
 ### 5 Dimensions (total 100 pts)
 | Dimension | Max | What it measures |
@@ -314,6 +335,7 @@ SVG score ring (220×80), served with `Cache-Control: max-age=3600` and `Access-
 ## GEO Score (services/geo.py)
 
 Active endpoint: `GET /api/v1/geo/{domain}` (handled by `push.py` router)
+**Now public** — no auth required as of 2026-03-06.
 
 Returns per-LLM citation readiness scores for: **ChatGPT, Perplexity, Claude, Gemini, Grok, Llama**.
 Each engine has different weights based on what it values (freshness vs. authority vs. structured data vs. WebMCP).
@@ -333,7 +355,7 @@ Runs queries against:
 - **OpenAI gpt-4o-search-preview** (`OPENAI_API_KEY` optional)
 - **Claude** (via Anthropic, always available)
 
-Weekly auto-check via APScheduler for all Pro+ tenants that have saved queries.
+Weekly auto-check via APScheduler for all Pro+ tenants with saved queries.
 
 ---
 
@@ -423,19 +445,65 @@ TXT          _railway-verify → railway-verify=3ccacaca6758c5c2df44dd92a7fef6f0
 ```
 App
 ├── ToastContainer
-├── Sidebar (tab navigation + plan badge)
-├── OverviewPage        ← score summary, quick actions
+├── Sidebar (NAV_SECTIONS grouped: SETUP / INSIGHTS / TOOLS + Settings at bottom)
+│   ├── InfoTip                   ← inline ⓘ hover tooltip (used in checklist)
+│   └── NAV_SECTIONS items with title= tooltips on each button
+├── OverviewPage
+│   ├── OnboardingChecklist       ← 3-step progress card (Get key / Scan / Install snippet)
+│   ├── Scan a site form
+│   ├── Stats row (Sites indexed, Avg AI score, WebMCP sites)
+│   └── Indexed sites list (ScoreRing | spinner | ↺ retry, inline delete confirmation)
 ├── ScorePage           ← full 5-dimension score breakdown
 ├── GeoPage             ← per-LLM citation readiness
 ├── AnalyticsPage       ← AI agent traffic (events + agents + pages tabs)
 ├── ContentDoctorPage   ← Authority Gap Scanner + Structural Optimizer
-├── SnippetPage         ← user signs up / gets API key / installs snippet
+├── SnippetPage
+│   ├── Status banner (green "Snippet active on N domains" / yellow "not installed yet")
+│   └── Step 2 header has "Platform-specific guides ↗" link → /install
 ├── SettingsPage
-│   ├── DangerZone      ← "Wipe all data" button (sends X-API-Key)
+│   ├── DangerZone      ← "Remove all sites" (loops getMyDomains + deleteRegistry, tenant-key safe)
 │   └── UpgradeCTAs     ← monthly/annual toggle + Starter + Pro cards
 ├── IngestPage          ← crawl-on-demand + job status polling
 ├── RegistriesPage      ← browse all indexed domains
 └── TenantsPage         ← admin-only tenant management
+```
+
+### Sidebar navigation structure (NAV_SECTIONS)
+```js
+const NAV_SECTIONS = [
+  { label: 'SETUP', items: [
+    { id: 'snippet',  label: 'Install Snippet', icon: '⟨⟩', tooltip: '...' },
+  ]},
+  { label: 'INSIGHTS', items: [
+    { id: 'overview',  label: 'Overview',  icon: '⊞', tooltip: '...' },
+    { id: 'score',     label: 'AI Score',  icon: '◎', tooltip: '...' },
+    { id: 'geo',       label: 'GEO',       icon: '◈', tooltip: '...' },
+    { id: 'analytics', label: 'Analytics', icon: '↗', tooltip: '...' },
+  ]},
+  { label: 'TOOLS', items: [
+    { id: 'content-doctor', label: 'Content Doctor', icon: '✦', highlight: true, tooltip: '...' },
+    { id: 'citations',      label: 'Citations',      icon: '◉', tooltip: '...' },
+  ]},
+]
+// Settings pushed to sidebar bottom via marginTop: 'auto'
+// Each button has native title= tooltip
+```
+
+### Onboarding checklist (OnboardingChecklist component)
+```jsx
+// Rendered at top of OverviewPage, above the scan form
+// 3 steps with InfoTip on each:
+//   1. Get your API key  (hasKey = !!localStorage.getItem('galuli_api_key'))
+//   2. Scan your first site  (hasScan = registries.length > 0)
+//   3. Install the snippet  (hasSnippet = !!localStorage.getItem('galuli_snippet_active') || webmcp_enabled)
+// Progress bar fills as steps complete. Dismissed via × → localStorage 'galuli_onboarding_done'=1
+```
+
+### Delete domain flow (OverviewPage)
+```
+Click × → if no API key: toast + redirect to 'snippet' tab
+          if has key: show inline "Remove? [Yes] [No]" in the site row
+          Yes click → api.deleteRegistry(domain) → removes from state on success
 ```
 
 ### Routing
@@ -447,6 +515,15 @@ const VALID_PAGES = ['overview','score','geo','analytics','content-doctor',
 // hashchange listener handles browser back/forward
 // visitedRef (useRef<Set>) tracks which pages have been visited — lazy-mount pattern
 ```
+
+### localStorage keys used by the dashboard
+| Key | Set by | Used for |
+|---|---|---|
+| `galuli_api_key` | SnippetPage (on login/signup) | Auth for all API calls; `getKey()` in api.js |
+| `galuli_api_url` | SettingsPage | Override API base URL (default: window.location.origin) |
+| `galuli_snippet_active` | SnippetPage (when domains.length > 0) | OnboardingChecklist step 3 check |
+| `galuli_onboarding_done` | OnboardingChecklist × dismiss button | Hides checklist permanently |
+| `galuli_theme` | Sidebar theme toggle | 'dark' or 'light' |
 
 ### Plan display constants (PLAN_DETAILS in App.jsx)
 ```js
@@ -467,6 +544,36 @@ function UpgradeCTAs({ plan, email }) {
   // Starter: $9/mo or $79/yr | Pro: $29/mo or $249/yr
   // Visible to free and starter plans only
 }
+```
+
+---
+
+## Mascot — Galu (Galu.jsx + dashboard/public/galu.png)
+
+```jsx
+// dashboard/src/Galu.jsx
+// Usage: <GaluMascot size={72} mood="default" style={{ marginBottom: 20 }} />
+// Props: size (px, default 56), mood ('default'|'happy'|'sad'), style (extra CSS)
+// Renders: <img src="/dashboard/galu.png"> with onError → 🐙 emoji fallback
+// The PNG is at dashboard/public/galu.png → served at /dashboard/galu.png by Vite
+// Placed in: Landing.jsx bottom CTA section (size 72, above "Ready to join?")
+```
+
+---
+
+## Landing Page — Notable Sections
+
+```
+LandingPage (Landing.jsx):
+├── Hero section (headline, subheadline, scan input, buttons)
+├── Trust strip (logo strip)
+├── SimilarWeb callout banner (Reuters/Fox News stat — added 2026-03-06)
+│   "Reuters (1.5M searches/mo) outranks Fox News (42M) in AI citations."
+│   Source link → SimilarWeb 2026 GenAI Brand Visibility Index
+├── "How it works" section
+├── Features grid
+├── Bottom CTA section (GaluMascot size=72 + "Ready to join?" + sign-up button)
+└── Footer
 ```
 
 ---
@@ -493,6 +600,7 @@ PLAN_LIMITS = {
 - `is_domain_allowed(api_key, domain)` — auto-registers domain if under limit
 - `record_request(api_key, endpoint, domain)` — increments requests_today + requests_total
 - `reset_daily_usage()` — sets requests_today=0 for all tenants (called midnight UTC)
+- `get_tenant_domains(api_key)` — returns list of domain strings for a tenant (used by "Remove all sites")
 
 **Note:** `stripe_subscription_id` column is reused to store LS subscription IDs (no migration needed).
 
@@ -574,18 +682,22 @@ auto_refresh_interval_hours: int = 168  # 7 days
 --radius-sm: 6px
 ```
 
-### Key sizes
+### Key sizes (updated 2026-03-06)
 - Base font: **14px** (Linear-style density)
-- Page header h1: **18px**, weight 600
+- Page header h1: **20px**, weight 600 (was 18px)
 - Table td: **13px**
 - Buttons: **13px**, padding 7px 14px
-- Stat value: **32px**
+- Stat value: **36px** (was 32px)
 - Sidebar item: **14px**
 
-### Layout
-- **Left sidebar** (fixed, 220px) — `.sidebar` with logo, nav items, footer
+### Layout (updated 2026-03-06)
+- **Left sidebar** (fixed, 220px) — `.sidebar` with logo, sectioned nav, footer
 - **`.app-shell`** = flex row container
-- **`.main-content`** = `margin-left: 220px`, padding 32px 40px
+- **`.main-content`** = `margin-left: 220px`, padding `44px 60px` (was `32px 40px`)
+- **`.card`** default padding: `20px 24px` (was `16px 20px`)
+- **`.card-lg`** padding: `28px 32px` (was `24px 28px`)
+- **`.stat-card`** padding: `20px 24px` (was `16px 20px`)
+- Sidebar sections: `.sidebar-section` with `.sidebar-section-label` (10px uppercase caps)
 - Sidebar items: `.sidebar-item`, `.sidebar-item.active`, `.sidebar-item-icon`
 
 ---
@@ -610,7 +722,53 @@ Railway mounts volumes at **runtime** with root ownership. A non-root user (e.g.
 
 ---
 
-## Change Log (2026-03-02 — 2026-03-05)
+## Change Log
+
+### 2026-03-06 — Dashboard UX overhaul + bug fixes (commits `9bec295`, `62992b4`, `f9b1215`, `1ba3048`)
+
+#### Dashboard UX (9bec295)
+| File | Change |
+|---|---|
+| `dashboard/src/App.jsx` | Added `InfoTip` component — inline ⓘ circle with 220px hover tooltip card |
+| `dashboard/src/App.jsx` | Added `OnboardingChecklist` component — 3-step progress card on OverviewPage (Get key / Scan / Install), progress bar, dismiss to localStorage |
+| `dashboard/src/App.jsx` | Replaced flat `NAV_LINKS` with `NAV_SECTIONS` (SETUP / INSIGHTS / TOOLS groups) with section label headers and native `title=` tooltip on every nav item |
+| `dashboard/src/App.jsx` | Settings nav item pushed to sidebar bottom via `marginTop: 'auto'` |
+| `dashboard/src/App.jsx` | SnippetPage: green "Snippet active on N domains" / yellow "not installed" status banner |
+| `dashboard/src/App.jsx` | SnippetPage: persists `galuli_snippet_active` to localStorage when domains load |
+| `dashboard/src/App.jsx` | SnippetPage Step 2: added "Platform-specific guides ↗" link → `/install` |
+| `dashboard/src/index.css` | Added `.sidebar-section` and `.sidebar-section-label` CSS classes |
+
+#### Bug fixes + design (62992b4)
+| File | Change |
+|---|---|
+| `dashboard/src/App.jsx` | × delete: replaced `confirm()` dialog with inline two-step "Remove? Yes / No" in the site row |
+| `dashboard/src/App.jsx` | × delete: added `confirmingDelete` state; first click shows confirmation, second click deletes |
+| `dashboard/src/App.jsx` | "Wipe all data" → "Remove all sites": replaced `api.wipeAll()` (master key required → always 403) with `api.getMyDomains()` + loop of `api.deleteRegistry()` per domain. Added loading spinner + page reload on success. Converted `DangerZone` from const arrow to proper function component with `useState` |
+| `dashboard/src/index.css` | `.main-content` padding: `32px 40px` → `44px 60px` |
+| `dashboard/src/index.css` | `.card` padding: `16px 20px` → `20px 24px` |
+| `dashboard/src/index.css` | `.card-lg` padding: `24px 28px` → `28px 32px` |
+| `dashboard/src/index.css` | `.stat-card` padding: `16px 20px` → `20px 24px`; stat value: `32px` → `36px` |
+| `dashboard/src/index.css` | `.page-header h1`: `18px` → `20px`; margin-bottom: `24px` → `28px` |
+
+#### Auth + score/spinner fixes (f9b1215)
+| File | Change |
+|---|---|
+| `app/api/auth.py` | Added `/api/v1/score/` and `/api/v1/geo/` to `PUBLIC_PREFIXES` — fixes score loading for unauthenticated users. Root cause: score API returned 401, `.catch(()=>{})` swallowed it, spinner ran forever |
+| `dashboard/src/App.jsx` | Score loading catch: sets `scores[domain] = 'failed'` instead of swallowing error → spinner stops, shows ↺ retry button + "Score unavailable" message |
+| `dashboard/src/App.jsx` | Avg AI score: shows muted gray `—` when null (was incorrectly red via ternary fallthrough) |
+
+#### Delete gate fix (1ba3048)
+| File | Change |
+|---|---|
+| `dashboard/src/App.jsx` | `handleDelete`: checks `localStorage.getItem('galuli_api_key')` before proceeding. If no key: toast "You need a free account to remove sites" + redirect to 'snippet' tab. Prevents the confusing "X-API-Key header required" error. |
+
+### 2026-03-06 — Mascot + landing page (commits `892c9d8`, `f0cdb1d`, `ca2f700`)
+| Commit | File | Change |
+|---|---|---|
+| `892c9d8` | `dashboard/src/Galu.jsx` | Added `useState` emoji fallback (🐙) for missing image; `onError` → `setImgFailed(true)` |
+| `892c9d8` | `dashboard/src/Landing.jsx` | Added `<GaluMascot size={72}>` to bottom CTA section (above "Ready to join?" badge) |
+| `f0cdb1d` | `dashboard/public/galu.png` | Added the actual mascot PNG file (was missing, causing emoji fallback always) |
+| `ca2f700` | `dashboard/src/Landing.jsx` | Added SimilarWeb Reuters/Fox News callout banner between trust strip and "How it works" |
 
 ### 2026-03-05 — Full QA pass + tab state persistence (commit `531fe4e`)
 | File | Change |
@@ -640,24 +798,35 @@ Railway mounts volumes at **runtime** with root ownership. A non-root user (e.g.
 | `CLAUDE.md` | Comprehensive update: routing table, all 12 blog posts, InstallGuide platforms, v3.2.0 details |
 
 ### 2026-03-02 — 2026-03-03 — Security hardening + launch fixes
-
 All critical issues fixed before launch. Committed in two batches:
 - `efb0a7b` — 8 critical/high bugs fixed
 - `a7b73be` — 6 UX/polish fixes
 
-## Bug Fix Log (2026-03-02 — 2026-03-05)
+---
 
-### QA fixes (531fe4e) — 2026-03-05
+## Bug Fix Log
+
+### 2026-03-06 fixes
 | # | File | Bug | Fix |
 |---|---|---|---|
-| 1 | `dashboard/src/App.jsx` | Tab switch unmounts page component → all fetched data lost, re-fetch on return → "shows then disappears" | Replaced `pages[page]` with lazy-mount + `display:none` (useRef Set of visited pages) |
-| 2 | `dashboard/src/App.jsx` | `CitationTrackerPage`: `isPro = true` hardcoded — all users (including free) had Pro access | Restored `['pro','agency','enterprise'].includes(plan)` |
-| 3 | `dashboard/src/App.jsx` | `ContentDoctorPage`: `'agency'` missing from `isPaid` — agency users hit the free paywall | Added `'agency'` to `isPaid` array |
-| 4 | `dashboard/src/App.jsx` | `TenantsPage` `planBadge`: `starter` and `agency` not mapped → shown as grey badge | Added `starter: 'badge-yellow'`, `agency: 'badge-purple'` |
-| 5 | `dashboard/src/App.jsx` | `ScorePage`/`GeoPage`: silent `.catch(() => {})` on API failure → page showed nothing | Added retry card for `score === null` and `geo === null` states |
-| 6 | `Dockerfile` | `USER appuser` (non-root) → Railway volume mounted root-owned at runtime → SQLite unwritable → startup crash → 502 for 11h | Removed non-root user; documented why root is required for Railway volumes |
+| 1 | `app/api/auth.py` | `/api/v1/score/*` not public → 401 for unauthenticated users → `.catch(()=>{})` swallowed it → spinner stuck forever | Added `/api/v1/score/` and `/api/v1/geo/` to `PUBLIC_PREFIXES` |
+| 2 | `dashboard/src/App.jsx` | Score catch was `() => {}` → no way to distinguish "loading" from "failed" | Changed to set `scores[domain] = 'failed'`, renders ↺ retry + "Score unavailable" |
+| 3 | `dashboard/src/App.jsx` | Avg AI score showed red `—` when null (ternary fallthrough: `null >= 70` = false, `null >= 50` = false → red) | Added explicit `avgScore === null ? 'var(--muted)' :` check |
+| 4 | `dashboard/src/App.jsx` | × delete button: used `confirm()` dialog — often unnoticed/cancelled, "nothing happens" | Replaced with inline two-step confirmation in the site row |
+| 5 | `dashboard/src/App.jsx` | "Wipe all data" button called `api.wipeAll()` which requires master key → always 403 for tenant users | Changed to fetch `api.getMyDomains()` + loop `api.deleteRegistry()` per domain |
+| 6 | `dashboard/src/App.jsx` | Delete with no API key returned confusing "X-API-Key header required" error | Added key check at start of `handleDelete`; no key → toast + redirect to snippet tab |
 
-### Critical fixes (efb0a7b) — 2026-03-02
+### 2026-03-05 QA fixes
+| # | File | Bug | Fix |
+|---|---|---|---|
+| 1 | `dashboard/src/App.jsx` | Tab switch unmounts page component → all fetched data lost, re-fetch on return | Replaced `pages[page]` with lazy-mount + `display:none` (useRef Set of visited pages) |
+| 2 | `dashboard/src/App.jsx` | `CitationTrackerPage`: `isPro = true` hardcoded — all users had Pro access | Restored `['pro','agency','enterprise'].includes(plan)` |
+| 3 | `dashboard/src/App.jsx` | `ContentDoctorPage`: `'agency'` missing from `isPaid` — agency hit free paywall | Added `'agency'` to `isPaid` array |
+| 4 | `dashboard/src/App.jsx` | `TenantsPage` `planBadge`: `starter` and `agency` not mapped → grey badge | Added `starter: 'badge-yellow'`, `agency: 'badge-purple'` |
+| 5 | `dashboard/src/App.jsx` | `ScorePage`/`GeoPage`: silent `.catch(()=>{})` → page showed nothing on API failure | Added retry card for `score === null` and `geo === null` states |
+| 6 | `Dockerfile` | `USER appuser` (non-root) → Railway volume root-owned at runtime → SQLite unwritable → 502 for 11h | Removed non-root user; root required for Railway volumes |
+
+### 2026-03-02 critical fixes (efb0a7b)
 | # | File | Bug | Fix |
 |---|---|---|---|
 | 1 | `static/galuli.js` | `window.galui = window.galuli` inside object literal → syntax error, broke every customer install | Moved alias after closing `};` |
@@ -669,7 +838,7 @@ All critical issues fixed before launch. Committed in two batches:
 | 7 | `app/api/routes/citations.py` | Pro gate was commented out → free users had full Citation Tracker access | Restored `_require_pro()` guard |
 | 8 | `dashboard/src/App.jsx` | TenantsPage plan dropdown missing `starter`/`agency`, Pro showed wrong limits | Added all plans with correct limits |
 
-### Polish fixes (a7b73be) — 2026-03-03
+### 2026-03-03 polish fixes (a7b73be)
 | # | File | Issue | Fix |
 |---|---|---|---|
 | 1 | `push.py` / `score.py` | push.py had dead score/badge/suggestions routes shadowing score.py | Removed dead routes from push.py; score.py is now authoritative |
@@ -688,12 +857,13 @@ All critical issues fixed before launch. Committed in two batches:
 3. **Manual QA** — test galuli.js snippet install end-to-end on each major platform type (HTML, WordPress, Next.js SPA), LS checkout flow, magic link email delivery
 4. **Install guide nav links** — consider adding /install link to the nav in About.jsx, Roadmap.jsx, Blog.jsx navbars (currently only accessible via direct URL or from the dashboard SnippetPage)
 5. **Deploy checklist** — add a pre-push checklist to catch regressions: plan gates correct, no hardcoded keys/flags, LS URLs correct, build passes
+6. **Delete domain UX** — `GET /registry/` returns ALL domains (public endpoint), not just the logged-in user's. The × button only works if the user has an API key. Consider filtering the OverviewPage list to `api.getMyDomains()` so users only see and manage their own sites.
 
 ---
 
 ## Known Technical Debt
 
-These are not urgent bugs but are real risks as the product scales. Documented here so they don't get forgotten.
+These are not urgent bugs but are real risks as the product scales.
 
 ### 🔴 SQLite on Railway (highest priority before first paying customers)
 - Single point of failure — no replication, no managed backups
@@ -701,10 +871,16 @@ These are not urgent bugs but are real risks as the product scales. Documented h
 - Already caused one 11h outage (Dockerfile non-root user + Railway volume mount issue)
 - **Fix:** Migrate to Railway Postgres or Neon. Schema is simple; migration is a few hours of work now vs. a data-loss crisis later.
 
-### 🟠 App.jsx is one file at ~3,280 lines
+### 🟠 App.jsx is one file at ~3,500+ lines
 - Every bug hunt requires reading the file in 100-line chunks with offset/limit (too big to load at once)
-- The `isPro = true` and tab-persistence bugs went unnoticed partly because of this
+- The `isPro = true`, tab-persistence, and spinner bugs went unnoticed partly because of this
 - **Fix:** Split into one file per page component (OverviewPage.jsx, ScorePage.jsx, etc.) — each ~200–400 lines. Keep shared components in a `components/` folder.
+
+### 🟠 OverviewPage shows global registry, not per-tenant
+- `GET /registry/` returns ALL indexed domains (public), not just the current user's
+- Users see and try to manage domains they don't own
+- The × delete button gates on API key but the list itself is global
+- **Fix:** Change OverviewPage to use `api.getMyDomains()` + load scores only for those domains
 
 ### 🟡 Starter plan limit of 1 site is aggressive
 - Most small businesses have staging + production, or multiple projects
