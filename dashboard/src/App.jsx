@@ -402,6 +402,13 @@ function OverviewPage({ setPage, setPendingScanDomain }) {
   }
 
   const handleDelete = async (domain) => {
+    // Gate: must have an API key to manage sites
+    if (!localStorage.getItem('galuli_api_key')) {
+      setConfirmingDelete(null)
+      toast.info('You need a free account to remove sites. Redirecting…')
+      setPage('snippet')
+      return
+    }
     // First click → show inline confirmation; second click → actually delete
     if (confirmingDelete !== domain) {
       setConfirmingDelete(domain)
