@@ -252,24 +252,24 @@ input::placeholder { color: var(--muted); }
   margin-left: var(--sidebar-w);
   flex: 1;
   min-width: 0;
-  padding: 32px 40px;
+  padding: 44px 60px;
   max-width: calc(1200px + var(--sidebar-w));
 }
 
 /* ── Page header ── */
 .page-header {
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 .page-header h1 {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
   color: var(--text);
-  letter-spacing: -0.2px;
+  letter-spacing: -0.3px;
 }
 .page-header p {
   font-size: 13px;
   color: var(--muted);
-  margin-top: 3px;
+  margin-top: 4px;
   line-height: 1.5;
 }
 
@@ -303,9 +303,9 @@ input::placeholder { color: var(--muted); }
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 16px 20px;
+  padding: 20px 24px;
 }
-.card-lg { padding: 24px 28px; }
+.card-lg { padding: 28px 32px; }
 
 .feature-card { transition: border-color 0.15s; }
 .feature-card:hover { border-color: var(--border2); }
@@ -528,24 +528,24 @@ pre {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 16px 20px;
+  padding: 20px 24px;
   display: flex;
   flex-direction: column;
 }
 .stat-value {
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 700;
   color: var(--text);
   line-height: 1.1;
   letter-spacing: -0.5px;
 }
 .stat-label {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--muted);
   margin-top: 6px;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.5px;
 }
 
 /* ── Tables — Linear style: no outer border, subtle rows ── */

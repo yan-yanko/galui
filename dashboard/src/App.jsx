@@ -368,6 +368,7 @@ function OverviewPage({ setPage, setPendingScanDomain }) {
   const [loading, setLoading] = useState(true)
   const [scanUrl, setScanUrl] = useState('')
   const [scanning, setScanning] = useState(false)
+  const [confirmingDelete, setConfirmingDelete] = useState(null) // domain string being confirmed
 
   useEffect(() => {
     Promise.all([
@@ -401,14 +402,19 @@ function OverviewPage({ setPage, setPendingScanDomain }) {
   }
 
   const handleDelete = async (domain) => {
-    if (!confirm(`Remove ${domain} from your dashboard?\n\nThis deletes the registry and all scan data. It cannot be undone.`)) return
+    // First click → show inline confirmation; second click → actually delete
+    if (confirmingDelete !== domain) {
+      setConfirmingDelete(domain)
+      return
+    }
+    setConfirmingDelete(null)
     try {
       await api.deleteRegistry(domain)
       setRegistries(prev => prev.filter(r => r.domain !== domain))
       setScores(prev => { const n = { ...prev }; delete n[domain]; return n })
       toast.success(`${domain} removed`)
     } catch (err) {
-      toast.error(err.message)
+      toast.error('Could not remove: ' + err.message)
     }
   }
 
@@ -498,19 +504,27 @@ function OverviewPage({ setPage, setPendingScanDomain }) {
                     <button className="btn btn-ghost btn-sm" onClick={() => setPage('score')}>Score</button>
                     <button className="btn btn-ghost btn-sm" onClick={() => setPage('analytics')}>Analytics</button>
                     <button className="btn btn-ghost btn-sm" onClick={() => setPage('snippet')}>Install</button>
-                    <button
-                      onClick={() => handleDelete(r.domain)}
-                      title={`Remove ${r.domain}`}
-                      style={{
-                        width: 26, height: 26, borderRadius: 6, border: '1px solid var(--border)',
-                        background: 'none', color: 'var(--muted)', fontSize: 13, cursor: 'pointer',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        transition: 'color 0.15s, border-color 0.15s, background 0.15s',
-                        flexShrink: 0,
-                      }}
-                      onMouseEnter={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.borderColor = '#ef444466'; e.currentTarget.style.background = '#ef444415' }}
-                      onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted)'; e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'none' }}
-                    >×</button>
+                    {confirmingDelete === r.domain ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                        <span style={{ fontSize: 12, color: 'var(--subtle)', whiteSpace: 'nowrap' }}>Remove?</span>
+                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(r.domain)} style={{ fontSize: 11, padding: '3px 10px' }}>Yes</button>
+                        <button className="btn btn-ghost btn-sm" onClick={() => setConfirmingDelete(null)} style={{ fontSize: 11, padding: '3px 10px' }}>No</button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => handleDelete(r.domain)}
+                        title={`Remove ${r.domain}`}
+                        style={{
+                          width: 26, height: 26, borderRadius: 6, border: '1px solid var(--border)',
+                          background: 'none', color: 'var(--muted)', fontSize: 13, cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          transition: 'color 0.15s, border-color 0.15s, background 0.15s',
+                          flexShrink: 0,
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.borderColor = '#ef444466'; e.currentTarget.style.background = '#ef444415' }}
+                        onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted)'; e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'none' }}
+                      >×</button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -2517,31 +2531,47 @@ function SettingsPage({ setPage }) {
   )
 
   // ── Danger Zone card (always visible) ──
-  const DangerZone = () => (
-    <div className="card flex col gap-14" style={{ border: '1px solid #ef444430' }}>
-      <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--red)' }}>⚠️ Danger Zone</div>
-      <div className="flex between center wrap gap-12" style={{ background: 'var(--surface2)', border: '1px solid #ef444420', borderRadius: 10, padding: '14px 16px' }}>
-        <div>
-          <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 3 }}>Wipe all data</div>
-          <div style={{ fontSize: 13, color: 'var(--muted)' }}>Delete every registry, scan, and job from the database. Cannot be undone.</div>
+  function DangerZone() {
+    const [wiping, setWiping] = useState(false)
+    const handleWipe = async () => {
+      if (!confirm('Remove all your indexed sites from the dashboard?\n\nThis cannot be undone.')) return
+      setWiping(true)
+      try {
+        // Fetch THIS tenant's domains (not global wipe — no master key needed)
+        const data = await api.getMyDomains().catch(() => ({ domains: [] }))
+        const domains = data.domains || []
+        for (const domain of domains) {
+          await api.deleteRegistry(domain).catch(() => { })
+        }
+        toast.success('All your sites removed — reloading…')
+        setTimeout(() => window.location.reload(), 1500)
+      } catch (err) {
+        toast.error('Wipe failed: ' + err.message)
+      } finally {
+        setWiping(false)
+      }
+    }
+    return (
+      <div className="card flex col gap-14" style={{ border: '1px solid #ef444430' }}>
+        <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--red)' }}>⚠️ Danger Zone</div>
+        <div className="flex between center wrap gap-12" style={{ background: 'var(--surface2)', border: '1px solid #ef444420', borderRadius: 10, padding: '14px 16px' }}>
+          <div>
+            <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 3 }}>Remove all my sites</div>
+            <div style={{ fontSize: 13, color: 'var(--muted)' }}>Delete all your indexed sites and scan data from the dashboard. Cannot be undone.</div>
+          </div>
+          <button
+            className="btn btn-danger btn-sm"
+            onClick={handleWipe}
+            disabled={wiping}
+          >
+            {wiping
+              ? <><span className="spinner" style={{ width: 13, height: 13, borderColor: '#fff3', borderTopColor: '#fff' }} /> Wiping…</>
+              : 'Remove all sites →'}
+          </button>
         </div>
-        <button
-          className="btn btn-danger btn-sm"
-          onClick={async () => {
-            if (!confirm('Delete ALL registries, scans, and jobs?\n\nThis wipes the entire database and cannot be undone.')) return
-            try {
-              await api.wipeAll()
-              toast.success('All data wiped — refresh to see an empty dashboard')
-            } catch (err) {
-              toast.error(err.message)
-            }
-          }}
-        >
-          Wipe all data →
-        </button>
       </div>
-    </div>
-  )
+    )
+  }
 
   // No tenant key — show explainer + sign-up prompt
   if (!me && !activeKey) {
