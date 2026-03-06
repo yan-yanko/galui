@@ -98,6 +98,99 @@ function PageHeader({ title, subtitle }) {
   )
 }
 
+// ── InfoTip — inline ⓘ tooltip ─────────────────────────────────────────────
+function InfoTip({ text }) {
+  const [show, setShow] = useState(false)
+  return (
+    <span
+      style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', marginLeft: 4, cursor: 'default' }}
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+    >
+      <span style={{ fontSize: 11, color: 'var(--muted)', border: '1px solid var(--border2)', borderRadius: '50%', width: 14, height: 14, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, flexShrink: 0 }}>ⓘ</span>
+      {show && (
+        <span style={{
+          position: 'absolute', bottom: '100%', left: '50%', transform: 'translateX(-50%)',
+          background: 'var(--surface3)', border: '1px solid var(--border2)',
+          color: 'var(--subtle)', fontSize: 12, lineHeight: 1.5, padding: '7px 10px',
+          borderRadius: 6, whiteSpace: 'normal', width: 220, textAlign: 'left',
+          pointerEvents: 'none', zIndex: 1000, marginBottom: 6, boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+        }}>
+          {text}
+        </span>
+      )}
+    </span>
+  )
+}
+
+// ── OnboardingChecklist ────────────────────────────────────────────────────
+function OnboardingChecklist({ hasKey, hasScan, hasSnippet, onNavigate }) {
+  const [dismissed, setDismissed] = useState(() => localStorage.getItem('galuli_onboarding_done') === '1')
+  const steps = [
+    { label: 'Get your API key',    done: hasKey,     action: () => onNavigate('snippet'), actionLabel: 'Get key →',    tip: 'A free API key lets you install the snippet and start monitoring your site.' },
+    { label: 'Scan your first site', done: hasScan,   action: null,                        actionLabel: 'Scan ↑',       tip: 'Paste a URL in the scan box above — results appear in ~60 seconds.' },
+    { label: 'Install the snippet', done: hasSnippet, action: () => onNavigate('snippet'), actionLabel: 'Install →',    tip: 'One script tag in your <head> enables live AI tracking, llms.txt, and WebMCP.' },
+  ]
+  const doneCount = steps.filter(s => s.done).length
+  const allDone = doneCount === steps.length
+
+  if (dismissed) return null
+  if (allDone) {
+    setTimeout(() => { localStorage.setItem('galuli_onboarding_done', '1'); setDismissed(true) }, 3000)
+  }
+
+  return (
+    <div className="card" style={{ borderColor: allDone ? 'rgba(74,173,82,0.3)' : 'rgba(94,106,210,0.25)', padding: '18px 20px' }}>
+      {/* Header row */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <div>
+          <span style={{ fontWeight: 700, fontSize: 13 }}>
+            {allDone ? '✓ You\'re all set!' : 'Getting started'}
+          </span>
+          <span style={{ fontSize: 12, color: 'var(--muted)', marginLeft: 8 }}>
+            {allDone ? 'Galuli is fully configured.' : `${doneCount} of ${steps.length} complete`}
+          </span>
+        </div>
+        <button
+          onClick={() => { localStorage.setItem('galuli_onboarding_done', '1'); setDismissed(true) }}
+          title="Dismiss"
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', fontSize: 16, padding: '2px 6px', borderRadius: 4, lineHeight: 1 }}
+        >×</button>
+      </div>
+      {/* Progress bar */}
+      <div style={{ background: 'var(--border)', borderRadius: 4, height: 3, marginBottom: 14, overflow: 'hidden' }}>
+        <div style={{ height: '100%', borderRadius: 4, background: allDone ? 'var(--green)' : 'var(--accent)', width: `${(doneCount / steps.length) * 100}%`, transition: 'width 0.4s ease' }} />
+      </div>
+      {/* Steps */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+        {steps.map((step, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{
+              width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+              background: step.done ? 'rgba(74,173,82,0.12)' : 'var(--surface2)',
+              border: `1px solid ${step.done ? 'rgba(74,173,82,0.4)' : 'var(--border)'}`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 10, fontWeight: 700,
+              color: step.done ? 'var(--green)' : 'var(--muted)',
+            }}>
+              {step.done ? '✓' : i + 1}
+            </div>
+            <span style={{ fontSize: 13, flex: 1, color: step.done ? 'var(--muted)' : 'var(--text)', textDecoration: step.done ? 'line-through' : 'none' }}>
+              {step.label}
+            </span>
+            <InfoTip text={step.tip} />
+            {!step.done && step.action && (
+              <button className="btn btn-primary btn-sm" onClick={step.action} style={{ flexShrink: 0, fontSize: 12 }}>
+                {step.actionLabel}
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function EmptyState({ icon, title, description, action }) {
   return (
     <div className="card">
@@ -160,15 +253,32 @@ function TabExplainer({ icon, title, description, features, cta, onCta, ctaLabel
 }
 
 // ── Sidebar Navigation ────────────────────────────────────────────────────────
-const NAV_LINKS = [
-  { id: 'overview',        label: 'Overview',        icon: '⊞' },
-  { id: 'score',           label: 'AI Score',         icon: '◎' },
-  { id: 'geo',             label: 'GEO',              icon: '◈' },
-  { id: 'analytics',       label: 'Analytics',        icon: '↗' },
-  { id: 'content-doctor',  label: 'Content Doctor',   icon: '✦', highlight: true },
-  { id: 'citations',       label: 'Citations',        icon: '◉' },
-  { id: 'snippet',         label: 'Snippet',          icon: '⟨⟩' },
-  { id: 'settings',        label: 'Settings',         icon: '⚙' },
+const NAV_SECTIONS = [
+  {
+    label: 'SETUP',
+    items: [
+      {
+        id: 'snippet', label: 'Install Snippet', icon: '⟨⟩',
+        tooltip: 'Get your API key and paste one script tag into your site\'s <head>. Activates AI tracking, llms.txt generation, WebMCP, and auto-indexing.',
+      },
+    ],
+  },
+  {
+    label: 'INSIGHTS',
+    items: [
+      { id: 'overview',  label: 'Overview',   icon: '⊞', tooltip: 'Your AI accessibility dashboard — scan sites, track scores, and monitor overall progress.' },
+      { id: 'score',     label: 'AI Score',   icon: '◎', tooltip: '0–100 AI Readiness Score across 5 dimensions: Content, Structure, Machine Signals, Authority, and Freshness.' },
+      { id: 'geo',       label: 'GEO',        icon: '◈', tooltip: 'Generative Engine Optimization — per-LLM citation readiness score for ChatGPT, Claude, Perplexity, Gemini, Grok, and Llama.' },
+      { id: 'analytics', label: 'Analytics',  icon: '↗', tooltip: 'AI agent traffic analytics — which LLMs crawl your site, which pages they read, and how traffic trends over time.' },
+    ],
+  },
+  {
+    label: 'TOOLS',
+    items: [
+      { id: 'content-doctor', label: 'Content Doctor', icon: '✦', highlight: true, tooltip: 'Authority gap scanner + information gain analysis. Returns specific rewrites that increase AI citation probability by 30–40% (Princeton GEO-bench).' },
+      { id: 'citations',      label: 'Citations',      icon: '◉', tooltip: 'Track whether ChatGPT, Perplexity, and Claude cite your site in their answers. Requires Pro plan.' },
+    ],
+  },
 ]
 
 function Nav({ page, setPage, health, theme, toggleTheme }) {
@@ -184,44 +294,68 @@ function Nav({ page, setPage, health, theme, toggleTheme }) {
         <span>galuli</span>
       </a>
 
-      {/* Main nav */}
-      <div className="sidebar-section">
-        {NAV_LINKS.map(l => (
-          <button
-            key={l.id}
-            className={`sidebar-item${page === l.id ? ' active' : ''}`}
-            onClick={() => setPage(l.id)}
-          >
-            <span className="sidebar-item-icon">{l.icon}</span>
-            <span>{l.label}</span>
-            {l.highlight && (
-              <span style={{
-                marginLeft: 'auto', fontSize: 10, fontWeight: 600,
-                background: 'rgba(94,106,210,0.15)', color: 'var(--accent)',
-                padding: '1px 5px', borderRadius: 3, letterSpacing: 0.3,
-              }}>NEW</span>
-            )}
-          </button>
-        ))}
-      </div>
-
-      {/* Footer — status + theme toggle */}
-      <div className="sidebar-footer">
-        {health && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--muted)', marginBottom: 8, padding: '0 4px' }}>
-            <span className={`dot dot-${health.anthropic_configured ? 'green' : 'red'}`} />
-            <span>{health.registries_indexed} site{health.registries_indexed !== 1 ? 's' : ''} indexed</span>
+      {/* Sectioned nav */}
+      {NAV_SECTIONS.map(section => (
+        <div key={section.label} className="sidebar-section">
+          <div style={{
+            fontSize: 10, fontWeight: 700, color: 'var(--muted)',
+            letterSpacing: '0.7px', padding: '8px 12px 4px',
+            textTransform: 'uppercase',
+          }}>
+            {section.label}
           </div>
-        )}
-        <button
-          onClick={toggleTheme}
-          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          className="sidebar-item"
-          style={{ width: '100%' }}
-        >
-          <span className="sidebar-item-icon">{theme === 'dark' ? '☀' : '🌙'}</span>
-          <span>{theme === 'dark' ? 'Light mode' : 'Dark mode'}</span>
-        </button>
+          {section.items.map(l => (
+            <button
+              key={l.id}
+              className={`sidebar-item${page === l.id ? ' active' : ''}`}
+              onClick={() => setPage(l.id)}
+              title={l.tooltip}
+            >
+              <span className="sidebar-item-icon">{l.icon}</span>
+              <span>{l.label}</span>
+              {l.highlight && (
+                <span style={{
+                  marginLeft: 'auto', fontSize: 10, fontWeight: 600,
+                  background: 'rgba(94,106,210,0.15)', color: 'var(--accent)',
+                  padding: '1px 5px', borderRadius: 3, letterSpacing: 0.3,
+                }}>NEW</span>
+              )}
+            </button>
+          ))}
+        </div>
+      ))}
+
+      {/* Settings + footer at bottom */}
+      <div style={{ marginTop: 'auto' }}>
+        <div className="sidebar-section">
+          <button
+            className={`sidebar-item${page === 'settings' ? ' active' : ''}`}
+            onClick={() => setPage('settings')}
+            title="Account settings, plan details, API keys, and upgrade options"
+          >
+            <span className="sidebar-item-icon">⚙</span>
+            <span>Settings</span>
+          </button>
+        </div>
+
+        {/* Footer — status + theme toggle */}
+        <div className="sidebar-footer">
+          {health && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--muted)', marginBottom: 8, padding: '0 4px' }}>
+              <span className={`dot dot-${health.anthropic_configured ? 'green' : 'red'}`} />
+              <span>{health.registries_indexed} site{health.registries_indexed !== 1 ? 's' : ''} indexed</span>
+            </div>
+          )}
+          <button
+            onClick={toggleTheme}
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            className="sidebar-item"
+            style={{ width: '100%' }}
+          >
+            <span className="sidebar-item-icon">{theme === 'dark' ? '☀' : '🌙'}</span>
+            <span>{theme === 'dark' ? 'Light mode' : 'Dark mode'}</span>
+          </button>
+        </div>
       </div>
     </aside>
   )
@@ -290,9 +424,20 @@ function OverviewPage({ setPage, setPendingScanDomain }) {
     ? Math.round(scores_arr.reduce((a, b) => a + b.total, 0) / scores_arr.length)
     : null
 
+  const hasKey = !!localStorage.getItem('galuli_api_key')
+  const hasSnippet = !!localStorage.getItem('galuli_snippet_active') || scores_arr.some(s => s?.dimensions?.webmcp_compliance?.webmcp_enabled)
+
   return (
     <div className="flex col gap-20">
       <PageHeader title="Overview" subtitle="Your AI accessibility dashboard" />
+
+      {/* Getting started checklist */}
+      <OnboardingChecklist
+        hasKey={hasKey}
+        hasScan={hasData}
+        hasSnippet={hasSnippet}
+        onNavigate={setPage}
+      />
 
       {/* Quick scan */}
       <div className="card" style={{ padding: '20px 24px' }}>
@@ -1714,7 +1859,11 @@ function SnippetPage() {
     fetch(`${api.base()}/api/v1/tenants/domains`, {
       headers: { 'X-API-Key': selectedKey, 'Content-Type': 'application/json' },
     }).then(r => r.ok ? r.json() : { domains: [] })
-      .then(d => setDomains(d.domains || []))
+      .then(d => {
+        const list = d.domains || []
+        setDomains(list)
+        if (list.length > 0) localStorage.setItem('galuli_snippet_active', '1')
+      })
       .catch(() => setDomains([]))
   }, [selectedKey])
 
@@ -1746,6 +1895,32 @@ function SnippetPage() {
         title="Install the Snippet"
         subtitle="One script tag. Your site becomes AI-readable, WebMCP-compliant, and fully tracked."
       />
+
+      {/* Status banner */}
+      {domains.length > 0 ? (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px',
+          background: 'rgba(74,173,82,0.08)', border: '1px solid rgba(74,173,82,0.25)',
+          borderRadius: 8, fontSize: 13,
+        }}>
+          <span className="dot dot-green" style={{ width: 8, height: 8, flexShrink: 0 }} />
+          <span style={{ fontWeight: 600, color: 'var(--green)' }}>Snippet active</span>
+          <span style={{ color: 'var(--subtle)' }}>—</span>
+          <span style={{ color: 'var(--subtle)' }}>
+            Running on {domains.length} domain{domains.length !== 1 ? 's' : ''}: {domains.slice(0, 3).join(', ')}{domains.length > 3 ? ` +${domains.length - 3} more` : ''}
+          </span>
+        </div>
+      ) : selectedKey ? (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px',
+          background: 'rgba(217,165,58,0.08)', border: '1px solid rgba(217,165,58,0.25)',
+          borderRadius: 8, fontSize: 13,
+        }}>
+          <span style={{ fontSize: 14 }}>⚠</span>
+          <span style={{ fontWeight: 600, color: 'var(--yellow)' }}>Snippet not installed yet</span>
+          <span style={{ color: 'var(--subtle)' }}>— follow steps below to activate</span>
+        </div>
+      ) : null}
 
       <TabExplainer
         icon="⬡"
@@ -1826,7 +2001,12 @@ function SnippetPage() {
 
       {/* ── Step 2: Add snippet ── */}
       <div className="card flex col gap-14">
-        <div style={{ fontWeight: 700, fontSize: 13 }}>Step 2 — Add to your site's <code>&lt;head&gt;</code></div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+          <div style={{ fontWeight: 700, fontSize: 13 }}>Step 2 — Add to your site's <code>&lt;head&gt;</code></div>
+          <a href="/install" target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: 'var(--accent)', textDecoration: 'none' }}>
+            Platform-specific guides ↗
+          </a>
+        </div>
         <div style={{ fontSize: 13, color: 'var(--muted)' }}>Works on WordPress, Webflow, Shopify, custom HTML, React — anything.</div>
         <div className="code-block">
           {snippetTag}
