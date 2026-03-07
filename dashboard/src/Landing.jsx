@@ -446,7 +446,7 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
               <span style={{ background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>not just Google.</span>
             </h1>
             <p style={{ fontSize: 18, color: 'var(--subtle)', lineHeight: 1.7, marginBottom: 28, maxWidth: 480 }}>
-              AI search now drives more qualified traffic than Google Ads — at 5x the conversion rate. Galuli gets your site into those answers automatically. One script tag. No backend changes. Works across ChatGPT, Claude, Perplexity, Gemini, Grok, and Llama.
+              AI search now drives more qualified traffic than Google Ads, at 5x the conversion rate. Galuli gets your site into those answers automatically. One script tag. No backend changes. Works across ChatGPT, Claude, Perplexity, Gemini, Grok, and Llama.
             </p>
 
             {/* Bullets */}
