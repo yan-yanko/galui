@@ -442,19 +442,19 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
               <div style={{ fontSize: 12, color: 'var(--muted)' }}>· Limited access · Every signup reviewed personally</div>
             </div>
             <h1 style={{ fontSize: 'clamp(42px, 5.5vw, 72px)', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.05, marginBottom: 22, color: 'var(--text)' }}>
-              Make your website<br />
-              <span style={{ background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>readable by AI.</span>
+              Get cited by AI,<br />
+              <span style={{ background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>not just Google.</span>
             </h1>
             <p style={{ fontSize: 18, color: 'var(--subtle)', lineHeight: 1.7, marginBottom: 28, maxWidth: 480 }}>
-              Other GEO tools give you a checklist. Galuli does it automatically. One script tag generates your llms.txt, registers your site with AI agent frameworks, and tracks which AI crawlers visit you in real time, with a live readability score across ChatGPT, Claude, Perplexity, Gemini, Grok, and Llama.
+              AI search now drives more qualified traffic than Google Ads — at 5x the conversion rate. Galuli gets your site into those answers automatically. One script tag. No backend changes. Works across ChatGPT, Claude, Perplexity, Gemini, Grok, and Llama.
             </p>
 
             {/* Bullets */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 28 }}>
               {[
-                { label: 'Effortless.', detail: 'One script tag. Galuli handles everything else automatically.' },
-                { label: 'Affordable.', detail: 'Free scan, no credit card. Paid plans start at $9/month.' },
-                { label: 'Universal.', detail: 'ChatGPT, Claude, Perplexity, Gemini, Grok — all of them, at once.' },
+                { label: '5x higher conversion.', detail: 'AI-referred traffic converts at 14.2% vs 2.8% from organic search.' },
+                { label: 'One script tag.', detail: 'No backend changes. Galuli handles llms.txt, WebMCP, and monitoring automatically.' },
+                { label: 'All 6 AI engines.', detail: 'ChatGPT, Claude, Perplexity, Gemini, Grok, and Llama — simultaneously.' },
               ].map(({ label, detail }) => (
                 <div key={label} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 15 }}>
                   <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'rgba(94,106,210,0.12)', border: '1px solid rgba(94,106,210,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)', fontWeight: 800, fontSize: 10, flexShrink: 0, marginTop: 1 }}>✓</div>
@@ -656,6 +656,34 @@ export function LandingPage({ onScanComplete, onAuthRequired }) {
         <FaqAccordion />
       </div>
 
+      {/* ── For agencies ── */}
+      <div style={{ background: 'var(--surface)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '64px 32px' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <div style={{ marginBottom: 32 }}>
+            <div className="eyebrow">For agencies</div>
+            <h2 style={{ fontSize: 'clamp(28px, 3vw, 42px)', fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text)', marginBottom: 8, lineHeight: 1.1 }}>Sell AI visibility.<br />Not just rankings.</h2>
+            <p style={{ fontSize: 16, color: 'var(--subtle)', maxWidth: 560 }}>Your clients are asking about AI search. Galuli gives you a concrete, measurable answer — with reports they can understand and scores that update automatically.</p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 1, border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden', background: 'var(--border)', marginBottom: 24 }}>
+            {[
+              { color: 'var(--accent)',  title: 'Client-ready score reports', desc: 'Every scanned domain gets an AI Readiness Report with a score, grade, and specific action items. Screenshot it. Send it. Bill for it.' },
+              { color: 'var(--green)',   title: 'Monitor all your clients at once', desc: "The Agency plan covers unlimited domains. See every client's AI score in one dashboard. Get alerted when scores drop or crawlers get blocked." },
+              { color: 'var(--purple)',  title: 'Embeddable score badge', desc: "Give clients a live score badge for their site. It updates automatically and links to their full report — a tangible proof point for your retainer." },
+            ].map(({ color, title, desc }) => (
+              <div key={title} className="feature-card" style={{ background: 'var(--surface)', padding: '20px 22px', transition: 'background 0.2s ease' }}>
+                <div style={{ width: 3, height: 16, background: color, borderRadius: 2, marginBottom: 12 }} />
+                <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 6, color: 'var(--text)' }}>{title}</div>
+                <div style={{ fontSize: 14, color: 'var(--subtle)', lineHeight: 1.7 }}>{desc}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+            <a href="/pricing" className="btn btn-primary">See Agency pricing →</a>
+            <span style={{ fontSize: 12, color: 'var(--muted)' }}>Unlimited domains · $799/yr · White-glove onboarding</span>
+          </div>
+        </div>
+      </div>
+
       {/* ── Bottom CTA ── */}
       <div style={{ background: 'var(--surface)', borderTop: '1px solid var(--border)', padding: '64px 32px' }}>
         <div style={{ maxWidth: 560, margin: '0 auto', textAlign: 'center' }}>
@@ -827,6 +855,17 @@ export function ResultsPage({ data, onRegistered }) {
               {score.total >= 70 && <span className="badge badge-green">✓ AI-Ready</span>}
               {score.total < 40 && <span className="badge badge-yellow">⚠ Needs Work</span>}
             </div>
+            <p style={{ fontSize: 12, color: 'var(--subtle)', lineHeight: 1.6, marginTop: 10 }}>
+              {score.total >= 85
+                ? "You're fully AI-readable. AI systems can cite you with confidence."
+                : score.total >= 70
+                ? "Most AI systems understand you well. You're appearing in AI answers — let's close the remaining gaps."
+                : score.total >= 55
+                ? "AI can reach you but often gets an incomplete picture. You're appearing in some answers but missing citation opportunities."
+                : score.total >= 40
+                ? "AI systems struggle to understand your site. You're likely being skipped in AI-generated answers."
+                : "AI systems cannot reliably understand your site. You're invisible in AI-generated answers right now."}
+            </p>
           </div>
         </div>
 
@@ -867,6 +906,20 @@ export function ResultsPage({ data, onRegistered }) {
                 )
               })}
             </div>
+          </div>
+        )}
+
+        {/* What gets better */}
+        {score.total < 85 && (
+          <div style={{ marginBottom: 16, padding: '12px 16px', background: 'rgba(94,106,210,0.06)', border: '1px solid rgba(94,106,210,0.2)', borderRadius: 8, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+            <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1, color: 'var(--accent)' }}>↑</span>
+            <p style={{ fontSize: 13, color: 'var(--subtle)', lineHeight: 1.6, margin: 0 }}>
+              Fix the issues above and your score could reach{' '}
+              <strong style={{ color: 'var(--accent)' }}>
+                Grade {score.total >= 70 ? 'A (85+)' : score.total >= 55 ? 'B (70+)' : score.total >= 40 ? 'C (55+)' : 'D (40+)'}
+              </strong>
+              {' '}— putting you in the range where AI systems actively cite sites like yours.
+            </p>
           </div>
         )}
 

@@ -1,6 +1,6 @@
 # Galuli — Claude Session Memory
 
-> Last updated: 2026-03-06
+> Last updated: 2026-03-07
 
 ---
 
@@ -724,6 +724,27 @@ Railway mounts volumes at **runtime** with root ownership. A non-root user (e.g.
 
 ## Change Log
 
+### 2026-03-07 — Agency feedback fixes: landing copy + results page UX
+
+**Context:** Agency owner feedback session revealed three blockers:
+1. Hero sells the mechanism ("readable"), not the outcome (citations)
+2. Score number is abstract — no plain-English interpretation of what it means
+3. No section targeting agencies specifically
+4. Scan results don't show what improving would actually achieve
+
+| File | Change |
+|---|---|
+| `dashboard/src/Landing.jsx` | H1: `"Make your website readable by AI"` → `"Get cited by AI, not just Google."` |
+| `dashboard/src/Landing.jsx` | Subheadline: feature-focused → leads with 5x conversion rate stat, then mechanism |
+| `dashboard/src/Landing.jsx` | Hero bullets: `Effortless / Affordable / Universal` → `5x higher conversion / One script tag / All 6 AI engines` |
+| `dashboard/src/Landing.jsx` | `ResultsPage`: added plain-English score interpretation below grade badges (5 tiers: "fully AI-readable" → "invisible in AI-generated answers right now") |
+| `dashboard/src/Landing.jsx` | `ResultsPage`: added "what gets better" nudge block above locked features — shows target grade and what fixing issues would achieve |
+| `dashboard/src/Landing.jsx` | New **"For agencies"** section between FAQ and bottom CTA: headline "Sell AI visibility. Not just rankings." + 3 feature cards (client reports, unlimited monitoring, embeddable badge) + CTA → `/pricing` |
+
+**Pending from agency feedback:** User (Yan) is handling case study block (before/after score + measurable outcome) separately.
+
+---
+
 ### 2026-03-06 — Dashboard UX overhaul + bug fixes (commits `9bec295`, `62992b4`, `f9b1215`, `1ba3048`)
 
 #### Dashboard UX (9bec295)
@@ -852,12 +873,20 @@ All critical issues fixed before launch. Committed in two batches:
 
 ## Pending TODOs
 
-1. **Pro annual variant** — create "$249/yr" variant in Lemon Squeezy, get checkout URL and variant ID, paste into `LS_URLS.pro_annual` in `App.jsx` and set `LS_VARIANT_PRO_ANNUAL` Railway env var
-2. **Starter annual URL** — create "$79/yr" variant in LS (variant ID 1353121 exists), paste checkout URL into `LS_URLS.starter_annual` in `App.jsx`
-3. **Manual QA** — test galuli.js snippet install end-to-end on each major platform type (HTML, WordPress, Next.js SPA), LS checkout flow, magic link email delivery
-4. **Install guide nav links** — consider adding /install link to the nav in About.jsx, Roadmap.jsx, Blog.jsx navbars (currently only accessible via direct URL or from the dashboard SnippetPage)
+### Agency feedback (in progress)
+1. **Case study block** — Yan doing manually: one real before/after (domain, score change, measurable outcome like "now cited in Perplexity for [keyword]"). Will be added as a new section in `Landing.jsx`.
+
+### Billing
+2. **Pro annual variant** — create "$249/yr" variant in Lemon Squeezy, get checkout URL and variant ID, paste into `LS_URLS.pro_annual` in `App.jsx` and set `LS_VARIANT_PRO_ANNUAL` Railway env var
+3. **Starter annual URL** — create "$79/yr" variant in LS (variant ID 1353121 exists), paste checkout URL into `LS_URLS.starter_annual` in `App.jsx`
+
+### QA / ops
+4. **Manual QA** — test galuli.js snippet install end-to-end on each major platform type (HTML, WordPress, Next.js SPA), LS checkout flow, magic link email delivery
 5. **Deploy checklist** — add a pre-push checklist to catch regressions: plan gates correct, no hardcoded keys/flags, LS URLs correct, build passes
-6. **Delete domain UX** — `GET /registry/` returns ALL domains (public endpoint), not just the logged-in user's. The × button only works if the user has an API key. Consider filtering the OverviewPage list to `api.getMyDomains()` so users only see and manage their own sites.
+
+### Dashboard
+6. **Install guide nav links** — consider adding /install link to the nav in About.jsx, Roadmap.jsx, Blog.jsx navbars (currently only accessible via direct URL or from the dashboard SnippetPage)
+7. **Delete domain UX** — `GET /registry/` returns ALL domains (public endpoint), not just the logged-in user's. The × button only works if the user has an API key. Consider filtering the OverviewPage list to `api.getMyDomains()` so users only see and manage their own sites.
 
 ---
 
