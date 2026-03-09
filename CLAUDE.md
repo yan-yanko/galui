@@ -724,9 +724,29 @@ Railway mounts volumes at **runtime** with root ownership. A non-root user (e.g.
 
 ## Change Log
 
-### 2026-03-07 — Agency feedback fixes: landing copy + results page UX
+### 2026-03-07 — Competitive positioning update (commits `d38a70a`, `0f3d901`, `9dc0078`)
 
-**Context:** Agency owner feedback session revealed three blockers:
+#### Competitive analysis session
+Reviewed 5 competitors to understand market positioning:
+
+| Competitor | Type | Pricing | Key differentiator vs Galuli |
+|---|---|---|---|
+| **Sight AI** (trysight.ai) | Content gen + visibility tracking | $49–$999/mo | Content generation = retention moat. Galuli doesn't generate content. |
+| **Geoptie** (geoptie.com) | AI rank tracker (prompt monitoring) | $490–$1,990/yr | Tracks where you rank but doesn't fix anything. Galuli fixes. |
+| **Seeders** (seeders.com) | Traditional cross-border SEO agency | N/A | Not a competitor. |
+| **Writesonic** | Full platform: track → action → content | Undisclosed (Series A+) | 120M proprietary AI conversations = data moat. Targets enterprise. |
+| **Surfer SEO** | SEO optimizer + AI tracker (beta) | Undisclosed (150k users) | Biggest long-term threat — existing user base adding GEO features. |
+
+**Key strategic findings:**
+1. **Everyone measures. Nobody fixes.** Every competitor is "track and suggest." Galuli auto-generates llms.txt, registers WebMCP, audits robots.txt — nobody else does this automatically.
+2. **Galuli is dramatically underpriced.** Geoptie charges $990/yr for a rank tracker with no auto-fix. Galuli Pro at $348/yr does more. Market validates $490–$1,990/yr pricing.
+3. **Content generation is a trap.** Sight AI and Writesonic went content-first. Galuli's "fix existing sites" angle is cleaner and nobody else owns it.
+4. **Surfer SEO is the biggest threat.** 150k users, already adding AI tracker beta. Window to establish position is 12–18 months.
+5. **Prompt tracking is the missing retention hook.** All competitors let users track specific queries ("best CRM for agencies") across AI engines over time. Galuli's Citation Tracker is closest but needs to be more self-serve.
+6. **Pricing recommendation:** Starter $9/mo → $19–29/mo, Pro $29/mo → $59–79/mo. Agency $799/yr is competitive.
+
+#### Landing page changes (d38a70a) — Agency feedback fixes
+**Context:** Agency owner feedback session revealed four blockers:
 1. Hero sells the mechanism ("readable"), not the outcome (citations)
 2. Score number is abstract — no plain-English interpretation of what it means
 3. No section targeting agencies specifically
@@ -740,6 +760,20 @@ Railway mounts volumes at **runtime** with root ownership. A non-root user (e.g.
 | `dashboard/src/Landing.jsx` | `ResultsPage`: added plain-English score interpretation below grade badges (5 tiers: "fully AI-readable" → "invisible in AI-generated answers right now") |
 | `dashboard/src/Landing.jsx` | `ResultsPage`: added "what gets better" nudge block above locked features — shows target grade and what fixing issues would achieve |
 | `dashboard/src/Landing.jsx` | New **"For agencies"** section between FAQ and bottom CTA: headline "Sell AI visibility. Not just rankings." + 3 feature cards (client reports, unlimited monitoring, embeddable badge) + CTA → `/pricing` |
+
+#### Minor copy fix (0f3d901)
+| File | Change |
+|---|---|
+| `dashboard/src/Landing.jsx` | Hero subheadline: em dash `—` → comma `,` |
+
+#### Competitive positioning update (9dc0078)
+| File | Change |
+|---|---|
+| `dashboard/src/Landing.jsx` | Subheadline: `"AI search now drives more qualified traffic..."` → `"Other tools track where you rank in AI answers. Galuli fixes why you don't."` |
+| `dashboard/src/Landing.jsx` | Stats strip: `$750B AI-mediated commerce (Gartner)` → `63% of purchases start with AI` |
+| `dashboard/src/Landing.jsx` | New **contrast section** between SimilarWeb callout and "How it works": "Most tools measure AI visibility. Galuli creates it." — ✗/✓ side-by-side comparison |
+| `dashboard/src/Landing.jsx` | "How it works" H2: `"AI accessibility in three steps"` → `"From invisible to cited in three steps"` |
+| `dashboard/src/Landing.jsx` | "How it works" subtitle: `"From zero to fully AI-readable..."` → `"One script tag. Galuli handles everything else."` |
 
 **Pending from agency feedback:** User (Yan) is handling case study block (before/after score + measurable outcome) separately.
 
@@ -875,6 +909,12 @@ All critical issues fixed before launch. Committed in two batches:
 
 ### Agency feedback (in progress)
 1. **Case study block** — Yan doing manually: one real before/after (domain, score change, measurable outcome like "now cited in Perplexity for [keyword]"). Will be added as a new section in `Landing.jsx`.
+
+### Pricing (validated by competitive analysis)
+2. **Raise prices** — market validates $490–$1,990/yr for competitors with less functionality. Recommended: Starter $9/mo → $19–29/mo, Pro $29/mo → $59–79/mo. Agency $799/yr is competitive. Change in `PLAN_DETAILS` in `App.jsx`, `PLAN_LIMITS` in `tenant.py`, and LS checkout variants.
+
+### Product roadmap (from competitive analysis)
+3. **Self-serve prompt tracking** — add to Citation Tracker: user enters a query (e.g. "best CRM for agencies"), Galuli runs it weekly across all 6 AI engines, shows trend over time. This is the retention hook every competitor uses. Currently `citation_tracker.py` does this but it's not self-serve enough.
 
 ### Billing
 2. **Pro annual variant** — create "$249/yr" variant in Lemon Squeezy, get checkout URL and variant ID, paste into `LS_URLS.pro_annual` in `App.jsx` and set `LS_VARIANT_PRO_ANNUAL` Railway env var
